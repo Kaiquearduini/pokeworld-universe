@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wiki — Pokeworld Universe</title>
-  <meta name="description" content="Pokédex do Pokeworld Universe: funções, alcance, dificuldade e estatísticas de todos os Pokémon.">
+  <title>Tickets — Pokeworld Universe</title>
+  <meta name="description" content="Abra um chamado para a equipe do Pokeworld Universe.">
   <link rel="icon" href="assets/logo-sigla.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="pages.css">
 </head>
-<body data-page="wiki">
+<body data-page="tickets">
 <div class="scroll-progress" aria-hidden="true"></div>
 <div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
 <div class="page page--sub">
@@ -18,7 +18,7 @@
     <div class="header-shape header-shape--white"></div>
     <div class="header-shape header-shape--grad"></div>
     <a class="logo-sigla" href="index.html"><img src="assets/logo-sigla.png" alt="PWU"></a>
-    <nav class="nav"><a href="o-jogo.html">O JOGO</a><a href="wiki.html" class="is-active">wiki</a><a href="download.html">download</a><a href="ranking.html">ranking</a><a href="loja.html">loja</a><a href="doar.html">doar</a></nav>
+    <nav class="nav"><a href="o-jogo.html">O JOGO</a><a href="wiki.html">wiki</a><a href="download.html">download</a><a href="ranking.html">ranking</a><a href="loja.html">loja</a><a href="doar.html">doar</a></nav>
     <div class="topbar-actions">
       <a class="btn-entrar" href="login.html" data-entrar>Iniciar sessão</a>
       <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
@@ -26,31 +26,42 @@
     <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </header>
 
-  <section class="banner" style="--bg:url('assets/img/bg/battle-map.jpg')">
+  <section class="banner" style="--bg:url('assets/img/bg/stadium-light.jpg')">
     <div class="banner__inner">
-      <span class="banner__tag">Pokédex</span>
-      <h1 class="banner__title" data-text="wiki.banner.title">Todos os<br>Pokémon</h1>
-      <p class="banner__sub" data-text="wiki.banner.sub">Funções, alcance, dificuldade e estatísticas de cada um dos 69 Pokémon jogáveis.</p>
-    </div><img class="banner__art" src="assets/img/art/gengar.png" alt="">
+      <span class="banner__tag">Suporte</span>
+      <h1 class="banner__title">Tickets</h1>
+      <p class="banner__sub">Fale com a equipe. Respondemos pelo e-mail da sua conta.</p>
+    </div>
   </section>
 
   <main class="sub">
 
-    <section class="sec">
-      <div class="wrap">
-        <div class="dex-tools">
-          <div class="chips">
-            <button class="chip is-active" type="button" data-role="todos">Todos</button>
-            <button class="chip" type="button" data-role="atacante">Atacante</button>
-            <button class="chip" type="button" data-role="versatil">Versátil</button>
-            <button class="chip" type="button" data-role="defensor">Defensor</button>
-            <button class="chip" type="button" data-role="suporte">Suporte</button>
-            <button class="chip" type="button" data-role="velocista">Velocista</button>
+    <section class="sec acc-sec">
+      <div class="wrap--narrow">
+        <div class="shop-gate" id="acc-gate" hidden style="margin-bottom:0">
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para continuar</h3>
+            <p>Faça login na sua conta Pokeworld para acessar esta área.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="login.html">Iniciar sessão</a></div>
           </div>
-          <label class="search">🔍 <input id="dex-search" type="search" placeholder="Buscar Pokémon"></label>
         </div>
-        <p class="sec__sub" style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;gap:2rem"><span><b id="dex-count">0</b> Pokémon encontrados</span><a class="btn btn--black btn--sm" href="admin.html?tab=pokemon">Painel admin</a></p>
-        <div class="dex-grid" id="dex-grid"></div>
+        <div id="acc" hidden>
+          <a class="voltar" href="minha-conta.html">← Voltar para minha conta</a>
+          <article class="acc-card">
+            <h2 class="acc-card__title">Abrir <span class="grad grad--yellow">ticket</span></h2>
+            <form id="f-ticket" novalidate style="margin-top:2.4rem">
+              <label class="field"><span>Assunto</span><select name="subject"><option>Problema com a conta</option><option>Pagamento ou doação</option><option>Bug no jogo</option><option>Denúncia</option><option>Outro</option></select></label>
+              <label class="field"><span>Mensagem</span><textarea name="message" rows="6" placeholder="Descreva o que aconteceu com o máximo de detalhes"></textarea></label>
+              <p class="auth__error" hidden></p>
+              <button class="auth__submit" type="submit"><span>Enviar ticket</span></button>
+            </form>
+          </article>
+          <article class="acc-card">
+            <h2 class="acc-card__title">Meus <span class="grad grad--yellow">chamados</span></h2>
+            <div class="ticket-list" id="lista-tickets"></div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -93,7 +104,6 @@
 
 </div>
 
-<div class="dex-modal" id="dex-modal" hidden><div class="dex-modal__bd"></div><div class="dex-modal__card"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="config.js"></script>

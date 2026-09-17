@@ -102,6 +102,16 @@
      É o preferido: a conta do site é a conta do jogo. Se a API responder 503
      (banco não configurado) ou falhar, cai para o Supabase/local. */
   var TOKEN_KEY = 'pwu_token';
+  var DEVICE_KEY = 'pwu_device';
+  /** Identificador deste navegador. Serve só para reconhecer o aparelho no login. */
+  function deviceId() {
+    var d = localStorage.getItem(DEVICE_KEY);
+    if (!d) {
+      d = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2, 12));
+      localStorage.setItem(DEVICE_KEY, d);
+    }
+    return d;
+  }
   var gameOn = null;          // null = ainda não sabemos
   // guarda as implementações anteriores (Supabase ou local) para o fallback.
   // Precisa copiar as FUNÇÕES: guardar o objeto `api` criaria recursão infinita.
@@ -117,7 +127,7 @@
         return r.json().catch(function () { return {}; }).then(function (d) {
           if (r.status === 503) { gameOn = false; var e = new Error('offline'); e.offline = true; throw e; }
           gameOn = true;
-          if (!r.ok) throw new Error(d.error || 'Algo deu errado. Tente novamente.');
+          if (!r.ok) { var er = new Error(d.error || 'Algo deu errado. Tente novamente.'); if (d.needsDevice) { er.needsDevice = true; er.email = d.email; } throw er; }
           return d;
         });
       }, function () { gameOn = false; var e = new Error('offline'); e.offline = true; throw e; });
@@ -126,20 +136,35 @@
   function fromGame(d) {
     if (d.token) localStorage.setItem(TOKEN_KEY, d.token);
     var a = d.account || d;
-    return { id: a.id, email: a.email, name: (a.email || '').split('@')[0], game: true, coins: a.coins, plan: a.plan, trainers: a.trainers || [] };
+    return { id: a.id, email: a.email, name: (a.email || '').split('@')[0], game: true, coins: a.coins, plan: a.plan, avatar: a.avatar || null, trainers: a.trainers || [] };
   }
 
   api.register = function (email, password) {
-    return gameFetch({ body: { action: 'register', email: email, password: password } }).then(fromGame)
+    return gameFetch({ body: { action: 'register', email: email, password: password, deviceId: deviceId() } }).then(fromGame)
       .catch(function (e) { if (!e.offline) throw e; return anterior.register(email, password); });
   };
   api.login = function (email, password) {
-    return gameFetch({ body: { action: 'login', email: email, password: password } }).then(fromGame)
+    return gameFetch({ body: { action: 'login', email: email, password: password, deviceId: deviceId() } }).then(fromGame)
       .catch(function (e) { if (!e.offline) throw e; return anterior.login(email, password); });
   };
   api.changePassword = function (email, current, next) {
     return gameFetch({ body: { action: 'password', password: current, next: next } }).then(function () {})
       .catch(function (e) { if (!e.offline) throw e; return anterior.changePassword(email, current, next); });
+  };
+  /** Confirma o código de 6 dígitos que autoriza este computador. */
+  api.confirmDevice = function (email, password, code) {
+    return gameFetch({ body: { action: 'device-confirm', email: email, password: password, code: code, deviceId: deviceId() } }).then(fromGame);
+  };
+  api.avatar = function (url) {
+    return gameFetch({ body: { action: 'avatar', avatar: url } }).then(function (d) {
+      if (auth.user) { auth.user.avatar = d.avatar; auth.set(auth.user); }
+      return d.avatar;
+    }).catch(function (e) {
+      if (!e.offline) throw e;
+      var pr = auth.profile() || {}; pr.avatar = url; auth.saveProfile(pr);
+      if (auth.user) { auth.user.avatar = url; auth.set(auth.user); }
+      return url;
+    });
   };
   api.ticket = function (subject, message) {
     return gameFetch({ body: { action: 'ticket', subject: subject, message: message } });
@@ -168,6 +193,9 @@
     },
     /** Conta completa do jogo (saldo + treinadores). */
     game: function () { return api.me(); },
+    deviceId: deviceId,
+    devices: function () { return gameFetch({ body: { action: 'devices', deviceId: deviceId() } }).catch(function () { return null; }); },
+    removeDevice: function (id) { return gameFetch({ body: { action: 'device-remove', deviceId: id } }).catch(function () { return null; }); },
     profile: function () { return auth.user ? readProfile(auth.user.email) : null; },
     saveProfile: function (p) { if (auth.user) writeProfile(auth.user.email, p); },
     accountUrl: ACCOUNT_URL,
@@ -180,6 +208,7 @@
     close: closeModal
   };
   PWU.auth = auth;
+  PWU.avatarUrl = avatarUrl;
 
   /* ---------- modal ---------- */
   var modal, currentTab = 'login';
@@ -330,19 +359,33 @@
   }
 
   /* ---------- estado de sessão no header ---------- */
+  function avatarUrl(u) {
+    var pr = u ? (auth.profile() || {}) : {};
+    return (u && u.avatar) || pr.avatar || 'assets/img/pokemon/pikachu.png';
+  }
+
   function renderSession() {
     var u = auth.user;
+    document.querySelectorAll('[data-entrar]').forEach(function (el) {
+      el.textContent = u ? 'Minha conta' : 'Iniciar sessão';
+      el.setAttribute('href', u ? ACCOUNT_URL : LOGIN_URL);
+    });
     document.querySelectorAll('[data-auth="login"]').forEach(function (el) {
       el.textContent = u ? 'Minha conta' : (el.dataset.label || 'Iniciar sessão');
     });
     document.querySelectorAll('.user-chip').forEach(function (c) { c.remove(); });
+
+    var acoes = document.querySelector('.topbar-actions');
+    var entrar = document.querySelector('[data-entrar]');
+    if (entrar) entrar.hidden = !!u;          // logado: o chip toma o lugar do botão
+
     if (u) {
       var chip = document.createElement('div');
       chip.className = 'user-chip';
-      chip.innerHTML = '<a href="' + ACCOUNT_URL + '" style="display:flex;align-items:center;gap:.8rem;color:inherit"><img src="assets/img/pokemon/pikachu.png" alt=""><span>' + u.name + '</span></a><button type="button" aria-label="Sair">Sair</button>';
+      chip.innerHTML = '<a href="' + ACCOUNT_URL + '"><img src="' + avatarUrl(u) + '" alt="" onerror="this.src=\'assets/img/pokemon/pikachu.png\'"><span>' + u.name + '</span></a><button type="button" aria-label="Sair">Sair</button>';
       chip.querySelector('button').addEventListener('click', auth.logout);
-      var host = document.querySelector('.hero, .topbar') || document.body;
-      host.appendChild(chip);
+      if (acoes) acoes.insertBefore(chip, acoes.firstChild);
+      else (document.querySelector('.hero, .topbar') || document.body).appendChild(chip);
     }
   }
 
@@ -374,6 +417,8 @@
     if (!t) return;
     e.preventDefault();
     if (auth.user) { if (!onAccountPage()) location.href = ACCOUNT_URL; return; }
+    // fora das páginas de conta/loja, manda para a página dedicada de login
+    if (!onLoginPage() && !staysAfterLogin()) { location.href = LOGIN_URL + (t.dataset.auth === 'register' ? '#criar' : ''); return; }
     openModal(t.dataset.auth === 'register' ? 'register' : 'login');
   });
   document.addEventListener('click', function (e) {

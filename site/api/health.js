@@ -4,6 +4,7 @@
  * GET /api/health
  */
 import { gameConfigured } from './_lib/gamedb.js';
+import { mailConfigured } from './_lib/mail.js';
 
 export default async function handler(req, res) {
   const has = (k) => !!(process.env[k] && String(process.env[k]).trim());
@@ -28,6 +29,7 @@ export default async function handler(req, res) {
     mercadopago: { token: has('MP_ACCESS_TOKEN'), modo: modo('MP_ACCESS_TOKEN', 'APP_USR-'), webhookSecret: has('MP_WEBHOOK_SECRET') },
     stripe: { secret: has('STRIPE_SECRET_KEY'), modo: modo('STRIPE_SECRET_KEY', 'sk_live_'), publica: has('STRIPE_PUBLIC_KEY'), webhookSecret: has('STRIPE_WEBHOOK_SECRET') },
     sessao: has('SESSION_SECRET'),
+    email: { configurado: mailConfigured(), de: process.env.MAIL_FROM || null },
     appUrl: process.env.APP_URL || null,
     bancoDoJogo: banco
   });

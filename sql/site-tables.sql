@@ -21,3 +21,18 @@ CREATE TABLE IF NOT EXISTS `site_exp_snapshots` (
 INSERT INTO `site_exp_snapshots` (`player_id`, `taken_on`, `experience`)
 SELECT `id`, CURDATE(), `experience` FROM `players` WHERE `deletion` = 0
 ON DUPLICATE KEY UPDATE `experience` = VALUES(`experience`);
+
+-- =====================================================================
+-- Dispositivos autorizados (login em um PC novo pede código por e-mail).
+-- O código em si é guardado na tabela `tokenvalidat`, que já existe.
+-- =====================================================================
+CREATE TABLE IF NOT EXISTS `site_devices` (
+  `account_id` INT(11)     NOT NULL,
+  `device_id`  VARCHAR(64) NOT NULL,
+  `label`      VARCHAR(120) DEFAULT NULL,
+  `last_ip`    VARCHAR(45)  DEFAULT NULL,
+  `created_at` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_seen`  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`account_id`, `device_id`),
+  KEY `site_devices_account` (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

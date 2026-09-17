@@ -145,6 +145,21 @@
   }
 
   /* =====================================================================
+     DOWNLOAD — links vindos do banco do jogo
+     ===================================================================== */
+  if (page === 'download') {
+    fetch('/api/game?resource=links').then(function (r) { return r.ok ? r.json() : null; }).then(function (l) {
+      if (!l) return;
+      var mapa = { 'dl-pc': l.pc, 'dl-android': l.mobile64 || l.mobile32, 'dl-ios': null, 'dl-switch': null };
+      Object.keys(mapa).forEach(function (id) {
+        var el = document.getElementById(id); if (!el) return;
+        if (mapa[id]) { el.href = mapa[id]; el.removeAttribute('data-require-auth'); el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener'); }
+      });
+      if (l.discord) document.querySelectorAll('a[href*="discord.gg"]').forEach(function (a) { a.href = l.discord; });
+    }).catch(function () {});
+  }
+
+  /* =====================================================================
      NOTÍCIAS — lista com filtro
      ===================================================================== */
   function newsCard(n) {
@@ -360,6 +375,15 @@
     });
     renderShop('todos'); renderCart();
 
+    // pacotes reais da tabela `pacotes` do jogo (quando houver)
+    fetch('/api/game?resource=shop').then(function (r) { return r.ok ? r.json() : null; }).then(function (lista) {
+      if (!lista || !lista.length) return;
+      PWU.shop = lista.map(function (p) {
+        return { id: 'pk-' + p.id, type: 'pacote', name: p.name, desc: p.priceFrom > p.price ? 'De ' + PWU.brl(p.priceFrom) + ' por ' + PWU.brl(p.price) : 'Pacote do servidor', price: p.price, image: 'assets/img/pokemon/mew.png', badge: p.tag || null };
+      }).concat(PWU.shop.filter(function (i) { return i.type !== 'pacote'; }));
+      renderShop('todos');
+    }).catch(function () {});
+
     // Loja só para quem está logado: abre o login ao entrar e trava a grade até conectar
     var gate = document.getElementById('shop-gate');
     function applyGate() {
@@ -439,6 +463,8 @@
       var pr = jogo ? { diamonds: jogo.coins, plan: jogo.plan, twitch: null, tickets: [], trainers: (jogo.trainers || []).map(function (t) { return { name: t.name, world: t.online ? 'Online agora' : 'Nível ' + t.level, avatar: (t.team[0] && String(t.team[0].name).toLowerCase().replace(/\s+/g, '-')) || 'pikachu', level: t.level }; }) } : PWU.auth.profile();
       document.getElementById('acc-name').value = shown.name ? (jogo ? jogo.name : u.name) : ' *  *  *  *  *';
       document.getElementById('acc-email').value = shown.email ? (jogo ? jogo.email : u.email) : ' *  *  *  *  *';
+      var av = document.getElementById('acc-avatar');
+      if (av) av.src = (PWU.avatarUrl ? PWU.avatarUrl(u) : 'assets/img/pokemon/pikachu.png');
       document.getElementById('acc-diamonds').textContent = (pr.diamonds || 0).toLocaleString('pt-BR');
       document.getElementById('acc-plan').textContent = pr.plan || 'Conta Grátis';
       var tw = document.querySelector('[data-acc="twitch"]'); if (tw) tw.textContent = pr.twitch ? 'Twitch: ' + pr.twitch : 'Vincular Twitch';
@@ -475,6 +501,29 @@
           }
           var p2 = PWU.auth.profile(); p2.tickets.push({ id: 1000 + p2.tickets.length + 1, subject: f.subject.value, message: msg, at: Date.now() }); PWU.auth.saveProfile(p2);
           closeP(); PWU.toast('Ticket enviado! Responderemos por e-mail.', 'ok');
+        });
+      }
+
+      if (act === 'avatar') {
+        var opcoes = (PWU.pokedex || []).slice(0, 40).map(function (x) { return { url: x.image, nome: x.name }; });
+        var atual = PWU.avatarUrl ? PWU.avatarUrl(PWU.auth.user) : '';
+        openP('<h3>Foto de perfil</h3><p class="sub">Escolha um parceiro para representar você no site, ou informe o endereço de uma imagem.</p>' +
+          '<div class="avatar-grid">' + opcoes.map(function (o) { return '<button type="button" data-av="' + o.url + '" class="' + (o.url === atual ? 'is-active' : '') + '" title="' + esc(o.nome) + '"><img src="' + o.url + '" alt=""></button>'; }).join('') + '</div>' +
+          '<form id="f-av" novalidate><label class="field"><span>Ou cole um endereço de imagem (https)</span><input type="url" name="url" placeholder="https://..." value="' + (/^https:/.test(atual) ? esc(atual) : '') + '"></label><p class="auth__error" hidden></p><button class="auth__submit" type="submit"><span>Salvar foto</span></button></form>');
+        pmBody.addEventListener('click', function (ev) {
+          var b2 = ev.target.closest('[data-av]'); if (!b2) return;
+          pmBody.querySelectorAll('[data-av]').forEach(function (x) { x.classList.toggle('is-active', x === b2); });
+          pmBody.querySelector('#f-av [name="url"]').value = '';
+        });
+        document.getElementById('f-av').addEventListener('submit', function (ev) {
+          ev.preventDefault();
+          var sel = pmBody.querySelector('[data-av].is-active');
+          var url = ev.currentTarget.url.value.trim() || (sel && sel.dataset.av) || '';
+          if (!url) return perr('Escolha um parceiro ou informe um endereço.');
+          if (/^https?:/i.test(url) && !/^https:/i.test(url)) return perr('Use um endereço https.');
+          var b3 = ev.currentTarget.querySelector('.auth__submit'); b3.classList.add('is-loading'); b3.disabled = true;
+          PWU.auth.api.avatar(url).then(function () { closeP(); renderAcc(); PWU.toast('Foto atualizada!', 'ok'); })
+            .catch(function (er) { perr(er.message || 'Não foi possível salvar.'); b3.classList.remove('is-loading'); b3.disabled = false; });
         });
       }
 
@@ -536,6 +585,7 @@
       }).join('');
       packsEl.addEventListener('click', function (e) {
         var b = e.target.closest('[data-pack]'); if (!b) return;
+        location.href = 'pagamento.html?pacote=' + encodeURIComponent(b.dataset.pack); return;
         var k = PWU.coinPackages.find(function (x) { return x.id === b.dataset.pack; }) || {};
         openP('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + '. Os coins caem na sua conta do jogo assim que o pagamento for confirmado.</p>' +
           '<div class="pay-ways">' +
@@ -588,6 +638,181 @@
     refreshCoins(0);
     if (!PWU.auth.user) setTimeout(function () { PWU.auth.open('login'); }, 500);
     document.addEventListener('auth:change', function () { renderAcc(); refreshCoins(0); });
+  }
+
+  /* =====================================================================
+     DOAR — tabela de bônus e pacotes
+     ===================================================================== */
+  if (page === 'doar' && window.PWU) {
+    var pacotes = PWU.coinPackages || [];
+    var corpo = document.getElementById('bonus-rows');
+    if (corpo) {
+      corpo.innerHTML = pacotes.map(function (k) {
+        return '<tr><td class="val">' + PWU.brl(k.price) + '</td>' +
+          '<td><span class="bonus' + (k.bonusPct ? '' : ' is-zero') + '">' + (k.bonusPct ? '+' + k.bonusPct + '%' : 'sem bônus') + '</span></td>' +
+          '<td class="coins">' + k.coins.toLocaleString('pt-BR') + ' coins</td>' +
+          '<td><button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">Doar</button></td></tr>';
+      }).join('');
+    }
+    var grade = document.getElementById('doar-packs');
+    if (grade) {
+      grade.innerHTML = pacotes.map(function (k, i) {
+        var gems = ''; for (var g = 0; g < Math.min(5, Math.ceil((i + 1) / 1.6)); g++) gems += '<i></i>';
+        return '<div class="pack' + (k.badge ? ' is-hot' : '') + '">' + (k.badge ? '<span class="pack__badge">' + esc(k.badge) + '</span>' : '') +
+          '<div class="pack__gems">' + gems + '</div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>coins</small>' +
+          '<em class="' + (k.bonusPct ? '' : 'is-none') + '">+' + k.bonusPct + '% bônus</em>' +
+          '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
+      }).join('');
+    }
+    var pmD = document.getElementById('pmodal'), pmBodyD = document.getElementById('pmodal-body');
+    function abrirD(html) { pmBodyD.innerHTML = html; pmD.hidden = false; document.body.classList.add('is-locked'); }
+    pmD.addEventListener('click', function (e) { if (e.target.closest('[data-pclose]')) { pmD.hidden = true; document.body.classList.remove('is-locked'); } });
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-pack]'); if (!b) return;
+      if (!PWU.auth.user) { PWU.toast('Entre na sua conta para doar e receber os coins.'); setTimeout(function () { location.href = 'login.html'; }, 1200); return; }
+      location.href = 'pagamento.html?pacote=' + encodeURIComponent(b.dataset.pack); return;
+      var k = pacotes.find(function (x) { return x.id === b.dataset.pack; }) || {};
+      abrirD('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + (k.bonusPct ? ' · já com ' + k.bonusPct + '% de bônus' : '') + '.</p>' +
+        '<div class="pay-ways"><button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>' +
+        '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button></div>' +
+        '<p class="mp-note">🔒 Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
+      pmBodyD.addEventListener('click', function (ev) {
+        var w = ev.target.closest('[data-prov]'); if (!w) return;
+        pay(b.dataset.pack, w, w.dataset.prov);
+      });
+    });
+  }
+
+  /* =====================================================================
+     PÁGINAS DA CONTA: tickets, segurança, foto de perfil e pagamento
+     ===================================================================== */
+  if (['tickets', 'seguranca', 'perfil', 'pagamento'].indexOf(page) > -1 && window.PWU) {
+    var portao = document.getElementById('acc-gate'), area = document.getElementById('acc');
+    var jogoConta = null;
+
+    function mostrar() {
+      var logado = !!PWU.auth.user;
+      portao.hidden = logado; area.hidden = !logado;
+      if (!logado) return;
+      if (PWU.auth.game) PWU.auth.game().then(function (d) { if (d && d.id) { jogoConta = d; pintar(); } });
+      pintar();
+    }
+    function err(sel, msg) { var p = document.querySelector(sel + ' .auth__error'); if (p) { p.textContent = msg || ''; p.hidden = !msg; } }
+
+    function pintar() {
+      // ----- tickets -----
+      var lista = document.getElementById('lista-tickets');
+      if (lista) {
+        var ts = (PWU.auth.profile() || {}).tickets || [];
+        lista.innerHTML = ts.length ? ts.slice().reverse().map(function (t) {
+          return '<div class="ticket"><b>#' + t.id + ' · ' + esc(t.subject) + '</b><small>' + new Date(t.at).toLocaleString('pt-BR') + ' · Aberto</small></div>';
+        }).join('') : '<p class="sec__sub" style="margin:0">Você ainda não abriu nenhum chamado.</p>';
+      }
+      // ----- foto de perfil -----
+      var grade = document.getElementById('grade-avatar');
+      if (grade && !grade.dataset.pronto) {
+        grade.dataset.pronto = '1';
+        var atual = PWU.avatarUrl ? PWU.avatarUrl(PWU.auth.user) : '';
+        grade.innerHTML = (PWU.pokedex || []).slice(0, 48).map(function (x) {
+          return '<button type="button" data-av="' + x.image + '" class="' + (x.image === atual ? 'is-active' : '') + '" title="' + esc(x.name) + '"><img src="' + x.image + '" alt=""></button>';
+        }).join('');
+        grade.addEventListener('click', function (e) {
+          var b = e.target.closest('[data-av]'); if (!b) return;
+          grade.querySelectorAll('[data-av]').forEach(function (x) { x.classList.toggle('is-active', x === b); });
+          document.getElementById('acc-avatar').src = b.dataset.av;
+          var u = document.querySelector('#f-av [name="url"]'); if (u) u.value = '';
+        });
+      }
+      var av = document.getElementById('acc-avatar');
+      if (av && PWU.avatarUrl) av.src = PWU.avatarUrl(PWU.auth.user);
+      // ----- aparelhos -----
+      if (page === 'seguranca') carregarAparelhos();
+    }
+
+    // ----- tickets: enviar -----
+    var fTicket = document.getElementById('f-ticket');
+    if (fTicket) fTicket.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var msg = fTicket.message.value.trim();
+      if (msg.length < 10) return err('#f-ticket', 'Escreva pelo menos 10 caracteres.');
+      err('#f-ticket', '');
+      var b = fTicket.querySelector('.auth__submit'); b.classList.add('is-loading'); b.disabled = true;
+      var envio = (jogoConta && PWU.auth.api.ticket) ? PWU.auth.api.ticket(fTicket.subject.value, msg)
+        : Promise.resolve().then(function () { var pr = PWU.auth.profile(); pr.tickets.push({ id: 1000 + pr.tickets.length + 1, subject: fTicket.subject.value, message: msg, at: Date.now() }); PWU.auth.saveProfile(pr); });
+      envio.then(function () { fTicket.reset(); PWU.toast('Ticket enviado! Responderemos por e-mail.', 'ok'); pintar(); })
+        .catch(function (er) { err('#f-ticket', er.message || 'Não foi possível enviar.'); })
+        .finally(function () { b.classList.remove('is-loading'); b.disabled = false; });
+    });
+
+    // ----- segurança: senha -----
+    var fSec = document.getElementById('f-sec');
+    if (fSec) fSec.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (fSec.next.value.length < 8) return err('#f-sec', 'A nova senha precisa ter pelo menos 8 caracteres.');
+      if (fSec.next.value !== fSec.confirm.value) return err('#f-sec', 'As senhas não coincidem.');
+      err('#f-sec', '');
+      var b = fSec.querySelector('.auth__submit'); b.classList.add('is-loading'); b.disabled = true;
+      PWU.auth.api.changePassword(PWU.auth.user.email, fSec.current.value, fSec.next.value)
+        .then(function () { fSec.reset(); PWU.toast('Senha alterada com sucesso!', 'ok'); })
+        .catch(function (er) { err('#f-sec', er.message); })
+        .finally(function () { b.classList.remove('is-loading'); b.disabled = false; });
+    });
+
+    // ----- segurança: aparelhos autorizados -----
+    function carregarAparelhos() {
+      var el = document.getElementById('lista-aparelhos'); if (!el || !PWU.auth.devices) return;
+      PWU.auth.devices().then(function (d) {
+        var st = document.getElementById('dev-status');
+        if (!d || d.missing) { el.innerHTML = '<p class="db-note">A verificação por código ainda não está ativa. Rode <b>sql/site-tables.sql</b> no banco do jogo para ligar.</p>'; return; }
+        if (st) st.textContent = d.devices.length + ' aparelho(s) autorizado(s)';
+        el.innerHTML = d.devices.map(function (v) {
+          var atual = v.device_id === d.atual;
+          return '<div class="device' + (atual ? ' is-current' : '') + '"><div class="device__ico">' + (/Android|iOS/.test(v.label || '') ? '📱' : '💻') + '</div>' +
+            '<div><b>' + esc(v.label || 'Aparelho') + '</b><small>' + (v.last_ip ? 'IP ' + esc(v.last_ip) + ' · ' : '') + 'último acesso ' + new Date(v.last_seen).toLocaleString('pt-BR') + '</small></div>' +
+            (atual ? '<span class="tag-atual">Este aparelho</span>' : '<button type="button" data-rmdev="' + esc(v.device_id) + '">Remover</button>') + '</div>';
+        }).join('') || '<p class="sec__sub" style="margin:0">Nenhum aparelho registrado ainda.</p>';
+      }).catch(function () {});
+    }
+    var listaAp = document.getElementById('lista-aparelhos');
+    if (listaAp) listaAp.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-rmdev]'); if (!b) return;
+      if (!confirm('Remover este aparelho? Ele vai precisar de um novo código para entrar.')) return;
+      PWU.auth.removeDevice(b.dataset.rmdev).then(function () { carregarAparelhos(); PWU.toast('Aparelho removido.'); });
+    });
+
+    // ----- foto de perfil: salvar -----
+    var fAv = document.getElementById('f-av');
+    if (fAv) fAv.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var sel = document.querySelector('#grade-avatar [data-av].is-active');
+      var url = fAv.url.value.trim() || (sel && sel.dataset.av) || '';
+      if (!url) return err('#f-av', 'Escolha um parceiro ou informe um endereço.');
+      if (/^http:/i.test(url)) return err('#f-av', 'Use um endereço https.');
+      err('#f-av', '');
+      var b = fAv.querySelector('.auth__submit'); b.classList.add('is-loading'); b.disabled = true;
+      PWU.auth.api.avatar(url).then(function () { PWU.toast('Foto atualizada!', 'ok'); setTimeout(function () { location.href = 'minha-conta.html'; }, 900); })
+        .catch(function (er) { err('#f-av', er.message || 'Não foi possível salvar.'); b.classList.remove('is-loading'); b.disabled = false; });
+    });
+
+    // ----- pagamento -----
+    if (page === 'pagamento') {
+      var pid = qs('pacote') || 'plus';
+      var k = (PWU.coinPackages || []).find(function (x) { return x.id === pid; }) || (PWU.coinPackages || [])[0];
+      var resumo = document.getElementById('resumo-pedido');
+      if (k && resumo) {
+        resumo.innerHTML = '<div class="resumo__coins">' + k.coins.toLocaleString('pt-BR') + '</div>' +
+          '<div class="resumo__info"><b>coins para sua conta</b><small>' + (k.bonusPct ? 'Já com ' + k.bonusPct + '% de bônus' : 'Pacote sem bônus') + '</small></div>' +
+          '<div class="resumo__preco">' + PWU.brl(k.price) + '</div>';
+      }
+      var meios = document.getElementById('meios-pagamento');
+      if (meios) meios.addEventListener('click', function (e) {
+        var w = e.target.closest('[data-prov]'); if (!w) return;
+        pay(k.id, w, w.dataset.prov);
+      });
+    }
+
+    mostrar();
+    document.addEventListener('auth:change', mostrar);
   }
 
   /* contador do rodapé */

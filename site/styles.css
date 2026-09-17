@@ -249,11 +249,36 @@ html.has-cursor .cursor.is-on { opacity: 1; }
   white-space: nowrap;
 }
 
-.btn-jogue-agora {
+.topbar-actions {
   position: absolute;
   z-index: 3;
-  left: calc(83.33% - 0.8rem);
+  right: 6rem;
   top: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+.btn-entrar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4.8364rem;
+  padding: 0 2.8rem;
+  border-radius: 13.8182rem;
+  border: 0.2rem solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  font-family: var(--bebas);
+  font-size: 2.4rem;
+  letter-spacing: 0.03em;
+  color: #fff;
+  white-space: nowrap;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+.btn-entrar:hover { background: #fff; color: #0530ef; transform: translateY(-.2rem); }
+.btn-jogue-agora {
+  position: relative;
+  z-index: 3;
   width: 22.8rem;
   height: 4.8364rem;
   padding: 0.8982rem 6.08rem 0.76rem;
@@ -372,7 +397,7 @@ html.has-cursor .cursor.is-on { opacity: 1; }
   animation: btn-pulse 2.2s ease-in-out infinite;
   cursor: pointer;
 }
-.btn-jogue-agora { position: absolute; }
+.btn-jogue-agora { position: relative; }
 .btn-jogue-agora::after,
 .pill--yellow::after {
   content: "";
@@ -1256,7 +1281,7 @@ html.has-cursor .cursor.is-on { opacity: 1; }
     background-image: url("assets/m-header-vector1.svg");
   }
   .logo-sigla { left: 2.9rem; top: 1.2rem; width: 9.4rem; height: 9.4rem; }
-  .nav, .btn-jogue-agora { display: none; }
+  .nav, .btn-jogue-agora, .topbar-actions { display: none; }
 
   .hamburger {
     display: block;
@@ -1670,11 +1695,13 @@ body.is-locked { overflow: hidden; }
 .auth__buy:hover { background: rgba(112,244,255,.12); border-color: #70f5ff; }
 
 /* chip de usuário logado */
-.user-chip { position: absolute; z-index: 4; right: 34.6rem; top: 2.5rem; display: flex; align-items: center; gap: .8rem; padding: .4rem 1.2rem .4rem .5rem; border-radius: 10rem; background: rgba(0,0,0,.45); color: #fff; font: 500 1.4rem var(--montreal); backdrop-filter: blur(6px); }
+.user-chip { display: flex; align-items: center; gap: .8rem; padding: .4rem 1.2rem .4rem .5rem; border-radius: 10rem; background: rgba(0,0,0,.45); color: #fff; font: 500 1.4rem var(--montreal); backdrop-filter: blur(6px); white-space: nowrap; }
+.user-chip a { display: flex; align-items: center; gap: .8rem; color: inherit; max-width: 18rem; overflow: hidden; text-overflow: ellipsis; }
+.user-chip span { overflow: hidden; text-overflow: ellipsis; }
 .user-chip img { width: 3.2rem; height: 3.2rem; border-radius: 50%; object-fit: contain; background: #fff; }
 .user-chip button { border: 0; background: rgba(255,255,255,.15); color: #fff; padding: .4rem 1rem; border-radius: 10rem; font: 400 1.3rem var(--bebas); letter-spacing: .06em; cursor: pointer; }
 .user-chip button:hover { background: var(--grad-yellow); color: #000; }
-.hero .user-chip ~ .btn-jogue-agora, .topbar .user-chip ~ .btn-jogue-agora { display: none; }
+
 
 /* menu mobile */
 .mobile-menu { position: fixed; inset: 0; z-index: 150; background: linear-gradient(160deg, #0d1330, #0530ef); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s; }
@@ -1698,6 +1725,8 @@ body.is-locked { overflow: hidden; }
   .auth { padding: 1.2rem; align-items: flex-end; }
   .auth__card { max-width: none; padding: 2.8rem 2rem 2.4rem; border-radius: 2.4rem 2.4rem 0 0; max-height: 94vh; }
   .auth__title { font-size: 3.2rem; }
-  .user-chip { right: 9rem; top: 2rem; }
+  .user-chip { position: absolute; right: 9rem; top: 2rem; z-index: 4; }
   .user-chip span { display: none; }
+  .topbar-actions:has(.user-chip) { display: flex; background: none; }
+  .topbar-actions:has(.user-chip) .btn-jogue-agora { display: none; }
 }

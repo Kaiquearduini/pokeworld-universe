@@ -12,11 +12,13 @@ NAV = [
     ("download.html", "download"),
     ("ranking.html", "ranking"),
     ("loja.html", "loja"),
+    ("doar.html", "doar"),
 ]
 
 def nav_html(active):
+    ativo = ' class="is-active"'
     return "".join(
-        f'<a href="{href}"{" class=\"is-active\"" if href == active else ""}>{label}</a>'
+        '<a href="%s"%s>%s</a>' % (href, ativo if href == active else "", label)
         for href, label in NAV
     )
 
@@ -38,7 +40,7 @@ FOOTER = """
         </div>
         <div>
           <h4>Suporte</h4>
-          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="admin.html">Painel admin</a></li></ul>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="doar.html">Doar</a></li><li><a href="admin.html">Painel admin</a></li></ul>
         </div>
         <div>
           <h4>Baixe agora</h4>
@@ -79,7 +81,10 @@ def layout(slug, title, desc, banner, body, extra_head="", extra_bottom=""):
     <div class="header-shape header-shape--grad"></div>
     <a class="logo-sigla" href="index.html"><img src="assets/logo-sigla.png" alt="PWU"></a>
     <nav class="nav">{nav_html(slug + ".html")}</nav>
-    <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
+    <div class="topbar-actions">
+      <a class="btn-entrar" href="login.html" data-entrar>Iniciar sessão</a>
+      <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
+    </div>
     <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </header>
 
@@ -260,10 +265,10 @@ PAGES["download"] = dict(
     <section class="sec">
       <div class="wrap">
         <div class="platforms">
-          <div class="platform" data-reveal><span class="platform__ribbon">Novo</span><div class="platform__icon">📱</div><h3>iOS</h3><p>iPhone e iPad com iOS 15 ou superior.</p><span class="size">1,9 GB · v12.0.1</span><a class="badge-img" href="#" data-require-auth><img src="assets/img/ui/appstore.svg" alt="App Store"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM.</p><span class="size">2,1 GB · v12.0.1</span><a class="badge-img" href="#" data-require-auth><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">🎮</div><h3>Nintendo Switch</h3><p>Compatível com Switch, Lite e OLED.</p><span class="size">3,4 GB · v12.0.1</span><a class="badge-img" href="#" data-require-auth><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10/11 de 64 bits. Suporte a controle.</p><span class="size">4,8 GB · v12.0.1</span><a class="btn btn--yellow btn--sm" href="#" data-require-auth>Baixar instalador</a></div>
+          <div class="platform" data-reveal><span class="platform__ribbon">Novo</span><div class="platform__icon">📱</div><h3>iOS</h3><p>iPhone e iPad com iOS 15 ou superior.</p><span class="size">1,9 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-ios" data-require-auth><img src="assets/img/ui/appstore.svg" alt="App Store"></a></div>
+          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM.</p><span class="size">2,1 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-android" data-require-auth><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a></div>
+          <div class="platform" data-reveal><div class="platform__icon">🎮</div><h3>Nintendo Switch</h3><p>Compatível com Switch, Lite e OLED.</p><span class="size">3,4 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-switch" data-require-auth><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a></div>
+          <div class="platform" data-reveal><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10/11 de 64 bits. Suporte a controle.</p><span class="size">4,8 GB · v12.0.1</span><a class="btn btn--yellow btn--sm" href="#" id="dl-pc" data-require-auth>Baixar instalador</a></div>
         </div>
       </div>
     </section>
@@ -428,7 +433,13 @@ PAGES["minha-conta"] = dict(
           <div class="acc-alert" id="acc-alert" hidden></div>
 
           <article class="acc-card" data-reveal>
-            <h2 class="acc-card__title">Minha <span class="grad grad--yellow">conta</span></h2>
+            <div class="acc-top">
+              <div class="acc-avatar">
+                <img id="acc-avatar" src="assets/img/pokemon/pikachu.png" alt="Foto de perfil">
+                <a class="acc-avatar__edit" href="perfil.html" aria-label="Trocar foto">Trocar foto</a>
+              </div>
+              <h2 class="acc-card__title">Minha <span class="grad grad--yellow">conta</span></h2>
+            </div>
             <div class="acc-grid">
               <div>
                 <div class="acc-field">
@@ -446,10 +457,10 @@ PAGES["minha-conta"] = dict(
               </div>
             </div>
             <div class="acc-actions">
-              <button type="button" class="btn btn--lime btn--sm" data-acc="tickets">Tickets</button>
-              <a class="btn btn--yellow btn--sm" href="#coins">Efetuar doação</a>
-              <button type="button" class="btn btn--black btn--sm" data-acc="security">Segurança</button>
-              <button type="button" class="btn btn--twitch btn--sm" data-acc="twitch">Vincular Twitch</button>
+              <a class="btn btn--lime btn--sm" href="tickets.html">Tickets</a>
+              <a class="btn btn--yellow btn--sm" href="doar.html">Efetuar doação</a>
+              <a class="btn btn--black btn--sm" href="seguranca.html">Segurança</a>
+              <a class="btn btn--twitch btn--sm" href="seguranca.html#twitch">Vincular Twitch</a>
               <button type="button" class="btn btn--danger btn--sm" data-acc="logout">Sair</button>
             </div>
           </article>
@@ -486,6 +497,230 @@ PAGES["minha-conta"] = dict(
 """,
     extra_bottom="""
 <div class="pmodal" id="pmodal" hidden><div class="pmodal__bd" data-pclose></div><div class="pmodal__card"><button class="pmodal__close" type="button" data-pclose aria-label="Fechar">×</button><div id="pmodal-body"></div></div></div>""")
+
+# ---------------------------------------------------------------- DOAR
+PAGES["doar"] = dict(
+    title="Doar",
+    desc="Apoie o Pokeworld Universe e receba coins com bônus. Pix, boleto ou cartão.",
+    banner=dict(bg="assets/img/bg/sky.jpg", tag="Apoie o servidor", title="Doe e ganhe<br>mais coins",
+                sub="Sua doação paga os servidores e o desenvolvimento. Quanto maior o pacote, maior o bônus em coins.",
+                art="assets/img/art/charizard.png"),
+    body="""
+    <section class="sec doar-sec">
+      <div class="wrap--narrow">
+        <div class="doar-intro" data-reveal>
+          <h2 class="sec__title">Como funciona o <span class="grad grad--yellow">bônus</span></h2>
+          <p class="sec__sub">A base é de <b>10 coins por R$ 1</b>. A partir de R$ 100 cada faixa dá um bônus extra, que já vem somado no total que você recebe. Os coins caem na conta do jogo assim que o pagamento é confirmado.</p>
+        </div>
+
+        <div class="bonus-table" data-reveal>
+          <table>
+            <thead><tr><th>Pacote</th><th>Bônus</th><th>Coins que você recebe</th><th></th></tr></thead>
+            <tbody id="bonus-rows"></tbody>
+          </table>
+        </div>
+
+        <div class="doar-cards">
+          <article class="doar-card" data-reveal>
+            <h3>Para onde vai sua doação</h3>
+            <ul>
+              <li>Servidor e hospedagem do mundo online</li>
+              <li>Desenvolvimento do cliente e das atualizações</li>
+              <li>Eventos, premiações e suporte da equipe</li>
+            </ul>
+          </article>
+          <article class="doar-card" data-reveal>
+            <h3>Formas de pagamento</h3>
+            <ul>
+              <li><b>Mercado Pago</b> — Pix, boleto ou cartão, no Brasil</li>
+              <li><b>Stripe</b> — cartão de crédito, inclusive internacional</li>
+              <li>Você escolhe na hora de comprar</li>
+            </ul>
+          </article>
+          <article class="doar-card" data-reveal>
+            <h3>Precisa de conta</h3>
+            <ul>
+              <li>Os coins são creditados na sua conta do jogo</li>
+              <li>Entre ou crie a sua antes de doar</li>
+              <li>É a mesma conta que você usa no cliente</li>
+            </ul>
+            <a class="btn btn--yellow btn--sm" href="login.html" style="margin-top:1.6rem" data-entrar>Entrar na conta</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec--white">
+      <div class="wrap">
+        <div class="sec__head"><div><h2 class="sec__title">Escolha seu <span class="grad">pacote</span></h2><p class="sec__sub">Clique no valor e escolha entre Mercado Pago ou Stripe.</p></div></div>
+        <div class="packs packs--light" id="doar-packs"></div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <img class="cta-band__pk cta-band__pk--l" src="assets/img/art/pikachu.png" alt="">
+      <img class="cta-band__pk cta-band__pk--r" src="assets/img/art/gengar.png" alt="">
+      <div class="wrap" data-reveal>
+        <h2>Obrigado por apoiar o Pokeworld</h2>
+        <p>Cada doação mantém o mundo no ar e acelera as próximas atualizações.</p>
+        <div class="btn-row"><a class="btn btn--yellow" href="minha-conta.html#coins">Ver meus coins</a><a class="btn btn--black" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener">Falar com a equipe</a></div>
+      </div>
+    </section>
+""",
+    extra_bottom="""
+<div class="pmodal" id="pmodal" hidden><div class="pmodal__bd" data-pclose></div><div class="pmodal__card"><button class="pmodal__close" type="button" data-pclose aria-label="Fechar">×</button><div id="pmodal-body"></div></div></div>""")
+
+# ---------------------------------------------------------------- TICKETS
+PAGES["tickets"] = dict(
+    title="Tickets",
+    desc="Abra um chamado para a equipe do Pokeworld Universe.",
+    banner=dict(bg="assets/img/bg/stadium-light.jpg", tag="Suporte", title="Tickets",
+                sub="Fale com a equipe. Respondemos pelo e-mail da sua conta."),
+    body="""
+    <section class="sec acc-sec">
+      <div class="wrap--narrow">
+        <div class="shop-gate" id="acc-gate" hidden style="margin-bottom:0">
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para continuar</h3>
+            <p>Faça login na sua conta Pokeworld para acessar esta área.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="login.html">Iniciar sessão</a></div>
+          </div>
+        </div>
+        <div id="acc" hidden>
+          <a class="voltar" href="minha-conta.html">← Voltar para minha conta</a>
+          <article class="acc-card">
+            <h2 class="acc-card__title">Abrir <span class="grad grad--yellow">ticket</span></h2>
+            <form id="f-ticket" novalidate style="margin-top:2.4rem">
+              <label class="field"><span>Assunto</span><select name="subject"><option>Problema com a conta</option><option>Pagamento ou doação</option><option>Bug no jogo</option><option>Denúncia</option><option>Outro</option></select></label>
+              <label class="field"><span>Mensagem</span><textarea name="message" rows="6" placeholder="Descreva o que aconteceu com o máximo de detalhes"></textarea></label>
+              <p class="auth__error" hidden></p>
+              <button class="auth__submit" type="submit"><span>Enviar ticket</span></button>
+            </form>
+          </article>
+          <article class="acc-card">
+            <h2 class="acc-card__title">Meus <span class="grad grad--yellow">chamados</span></h2>
+            <div class="ticket-list" id="lista-tickets"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- SEGURANÇA
+PAGES["seguranca"] = dict(
+    title="Segurança",
+    desc="Troque sua senha e gerencie os computadores autorizados na sua conta.",
+    banner=dict(bg="assets/img/bg/battle-map.jpg", tag="Sua conta", title="Segurança",
+                sub="Senha, aparelhos autorizados e histórico de acesso."),
+    body="""
+    <section class="sec acc-sec">
+      <div class="wrap--narrow">
+        <div class="shop-gate" id="acc-gate" hidden style="margin-bottom:0">
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para continuar</h3>
+            <p>Faça login na sua conta Pokeworld para acessar esta área.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="login.html">Iniciar sessão</a></div>
+          </div>
+        </div>
+        <div id="acc" hidden>
+          <a class="voltar" href="minha-conta.html">← Voltar para minha conta</a>
+
+          <article class="acc-card">
+            <h2 class="acc-card__title">Trocar <span class="grad grad--yellow">senha</span></h2>
+            <p class="acc-card__sub">É a mesma senha que você usa para entrar no jogo.</p>
+            <form id="f-sec" novalidate style="margin-top:2rem;max-width:52rem">
+              <label class="field"><span>Senha atual</span><input type="password" name="current" autocomplete="current-password"></label>
+              <label class="field"><span>Nova senha</span><input type="password" name="next" autocomplete="new-password"></label>
+              <label class="field"><span>Confirmar nova senha</span><input type="password" name="confirm" autocomplete="new-password"></label>
+              <p class="auth__error" hidden></p>
+              <button class="auth__submit" type="submit"><span>Salvar nova senha</span></button>
+            </form>
+          </article>
+
+          <article class="acc-card">
+            <div class="acc-card__head">
+              <h2 class="acc-card__title">Computadores <span class="grad grad--yellow">autorizados</span></h2>
+              <span class="acc-card__hint" id="dev-status"></span>
+            </div>
+            <p class="acc-card__sub">Quando alguém entra na sua conta de um computador novo, mandamos um código de 6 dígitos para o seu e-mail. Sem o código, o acesso não é liberado.</p>
+            <div class="devices" id="lista-aparelhos"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- FOTO DE PERFIL
+PAGES["perfil"] = dict(
+    title="Foto de perfil",
+    desc="Escolha a foto de perfil da sua conta Pokeworld Universe.",
+    banner=dict(bg="assets/img/bg/sky.jpg", tag="Sua conta", title="Foto de perfil",
+                sub="Escolha um parceiro para representar você no site."),
+    body="""
+    <section class="sec acc-sec">
+      <div class="wrap--narrow">
+        <div class="shop-gate" id="acc-gate" hidden style="margin-bottom:0">
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para continuar</h3>
+            <p>Faça login na sua conta Pokeworld para acessar esta área.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="login.html">Iniciar sessão</a></div>
+          </div>
+        </div>
+        <div id="acc" hidden>
+          <a class="voltar" href="minha-conta.html">← Voltar para minha conta</a>
+          <article class="acc-card">
+            <div class="acc-top">
+              <div class="acc-avatar"><img id="acc-avatar" src="assets/img/pokemon/pikachu.png" alt="Foto atual"></div>
+              <div><h2 class="acc-card__title">Sua <span class="grad grad--yellow">foto</span></h2><p class="acc-card__sub" style="margin-top:.6rem">Clique em um parceiro para escolher.</p></div>
+            </div>
+            <div class="avatar-grid avatar-grid--page" id="grade-avatar" style="margin-top:2.6rem"></div>
+            <form id="f-av" novalidate style="max-width:52rem">
+              <label class="field"><span>Ou cole o endereço de uma imagem (https)</span><input type="url" name="url" placeholder="https://..."></label>
+              <p class="auth__error" hidden></p>
+              <button class="auth__submit" type="submit"><span>Salvar foto</span></button>
+            </form>
+          </article>
+        </div>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- PAGAMENTO
+PAGES["pagamento"] = dict(
+    title="Pagamento",
+    desc="Escolha como pagar seus coins do Pokeworld Universe.",
+    banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Checkout", title="Como quer<br>pagar?",
+                sub="Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld."),
+    body="""
+    <section class="sec acc-sec">
+      <div class="wrap--narrow">
+        <div class="shop-gate" id="acc-gate" hidden style="margin-bottom:0">
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para continuar</h3>
+            <p>Faça login na sua conta Pokeworld para acessar esta área.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="login.html">Iniciar sessão</a></div>
+          </div>
+        </div>
+        <div id="acc" hidden>
+          <a class="voltar" href="doar.html">← Escolher outro pacote</a>
+          <article class="acc-card">
+            <h2 class="acc-card__title">Seu <span class="grad grad--yellow">pedido</span></h2>
+            <div class="resumo" id="resumo-pedido"></div>
+            <h3 class="pay-title">Escolha o meio de pagamento</h3>
+            <div class="pay-ways" id="meios-pagamento">
+              <button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>
+              <button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>
+            </div>
+            <p class="mp-note">🔒 O pagamento acontece no site do provedor. Os coins entram na sua conta do jogo assim que for confirmado.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+""")
 
 if __name__ == "__main__":
     for slug, cfg in PAGES.items():

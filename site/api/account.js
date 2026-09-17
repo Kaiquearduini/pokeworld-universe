@@ -5,10 +5,59 @@
  * POST /api/account { action: 'register' | 'login' | 'password', ... }
  * GET  /api/account            -> dados da conta + treinadores (Bearer token)
  */
-import { gameConfigured, q, one, run } from './_lib/gamedb.js';
+import crypto from 'crypto';
+import { gameConfigured, q, one, run, tableExists } from './_lib/gamedb.js';
 import { sign, accountFromRequest, hashSenha } from './_lib/session.js';
+import { mailConfigured, enviarEmail, emailCodigoDispositivo } from './_lib/mail.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CODIGO_VALE_MIN = 15;
+
+function ipDe(req) { return String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || null; }
+function apelidoDoAparelho(req) {
+  const ua = String(req.headers['user-agent'] || '');
+  const so = /Windows/i.test(ua) ? 'Windows' : /Mac OS|Macintosh/i.test(ua) ? 'Mac' : /Android/i.test(ua) ? 'Android' : /iPhone|iPad/i.test(ua) ? 'iOS' : /Linux/i.test(ua) ? 'Linux' : 'Desconhecido';
+  const nav = /Edg\//i.test(ua) ? 'Edge' : /Chrome\//i.test(ua) ? 'Chrome' : /Safari\//i.test(ua) ? 'Safari' : /Firefox\//i.test(ua) ? 'Firefox' : 'Navegador';
+  return `${nav} no ${so}`;
+}
+
+/* ---------- autorização de aparelho ----------
+   Guardamos os aparelhos em site_devices e o código em tokenvalidat (já existia).
+   Regra: o primeiro aparelho da conta entra sem código; os próximos precisam
+   do código que vai por e-mail. Sem e-mail configurado, a checagem é pulada
+   (o site continua funcionando) e /api/health avisa. */
+async function aparelhoConhecido(accountId, deviceId) {
+  if (!deviceId) return true;
+  if (!(await tableExists('site_devices'))) return true;
+  const r = await one('SELECT device_id FROM site_devices WHERE account_id = ? AND device_id = ? LIMIT 1', [accountId, deviceId]);
+  return !!r;
+}
+async function primeiroAparelho(accountId) {
+  const r = await one('SELECT COUNT(*) AS n FROM site_devices WHERE account_id = ?', [accountId]);
+  return Number((r && r.n) || 0) === 0;
+}
+async function registrarAparelho(accountId, deviceId, req) {
+  if (!deviceId || !(await tableExists('site_devices'))) return;
+  await run(
+    `INSERT INTO site_devices (account_id, device_id, label, last_ip, created_at, last_seen)
+     VALUES (?, ?, ?, ?, NOW(), NOW())
+     ON DUPLICATE KEY UPDATE last_seen = NOW(), last_ip = VALUES(last_ip)`,
+    [accountId, String(deviceId).slice(0, 64), apelidoDoAparelho(req), ipDe(req)]
+  );
+}
+async function mandarCodigo(acc, deviceId, req) {
+  const codigo = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
+  await run("UPDATE tokenvalidat SET expired = '1' WHERE id_account = ? AND expired = '0'", [acc.id]);
+  await run(
+    "INSERT INTO tokenvalidat (id_account, token, expired, validation_date) VALUES (?, ?, '0', NOW())",
+    [acc.id, `dev:${String(deviceId).slice(0, 64)}:${codigo}`]
+  );
+  await enviarEmail({
+    para: acc.email || acc.name,
+    assunto: 'Código para autorizar um novo acesso — Pokeworld Universe',
+    html: emailCodigoDispositivo({ codigo, ip: ipDe(req), quando: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) })
+  });
+}
 
 function parseBody(req) {
   let b = req.body;
@@ -33,7 +82,7 @@ function parseTeam(raw) {
 
 async function dadosDaConta(accountId) {
   const acc = await one(
-    'SELECT id, name, email, type, premdays, pontos, creation FROM accounts WHERE id = ? LIMIT 1',
+    'SELECT id, name, email, type, premdays, pontos, creation, image FROM accounts WHERE id = ? LIMIT 1',
     [accountId]
   );
   if (!acc) return null;
@@ -56,6 +105,7 @@ async function dadosDaConta(accountId) {
     premdays: Number(acc.premdays || 0),
     plan: Number(acc.premdays || 0) > 0 ? `Premium · ${acc.premdays} dias` : 'Conta Grátis',
     admin: Number(acc.type || 1) >= 5,
+    avatar: acc.image || null,
     createdAt: Number(acc.creation || 0),
     trainers: players.map((p) => ({
       id: p.id,
@@ -120,6 +170,28 @@ export default async function handler(req, res) {
       if (!acc || String(acc.password).toLowerCase() !== hashSenha(password)) {
         return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
       }
+
+      // computador novo? pede código por e-mail antes de liberar.
+      const deviceId = String(body.deviceId || '').slice(0, 64);
+      const temTabela = await tableExists('site_devices');
+      if (temTabela && deviceId && !(await aparelhoConhecido(acc.id, deviceId))) {
+        if (await primeiroAparelho(acc.id)) {
+          await registrarAparelho(acc.id, deviceId, req);       // o primeiro aparelho é o de confiança
+        } else if (mailConfigured()) {
+          try {
+            await mandarCodigo(acc, deviceId, req);
+            return res.status(403).json({ needsDevice: true, email: String(acc.email || acc.name).replace(/^(.).*(@.*)$/, '$1***$2'), error: 'Enviamos um código para o seu e-mail para autorizar este computador.' });
+          } catch (e) {
+            console.error('[account] falha ao enviar código', e.message);
+            await registrarAparelho(acc.id, deviceId, req);      // não trava o jogador por falha de e-mail
+          }
+        } else {
+          await registrarAparelho(acc.id, deviceId, req);        // envio de e-mail não configurado
+        }
+      } else if (temTabela && deviceId) {
+        await registrarAparelho(acc.id, deviceId, req);          // atualiza o último acesso
+      }
+
       const conta = await dadosDaConta(acc.id);
       return res.status(200).json({ token: sign(acc.id), account: conta });
     }
@@ -136,6 +208,58 @@ export default async function handler(req, res) {
       }
       await run('UPDATE accounts SET password = ? WHERE id = ?', [hashSenha(nova), id]);
       return res.status(200).json({ ok: true });
+    }
+
+    // ---------------- confirmar código do aparelho ----------------
+    if (action === 'device-confirm') {
+      const deviceId = String(body.deviceId || '').slice(0, 64);
+      const codigo = String(body.code || '').replace(/\D/g, '');
+      if (!EMAIL.test(email) || !deviceId || codigo.length !== 6) return res.status(400).json({ error: 'Informe o código de 6 dígitos.' });
+      const acc = await one('SELECT id, password FROM accounts WHERE name = ? OR email = ? LIMIT 1', [email, email]);
+      if (!acc || String(acc.password).toLowerCase() !== hashSenha(password)) return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
+
+      const reg = await one(
+        `SELECT id, validation_date FROM tokenvalidat
+          WHERE id_account = ? AND token = ? AND expired = '0'
+          ORDER BY id DESC LIMIT 1`,
+        [acc.id, `dev:${deviceId}:${codigo}`]
+      );
+      if (!reg) return res.status(401).json({ error: 'Código inválido. Peça um novo e tente de novo.' });
+      if (Date.now() - new Date(reg.validation_date).getTime() > CODIGO_VALE_MIN * 60000) {
+        return res.status(401).json({ error: 'Código expirado. Faça login de novo para receber outro.' });
+      }
+      await run("UPDATE tokenvalidat SET expired = '1' WHERE id = ?", [reg.id]);
+      await registrarAparelho(acc.id, deviceId, req);
+      const conta = await dadosDaConta(acc.id);
+      return res.status(200).json({ token: sign(acc.id), account: conta });
+    }
+
+    // ---------------- aparelhos autorizados ----------------
+    if (action === 'devices') {
+      const id = accountFromRequest(req);
+      if (!id) return res.status(401).json({ error: 'não autenticado' });
+      if (!(await tableExists('site_devices'))) return res.status(200).json({ devices: [], missing: 'tabela' });
+      const lista = await q('SELECT device_id, label, last_ip, created_at, last_seen FROM site_devices WHERE account_id = ? ORDER BY last_seen DESC', [id]);
+      return res.status(200).json({ devices: lista, atual: String(body.deviceId || '') });
+    }
+    if (action === 'device-remove') {
+      const id = accountFromRequest(req);
+      if (!id) return res.status(401).json({ error: 'não autenticado' });
+      await run('DELETE FROM site_devices WHERE account_id = ? AND device_id = ?', [id, String(body.deviceId || '').slice(0, 64)]);
+      return res.status(200).json({ ok: true });
+    }
+
+    // ---------------- foto de perfil ----------------
+    if (action === 'avatar') {
+      const id = accountFromRequest(req);
+      if (!id) return res.status(401).json({ error: 'não autenticado' });
+      const v = String(body.avatar || '').trim().slice(0, 255);
+      // só caminho interno do site ou https — nada de javascript: nem data:
+      if (v && !/^(assets\/[\w./-]+|https:\/\/[\w./%-]+\.(png|jpg|jpeg|webp|gif))$/i.test(v)) {
+        return res.status(400).json({ error: 'Use uma imagem do site ou um endereço https terminando em .png, .jpg ou .webp.' });
+      }
+      await run('UPDATE accounts SET image = ? WHERE id = ?', [v || null, id]);
+      return res.status(200).json({ ok: true, avatar: v || null });
     }
 
     // ---------------- ticket de suporte ----------------

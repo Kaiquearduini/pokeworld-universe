@@ -67,8 +67,10 @@
     });
   };
   var ACCOUNT_URL = 'minha-conta.html';
-  function onAccountPage() { return /minha-conta\.html/.test(location.pathname); }
-  function staysAfterLogin() { return onAccountPage() || /loja\.html/.test(location.pathname) || /admin\.html/.test(location.pathname); }
+  var LOGIN_URL = 'login.html';
+  function onAccountPage() { return /minha-conta(\.html)?$/.test(location.pathname); }
+  function onLoginPage() { return /login(\.html)?$/.test(location.pathname); }
+  function staysAfterLogin() { return onAccountPage() || /loja(\.html)?$/.test(location.pathname) || /admin\.html/.test(location.pathname); }
 
   /* Com Supabase configurado, as contas dos jogadores são reais (Supabase Auth).
      Sem ele, continua o modo local de demonstração. */
@@ -96,15 +98,76 @@
     };
   }
 
+  /* ---------- backend do JOGO (tabela accounts do banco poke) ----------
+     É o preferido: a conta do site é a conta do jogo. Se a API responder 503
+     (banco não configurado) ou falhar, cai para o Supabase/local. */
+  var TOKEN_KEY = 'pwu_token';
+  var gameOn = null;          // null = ainda não sabemos
+  // guarda as implementações anteriores (Supabase ou local) para o fallback.
+  // Precisa copiar as FUNÇÕES: guardar o objeto `api` criaria recursão infinita.
+  var anterior = { register: api.register, login: api.login, changePassword: api.changePassword };
+
+  function gameFetch(opts) {
+    var o = opts || {};
+    var h = { 'Content-Type': 'application/json' };
+    var tk = localStorage.getItem(TOKEN_KEY);
+    if (tk) h.Authorization = 'Bearer ' + tk;
+    return fetch('/api/account' + (o.query || ''), { method: o.method || 'POST', headers: h, body: o.body ? JSON.stringify(o.body) : undefined })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          if (r.status === 503) { gameOn = false; var e = new Error('offline'); e.offline = true; throw e; }
+          gameOn = true;
+          if (!r.ok) throw new Error(d.error || 'Algo deu errado. Tente novamente.');
+          return d;
+        });
+      }, function () { gameOn = false; var e = new Error('offline'); e.offline = true; throw e; });
+  }
+
+  function fromGame(d) {
+    if (d.token) localStorage.setItem(TOKEN_KEY, d.token);
+    var a = d.account || d;
+    return { id: a.id, email: a.email, name: (a.email || '').split('@')[0], game: true, coins: a.coins, plan: a.plan, trainers: a.trainers || [] };
+  }
+
+  api.register = function (email, password) {
+    return gameFetch({ body: { action: 'register', email: email, password: password } }).then(fromGame)
+      .catch(function (e) { if (!e.offline) throw e; return anterior.register(email, password); });
+  };
+  api.login = function (email, password) {
+    return gameFetch({ body: { action: 'login', email: email, password: password } }).then(fromGame)
+      .catch(function (e) { if (!e.offline) throw e; return anterior.login(email, password); });
+  };
+  api.changePassword = function (email, current, next) {
+    return gameFetch({ body: { action: 'password', password: current, next: next } }).then(function () {})
+      .catch(function (e) { if (!e.offline) throw e; return anterior.changePassword(email, current, next); });
+  };
+  api.ticket = function (subject, message) {
+    return gameFetch({ body: { action: 'ticket', subject: subject, message: message } });
+  };
+  /** Dados frescos da conta do jogo (saldo, treinadores). null se não for conta do jogo. */
+  api.me = function () {
+    if (!localStorage.getItem(TOKEN_KEY)) return Promise.resolve(null);
+    return gameFetch({ method: 'GET', query: '' }).catch(function () { return null; });
+  };
+
   var auth = {
-    backend: sb ? 'supabase' : 'local',
-    /** Token do jogador para as funções /api (só existe com Supabase). */
-    token: function () { return sb ? sb.auth.getSession().then(function (r) { return r.data.session ? r.data.session.access_token : null; }) : Promise.resolve(null); },
-    /** Saldo real de coins (tabela wallets). */
-    coins: function () {
-      if (!sb || !auth.user) return Promise.resolve(null);
-      return sb.from('wallets').select('coins').eq('user_id', auth.user.id).maybeSingle().then(function (r) { return r.data ? r.data.coins : 0; });
+    backend: 'game',
+    /** Token para as funções /api: o do jogo tem prioridade. */
+    token: function () {
+      var tk = localStorage.getItem(TOKEN_KEY);
+      if (tk) return Promise.resolve(tk);
+      return sb ? sb.auth.getSession().then(function (r) { return r.data.session ? r.data.session.access_token : null; }) : Promise.resolve(null);
     },
+    /** Saldo real de coins: accounts.pontos no banco do jogo. */
+    coins: function () {
+      return api.me().then(function (d) {
+        if (d) return Number(d.coins || 0);
+        if (sb && auth.user) return sb.from('wallets').select('coins').eq('user_id', auth.user.id).maybeSingle().then(function (r) { return r.data ? r.data.coins : 0; });
+        return null;
+      });
+    },
+    /** Conta completa do jogo (saldo + treinadores). */
+    game: function () { return api.me(); },
     profile: function () { return auth.user ? readProfile(auth.user.email) : null; },
     saveProfile: function (p) { if (auth.user) writeProfile(auth.user.email, p); },
     accountUrl: ACCOUNT_URL,
@@ -112,7 +175,7 @@
     user: null,
     load: function () { try { auth.user = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { auth.user = null; } return auth.user; },
     set: function (u) { auth.user = u; if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u)); else localStorage.removeItem(SESSION_KEY); renderSession(); document.dispatchEvent(new CustomEvent('auth:change', { detail: u })); },
-    logout: function () { if (sb) sb.auth.signOut(); auth.set(null); toast('Você saiu da sua conta.'); if (onAccountPage()) setTimeout(function () { location.href = 'index.html'; }, 600); },
+    logout: function () { localStorage.removeItem(TOKEN_KEY); if (sb) sb.auth.signOut(); auth.set(null); toast('Você saiu da sua conta.'); if (onAccountPage()) setTimeout(function () { location.href = 'index.html'; }, 600); },
     open: openModal,
     close: closeModal
   };
@@ -322,6 +385,12 @@
   });
 
   auth.load();
+  if (localStorage.getItem(TOKEN_KEY)) {
+    api.me().then(function (d) {
+      if (d && d.id) { var u = fromGame(d); if (!auth.user || auth.user.email !== u.email) auth.set(u); }
+      else if (d === null && gameOn === true) { localStorage.removeItem(TOKEN_KEY); auth.set(null); }
+    });
+  }
   if (sb) sb.auth.getSession().then(function (r) {
     var u = sbUser(r.data.session && r.data.session.user);
     if ((u && (!auth.user || auth.user.id !== u.id)) || (!u && auth.user)) auth.set(u);

@@ -2,20 +2,22 @@ import { randomUUID } from 'crypto';
 import { mpOrder, mpConfigured } from './_lib/mercadopago.js';
 import { getPackage } from './_lib/packages.js';
 import { createLocalOrder, attachMpOrderId } from './_lib/orders.js';
-import { dbConfigured, getUserFromToken } from './_lib/supabase.js';
+import { gameConfigured, one } from './_lib/gamedb.js';
+import { accountFromRequest } from './_lib/session.js';
 
 const APP_URL = (process.env.APP_URL || 'https://pokeworld-universe.vercel.app').replace(/\/+$/, '');
 
 /** POST /api/checkout { packageId } -> { checkoutUrl } */
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'método não permitido' });
-  if (!mpConfigured() || !dbConfigured()) return res.status(503).json({ error: 'pagamento ainda não configurado no servidor' });
+  if (!mpConfigured() || !gameConfigured()) return res.status(503).json({ error: 'pagamento ainda não configurado no servidor' });
 
   try {
-    // 1. Quem está comprando. Sem usuário logado não há pra quem creditar.
-    const auth = req.headers.authorization || '';
-    const user = await getUserFromToken(auth.startsWith('Bearer ') ? auth.slice(7) : null);
-    if (!user) return res.status(401).json({ error: 'não autenticado' });
+    // 1. Quem está comprando: a conta do JOGO. Sem ela não há pra quem creditar.
+    const accountId = accountFromRequest(req);
+    if (!accountId) return res.status(401).json({ error: 'não autenticado' });
+    const user = await one('SELECT id, email, name FROM accounts WHERE id = ? LIMIT 1', [accountId]);
+    if (!user) return res.status(401).json({ error: 'conta não encontrada' });
 
     // 2. O frontend manda SÓ o id do pacote. Preço e coins vêm do servidor.
     let body = req.body;
@@ -36,7 +38,7 @@ export default async function handler(req, res) {
         external_reference: String(local.id),
         description: `PokeWorld Universe — ${pkg.title}`,
         expiration_time: 'PT2H',
-        payer: { email: user.email },
+        payer: { email: user.email || user.name },
         items: [{ title: pkg.title, quantity: 1, unit_price: pkg.price.toFixed(2), unit_measure: 'unit' }],
         config: {
           notification_url: `${APP_URL}/api/webhook/mercadopago`,

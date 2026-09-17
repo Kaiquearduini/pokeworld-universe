@@ -31,13 +31,15 @@
 
   /* Pagamento (Mercado Pago, API de Orders): o site manda SÓ o id do pacote;
      o servidor define preço e coins, cria a order e devolve o checkout_url. */
-  function pay(packageId, btn) {
+  function pay(packageId, btn, provedor) {
     var label = btn ? btn.textContent : '';
+    var rota = provedor === 'stripe' ? '/api/stripe-checkout' : '/api/checkout';
+    var nome = provedor === 'stripe' ? 'Stripe' : 'Mercado Pago';
     function fail(msg) { PWU.toast(msg); if (btn) { btn.disabled = false; btn.textContent = label; } }
-    if (btn) { btn.disabled = true; btn.textContent = 'Abrindo Mercado Pago...'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Abrindo ' + nome + '...'; }
     return PWU.auth.token().then(function (token) {
       if (!token) throw new Error('Pagamentos exigem a conta conectada ao servidor. Entre novamente.');
-      return fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ packageId: packageId }) });
+      return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ packageId: packageId }) });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (r.status === 401) throw new Error('Sua sessão expirou. Entre novamente.');
@@ -210,53 +212,90 @@
     var catsEl = document.getElementById('rank-cats'), listEl = document.getElementById('rank-list'), descEl = document.getElementById('rank-desc');
     var search = document.getElementById('rank-search');
     var current = 'experiencia';
-    function fmt(v) { return v.toLocaleString('pt-BR'); }
+    var vivo = {};      // cache do que veio do banco do jogo
+    function fmt(v) { return Number(v || 0).toLocaleString('pt-BR'); }
+
+    /* Busca no banco do jogo; se não estiver configurado, usa os dados de exemplo. */
+    function carregar(cat) {
+      if (vivo[cat]) return Promise.resolve(vivo[cat]);
+      return fetch('/api/game?resource=ranking&cat=' + encodeURIComponent(cat))
+        .then(function (r) { if (!r.ok) throw new Error('offline'); return r.json(); })
+        .then(function (d) { vivo[cat] = d; return d; })
+        .catch(function () { return null; });
+    }
+
+    function linhas(cat, d) {
+      if (d && d.rows && d.rows.length) return d.rows;
+      if (d && d.rows && !d.rows.length) return [];
+      return (R[cat] || []).map(function (p, i) { return { pos: i + 1, name: p.name, value: p.value, guild: p.guild, members: p.members, team: (p.team || []).map(function (t) { return { name: t.id, level: t.lvl, pct: t.pct }; }) }; });
+    }
+
     function renderCats() {
       catsEl.innerHTML = cats.map(function (c) {
-        var top = R[c.id][0];
-        return '<button type="button" class="rank-cat' + (c.id === current ? ' is-active' : '') + '" data-cat="' + c.id + '"><small>' + esc(c.label) + '</small><b>' + esc(top.name) + ' · <em>' + fmt(top.value) + '</em></b></button>';
+        var d = vivo[c.id], top = (d && d.rows && d.rows[0]) || (R[c.id] && R[c.id][0]);
+        return '<button type="button" class="rank-cat' + (c.id === current ? ' is-active' : '') + '" data-cat="' + c.id + '"><small>' + esc(c.label) + '</small><b>' + (top ? esc(top.name) + ' · <em>' + fmt(top.value) + '</em>' : '—') + '</b></button>';
       }).join('');
     }
     document.getElementById('trophy-legend').innerHTML = T.map(function (src, i) { return '<figure><img src="' + src + '" alt=""><figcaption>' + (i < 6 ? (i + 1) + 'º' : '7º+') + '</figcaption></figure>'; }).join('');
+
     function renderList() {
       var cat = cats.find(function (c) { return c.id === current; });
-      descEl.textContent = cat.desc;
+      var d = vivo[current];
+      descEl.textContent = cat.desc + (d ? '' : ' (dados de exemplo — conecte o banco do jogo)');
       var q = (search.value || '').toLowerCase();
-      var list = R[current].map(function (p, i) { return Object.assign({ pos: i + 1 }, p); })
-        .filter(function (p) { return p.name.toLowerCase().indexOf(q) > -1 || (p.guild || '').toLowerCase().indexOf(q) > -1; });
+      var list = linhas(current, d).filter(function (p) { return p.name.toLowerCase().indexOf(q) > -1 || (p.guild || '').toLowerCase().indexOf(q) > -1; });
+
+      if (d && d.missing === 'snapshot') {
+        listEl.innerHTML = '<p class="rank-empty">Este ranking precisa do retrato diário de experiência.<br>Rode <b>sql/site-tables.sql</b> no banco e agende <b>/api/game?resource=snapshot</b> uma vez por dia.</p>';
+        return;
+      }
+
       listEl.innerHTML = list.map(function (p) {
         var trophy = T[Math.min(p.pos, 7) - 1];
         var slots = [];
         for (var k = 0; k < 6; k++) {
-          var m = p.team[k];
-          slots.push(m ? '<div class="slot"><img src="assets/img/pokemon/' + m.id + '.png" alt=""><span class="slot__lvl">LVL <b>' + m.lvl + '</b></span><div class="bar"><i data-w="' + m.pct + '"></i></div><span class="slot__pct">' + m.pct.toFixed(1).replace('.', ',') + '%</span></div>'
-            : '<div class="slot slot--empty"><img src="assets/img/pokemon/pikachu.png" alt=""><span class="slot__lvl">LVL <b>0</b></span><div class="bar"><i></i></div><span class="slot__pct">0%</span></div>');
+          var m = p.team && p.team[k];
+          var id = m ? String(m.name || '').toLowerCase().replace(/\s+/g, '-') : null;
+          slots.push(m ? '<div class="slot"><img src="assets/img/pokemon/' + id + '.png" alt="" onerror="this.style.visibility=\'hidden\'"><span class="slot__lvl">LVL <b>' + (m.level || 0) + '</b></span><div class="bar"><i data-w="' + (m.pct != null ? m.pct : Math.min(100, (m.level || 0))) + '"></i></div><span class="slot__pct">' + String(m.name).replace(/^./, function (c) { return c.toUpperCase(); }) + '</span></div>'
+            : '<div class="slot slot--empty"><img src="assets/img/pokemon/pikachu.png" alt=""><span class="slot__lvl">LVL <b>0</b></span><div class="bar"><i></i></div><span class="slot__pct">—</span></div>');
         }
         var you = me && p.name.toLowerCase() === (me.name || '').toLowerCase();
-        var sub = current === 'guildas' ? esc(p.guild) + ' · ' + p.members + ' membros' : esc(p.guild) + ' · ' + p.caught + ' Pokémon';
+        var sub = current === 'guildas' ? esc(p.guild || '') + (p.members ? ' · ' + p.members + ' membros' : '') : esc(p.guild || 'Sem guilda') + (p.level ? ' · nível ' + p.level : '');
         return '<article class="rank-card' + (p.pos <= 3 ? ' rank-card--top' : '') + (you ? ' you' : '') + '" data-reveal>' +
           '<div class="rank-card__head">' +
             '<div class="rank-card__pos' + (trophy ? '' : ' rank-card__pos--plain') + '">' + (trophy ? '<img src="' + trophy + '" alt="">' : '') + '<b>' + p.pos + '</b></div>' +
             '<div class="rank-card__name"><b>' + esc(p.name) + '</b><small>' + sub + '</small></div>' +
-            '<div class="rank-card__value"><b>' + fmt(p.value) + '</b><small>' + esc(cat.unit) + '</small></div>' +
+            '<div class="rank-card__value"><b>' + fmt(p.value) + '</b><small>' + esc((d && d.unit) || cat.unit) + '</small></div>' +
           '</div><div class="rank-team">' + slots.join('') + '</div></article>';
       }).join('') || '<p class="rank-empty">Nenhum resultado.</p>';
+
       if (G) {
         G.fromTo(listEl.querySelectorAll('.rank-card'), { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, stagger: .06, ease: 'power2.out', overwrite: true });
         G.fromTo(listEl.querySelectorAll('.bar i[data-w]'), { width: 0 }, { width: function (i, el) { return el.dataset.w + '%'; }, duration: 1, stagger: .01, ease: 'power3.out', delay: .2 });
       } else listEl.querySelectorAll('.bar i[data-w]').forEach(function (i) { i.style.width = i.dataset.w + '%'; });
       listEl.querySelectorAll('[data-reveal]').forEach(function (el) { el.setAttribute('data-revealed', '1'); });
     }
-    catsEl.addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (!b) return; current = b.dataset.cat; renderCats(); renderList(); });
+
+    function ir(cat) { current = cat; renderCats(); renderList(); carregar(cat).then(function () { renderCats(); renderList(); }); }
+    catsEl.addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (b) ir(b.dataset.cat); });
     search.addEventListener('input', renderList);
-    renderCats(); renderList();
-    document.getElementById('rank-updated').textContent = 'Estatísticas em ' + new Date().toLocaleDateString('pt-BR') + '. Cumulativo até agora (dia corrente).';
-    // cronômetro da temporada
+    ir('experiencia');
+    cats.forEach(function (c) { if (c.id !== 'experiencia') carregar(c.id).then(renderCats); });
+
+    // status do servidor no topo
+    fetch('/api/game?resource=status').then(function (r) { return r.ok ? r.json() : null; }).then(function (st) {
+      if (!st) return;
+      var el = document.getElementById('rank-updated');
+      if (el) el.textContent = 'Estatísticas em ' + new Date().toLocaleDateString('pt-BR') + ' · ' + st.online + ' online agora · recorde de ' + st.record + ' · ' + st.trainers + ' treinadores.';
+      document.querySelectorAll('.count[data-count]').forEach(function (c) { if (st.online) c.dataset.count = st.online; });
+    }).catch(function () {});
+
     var end = new Date('2026-12-15T23:59:59-03:00').getTime();
     function tick() {
-      var d = Math.max(0, end - Date.now());
-      var days = Math.floor(d / 864e5), h = Math.floor(d % 864e5 / 36e5), m = Math.floor(d % 36e5 / 6e4);
-      document.getElementById('t-d').textContent = days; document.getElementById('t-h').textContent = ('0' + h).slice(-2); document.getElementById('t-m').textContent = ('0' + m).slice(-2);
+      var d2 = Math.max(0, end - Date.now());
+      document.getElementById('t-d').textContent = Math.floor(d2 / 864e5);
+      document.getElementById('t-h').textContent = ('0' + Math.floor(d2 % 864e5 / 36e5)).slice(-2);
+      document.getElementById('t-m').textContent = ('0' + Math.floor(d2 % 36e5 / 6e4)).slice(-2);
     }
     tick(); setInterval(tick, 30000);
   }
@@ -391,20 +430,23 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pm.hidden) closeP(); });
     function perr(msg) { var p = pmBody.querySelector('.auth__error'); if (p) { p.textContent = msg; p.hidden = !msg; } }
 
+    var jogo = null;   // conta vinda do banco do jogo (null = modo local)
+
     function renderAcc() {
       var u = PWU.auth.user;
       gateA.hidden = !!u; acc.hidden = !u;
       if (!u) return;
-      var pr = PWU.auth.profile();
-      document.getElementById('acc-name').value = shown.name ? u.name : ' *  *  *  *  *';
-      document.getElementById('acc-email').value = shown.email ? u.email : ' *  *  *  *  *';
+      var pr = jogo ? { diamonds: jogo.coins, plan: jogo.plan, twitch: null, tickets: [], trainers: (jogo.trainers || []).map(function (t) { return { name: t.name, world: t.online ? 'Online agora' : 'Nível ' + t.level, avatar: (t.team[0] && String(t.team[0].name).toLowerCase().replace(/\s+/g, '-')) || 'pikachu', level: t.level }; }) } : PWU.auth.profile();
+      document.getElementById('acc-name').value = shown.name ? (jogo ? jogo.name : u.name) : ' *  *  *  *  *';
+      document.getElementById('acc-email').value = shown.email ? (jogo ? jogo.email : u.email) : ' *  *  *  *  *';
       document.getElementById('acc-diamonds').textContent = (pr.diamonds || 0).toLocaleString('pt-BR');
       document.getElementById('acc-plan').textContent = pr.plan || 'Conta Grátis';
       var tw = document.querySelector('[data-acc="twitch"]'); if (tw) tw.textContent = pr.twitch ? 'Twitch: ' + pr.twitch : 'Vincular Twitch';
       document.getElementById('acc-tcount').textContent = '(' + pr.trainers.length + ')';
       document.getElementById('acc-trainers').innerHTML = pr.trainers.map(function (t, i) {
-        return '<div class="trainer"><button class="rm" type="button" data-rm-trainer="' + i + '" aria-label="Excluir">×</button><img src="assets/img/pokemon/' + esc(t.avatar) + '.png" alt=""><h5>' + esc(t.name) + '</h5><span class="lvl">Nível ' + t.level + '</span><span class="world">' + esc(t.world) + '</span></div>';
-      }).join('') || '<div class="trainers__empty">Você ainda não tem treinadores.<br>Crie o primeiro aqui ou baixe o cliente e comece sua jornada.</div>';
+        return '<div class="trainer">' + (jogo ? '' : '<button class="rm" type="button" data-rm-trainer="' + i + '" aria-label="Excluir">×</button>') +
+          '<img src="assets/img/pokemon/' + esc(t.avatar) + '.png" alt="" onerror="this.src=\'assets/img/pokemon/pikachu.png\'"><h5>' + esc(t.name) + '</h5><span class="lvl">Nível ' + t.level + '</span><span class="world">' + esc(t.world) + '</span></div>';
+      }).join('') || '<div class="trainers__empty">' + (jogo ? 'Sua conta ainda não tem treinadores.<br>Baixe o cliente, entre no jogo e crie o primeiro.' : 'Você ainda não tem treinadores.<br>Crie o primeiro aqui ou baixe o cliente e comece sua jornada.') + '</div>';
       if (G) G.fromTo('#acc-trainers .trainer', { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .06, ease: 'power2.out', overwrite: true });
     }
 
@@ -426,6 +468,11 @@
         document.getElementById('f-ticket').addEventListener('submit', function (ev) {
           ev.preventDefault(); var f = ev.currentTarget, msg = f.message.value.trim();
           if (msg.length < 10) return perr('Escreva pelo menos 10 caracteres.');
+          if (jogo && PWU.auth.api.ticket) {
+            PWU.auth.api.ticket(f.subject.value, msg).then(function () { closeP(); PWU.toast('Ticket enviado! Responderemos por e-mail.', 'ok'); })
+              .catch(function (er) { perr(er.message || 'Não foi possível enviar.'); });
+            return;
+          }
           var p2 = PWU.auth.profile(); p2.tickets.push({ id: 1000 + p2.tickets.length + 1, subject: f.subject.value, message: msg, at: Date.now() }); PWU.auth.saveProfile(p2);
           closeP(); PWU.toast('Ticket enviado! Responderemos por e-mail.', 'ok');
         });
@@ -460,6 +507,7 @@
       }
 
       if (act === 'new-trainer') {
+        if (jogo) return PWU.toast('Treinadores são criados dentro do jogo. Baixe o cliente e entre com esta conta.');
         if (pr.trainers.length >= 8) return PWU.toast('Limite de 8 treinadores por conta.');
         openP('<h3>Novo treinador</h3><p class="sub">Escolha o nome, o mundo e o parceiro inicial.</p><form id="f-tr" novalidate>' +
           '<label class="field"><span>Nome do treinador</span><input type="text" name="name" maxlength="20" placeholder="Ex.: Ash Ketchum"></label>' +
@@ -486,7 +534,19 @@
           '<em class="' + (k.bonusPct ? '' : 'is-none') + '">+' + k.bonusPct + '% bônus</em>' +
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
-      packsEl.addEventListener('click', function (e) { var b = e.target.closest('[data-pack]'); if (b) pay(b.dataset.pack, b); });
+      packsEl.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-pack]'); if (!b) return;
+        var k = PWU.coinPackages.find(function (x) { return x.id === b.dataset.pack; }) || {};
+        openP('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + '. Os coins caem na sua conta do jogo assim que o pagamento for confirmado.</p>' +
+          '<div class="pay-ways">' +
+          '<button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>' +
+          '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>' +
+          '</div><p class="mp-note">🔒 Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
+        pmBody.addEventListener('click', function (ev) {
+          var w = ev.target.closest('[data-prov]'); if (!w) return;
+          pay(b.dataset.pack, w, w.dataset.prov);
+        });
+      });
     }
     if (location.hash === '#coins') setTimeout(function () { var d = document.getElementById('coins'); if (d && PWU.auth.user) d.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 900);
 
@@ -512,8 +572,20 @@
       history.replaceState(null, '', location.pathname);
     }
 
+    function puxarJogo(tries) {
+      if (!PWU.auth.game) return;
+      PWU.auth.game().then(function (d) {
+        if (!d || !d.id) return;
+        var antes = jogo ? jogo.coins : null;
+        jogo = d; renderAcc();
+        if (antes != null && d.coins > antes) PWU.toast('Coins creditados na sua conta!', 'ok');
+        else if (tries > 0) setTimeout(function () { puxarJogo(tries - 1); }, 4000);
+      }).catch(function () {});
+    }
+
     renderAcc();
-    refreshCoins(pg ? 8 : 0);
+    puxarJogo(pg ? 8 : 0);
+    refreshCoins(0);
     if (!PWU.auth.user) setTimeout(function () { PWU.auth.open('login'); }, 500);
     document.addEventListener('auth:change', function () { renderAcc(); refreshCoins(0); });
   }

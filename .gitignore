@@ -17,3 +17,7 @@ node_modules/
 /*.mp4
 /*.png
 /BUTTON/
+
+# dump do banco do jogo: contém e-mails e hashes de senha de jogadores reais
+/db/
+*.sql.bak

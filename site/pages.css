@@ -368,6 +368,14 @@
 .ticket small { color: rgba(255,255,255,.55); }
 .mp-note { display: flex; align-items: center; gap: .8rem; margin-top: 1.4rem; font-size: 1.3rem; color: rgba(255,255,255,.55); }
 
+/* escolha do meio de pagamento */
+.pay-ways { display: grid; gap: 1.2rem; margin-bottom: 1.6rem; }
+.pay-way { display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; padding: 1.8rem 2rem; border-radius: 1.6rem; border: .15rem solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: #fff; text-align: left; cursor: pointer; transition: all .2s; }
+.pay-way:hover { border-color: #70f5ff; background: rgba(112,244,255,.1); transform: translateY(-.2rem); }
+.pay-way b { font: 500 2rem var(--montreal); }
+.pay-way small { font: 400 1.4rem var(--montreal); color: rgba(255,255,255,.6); }
+.pay-way:disabled { opacity: .6; cursor: wait; }
+
 /* ---------- WIKI ---------- */
 .dex-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem; margin-bottom: 3rem; }
 .dex-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2rem; }
@@ -458,3 +466,39 @@
   .packs { grid-template-columns: 1fr 1fr; gap: 2rem 1.2rem; }
   .amounts { grid-template-columns: 1fr 1fr; }
 }
+
+/* =====================================================================
+   PÁGINA /login
+   ===================================================================== */
+.login-page { position: relative; min-height: calc(100vh - 10.4rem); display: flex; align-items: center; justify-content: center; padding: 6rem 2rem 8rem; overflow: hidden; background: #0d1330 url("assets/img/bg/hex-plain.png") center / 40rem repeat; }
+.login-page::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, rgba(5,48,239,.45), transparent 60%), linear-gradient(180deg, rgba(13,19,48,.9), rgba(13,19,48,.97)); }
+.login-page__art { position: absolute; bottom: -4rem; height: 62rem; object-fit: contain; pointer-events: none; opacity: .9; filter: drop-shadow(0 2rem 4rem rgba(0,0,0,.5)); }
+.login-page__art--l { left: 2rem; transform: scaleX(-1); }
+.login-page__art--r { right: 2rem; }
+
+.login-box { position: relative; z-index: 1; width: min(52rem, 100%); padding: 4rem 4rem 3.4rem; border-radius: 2.8rem; color: #fff; font-family: var(--montreal); background: linear-gradient(rgba(6,10,30,.92), rgba(6,10,30,.92)) padding-box, var(--grad-blue) border-box; border: .3rem solid transparent; box-shadow: 0 3rem 9rem rgba(5,48,239,.45); }
+.login-box__head { text-align: center; margin-bottom: 2.8rem; }
+.login-box__head img { width: 14rem; margin: -1rem auto .6rem; object-fit: contain; }
+.login-box__head h1 { font: 400 4.6rem/1 var(--bebas); }
+.login-box__head p { margin-top: 1rem; font: 400 1.5rem/1.5 var(--montreal); color: rgba(255,255,255,.7); }
+
+.login-tabs { position: relative; display: flex; margin-bottom: 2.6rem; padding: .4rem; border-radius: 1.4rem; background: rgba(255,255,255,.07); }
+.login-tab { flex: 1; position: relative; z-index: 1; padding: 1.2rem; border: 0; background: none; color: rgba(255,255,255,.7); font: 400 2.1rem/1 var(--bebas); letter-spacing: .05em; cursor: pointer; transition: color .25s; }
+.login-tab.is-active { color: #000; }
+.login-tabs__ink { position: absolute; top: .4rem; left: .4rem; width: calc(50% - .4rem); height: calc(100% - .8rem); border-radius: 1.1rem; background: var(--grad-yellow); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.login-form[hidden] { display: none; }
+.login-form .auth__submit { margin-top: .6rem; }
+
+.login-perks { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-top: 2.8rem; padding-top: 2.4rem; border-top: .1rem solid rgba(255,255,255,.1); }
+.login-perks li { display: flex; align-items: center; gap: 1.2rem; font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.72); }
+.login-perks b { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; flex: none; border-radius: 50%; background: rgba(112,244,255,.15); color: #70f5ff; font: 400 1.6rem var(--bebas); }
+
+@media (max-width: 900px) {
+  .login-page { padding: 4rem 1.6rem 6rem; min-height: 0; }
+  .login-page__art { display: none; }
+  .login-box { padding: 3rem 2.2rem 2.6rem; }
+  .login-box__head h1 { font-size: 3.6rem; }
+}
+
+/* aviso de recurso que depende do banco do jogo */
+.db-note { margin-top: 2rem; padding: 1.6rem 2rem; border-radius: 1.4rem; background: rgba(252,208,92,.12); border: .1rem solid rgba(252,208,92,.45); color: #ffe08a; font: 400 1.5rem/1.5 var(--montreal); }

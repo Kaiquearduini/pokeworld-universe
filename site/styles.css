@@ -236,7 +236,7 @@ html.has-cursor .cursor.is-on { opacity: 1; }
 
 .nav {
   position: absolute;
-  z-index: 3;
+  z-index: 2;
   top: 2.9rem;
   left: calc(50% - 0.05rem);
   transform: translateX(-50%);
@@ -276,6 +276,7 @@ html.has-cursor .cursor.is-on { opacity: 1; }
   transition: background .2s, border-color .2s, transform .2s;
 }
 .btn-entrar:hover { background: #fff; color: #0530ef; transform: translateY(-.2rem); }
+.btn-entrar[hidden] { display: none; }
 .btn-jogue-agora {
   position: relative;
   z-index: 3;

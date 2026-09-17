@@ -40,7 +40,7 @@ FOOTER = """
         </div>
         <div>
           <h4>Suporte</h4>
-          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="doar.html">Doar</a></li><li><a href="admin.html">Painel admin</a></li></ul>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="doar.html#pacotes">Doar</a></li><li><a href="admin.html">Painel admin</a></li></ul>
         </div>
         <div>
           <h4>Baixe agora</h4>
@@ -458,7 +458,7 @@ PAGES["minha-conta"] = dict(
             </div>
             <div class="acc-actions">
               <a class="btn btn--lime btn--sm" href="tickets.html">Tickets</a>
-              <a class="btn btn--yellow btn--sm" href="doar.html">Efetuar doação</a>
+              <a class="btn btn--yellow btn--sm" href="doar.html#pacotes">Efetuar doação</a>
               <a class="btn btn--black btn--sm" href="seguranca.html">Segurança</a>
               <a class="btn btn--twitch btn--sm" href="seguranca.html#twitch">Vincular Twitch</a>
               <button type="button" class="btn btn--danger btn--sm" data-acc="logout">Sair</button>
@@ -550,7 +550,7 @@ PAGES["doar"] = dict(
       </div>
     </section>
 
-    <section class="sec sec--white">
+    <section class="sec sec--white" id="pacotes">
       <div class="wrap">
         <div class="sec__head"><div><h2 class="sec__title">Escolha seu <span class="grad">pacote</span></h2><p class="sec__sub">Clique no valor e escolha entre Mercado Pago ou Stripe.</p></div></div>
         <div class="packs packs--light" id="doar-packs"></div>

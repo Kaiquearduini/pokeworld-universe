@@ -644,6 +644,12 @@
      DOAR — tabela de bônus e pacotes
      ===================================================================== */
   if (page === 'doar' && window.PWU) {
+    if (location.hash === '#pacotes') {
+      setTimeout(function () {
+        var alvo = document.getElementById('pacotes');
+        if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500);
+    }
     var pacotes = PWU.coinPackages || [];
     var corpo = document.getElementById('bonus-rows');
     if (corpo) {

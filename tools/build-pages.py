@@ -1,0 +1,495 @@
+#!/usr/bin/env python3
+"""Gera as subpáginas estáticas do site (site/*.html) a partir de um template único.
+Uso: python3 tools/build-pages.py
+"""
+import os, pathlib
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent / "site"
+
+NAV = [
+    ("o-jogo.html", "O JOGO"),
+    ("wiki.html", "wiki"),
+    ("download.html", "download"),
+    ("ranking.html", "ranking"),
+    ("loja.html", "loja"),
+]
+
+def nav_html(active):
+    return "".join(
+        f'<a href="{href}"{" class=\"is-active\"" if href == active else ""}>{label}</a>'
+        for href, label in NAV
+    )
+
+FOOTER = """
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="site-footer__top">
+        <div class="site-footer__brand">
+          <img src="assets/logo-sigla.png" alt="Pokeworld Universe">
+          <p>Pokeworld Universe é um jogo online moderno para explorar mundos incríveis, colecionar criaturas únicas e batalhar com treinadores do mundo todo.</p>
+          <div class="site-footer__social">
+            <a href="#" aria-label="Discord"><img src="assets/social-discord.png" alt="" style="object-fit:cover;width:100%;height:100%"></a>
+            <a href="#" aria-label="Instagram"><img src="assets/social-instagram.svg" alt=""></a>
+          </div>
+        </div>
+        <div>
+          <h4>Jogo</h4>
+          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="wiki.html">Pokédex</a></li><li><a href="ranking.html">Ranking</a></li><li><a href="loja.html">Loja</a></li></ul>
+        </div>
+        <div>
+          <h4>Suporte</h4>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="admin.html">Painel admin</a></li></ul>
+        </div>
+        <div>
+          <h4>Baixe agora</h4>
+          <div class="site-footer__badges">
+            <a href="download.html"><img src="assets/img/ui/appstore.svg" alt="App Store"></a>
+            <a href="download.html"><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a>
+            <a href="download.html"><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a>
+          </div>
+        </div>
+      </div>
+      <div class="site-footer__bar">
+        <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/icon-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
+        <span>© 2026 Pokeworld Universe. Projeto de demonstração, sem afiliação com The Pokémon Company.</span>
+      </div>
+    </div>
+  </footer>
+"""
+
+def layout(slug, title, desc, banner, body, extra_head="", extra_bottom=""):
+    return f"""<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title} — Pokeworld Universe</title>
+  <meta name="description" content="{desc}">
+  <link rel="icon" href="assets/logo-sigla.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="pages.css">{extra_head}
+</head>
+<body data-page="{slug}">
+<div class="scroll-progress" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+<div class="page page--sub">
+
+  <header class="topbar">
+    <div class="header-shape header-shape--white"></div>
+    <div class="header-shape header-shape--grad"></div>
+    <a class="logo-sigla" href="index.html"><img src="assets/logo-sigla.png" alt="PWU"></a>
+    <nav class="nav">{nav_html(slug + ".html")}</nav>
+    <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </header>
+
+  <section class="banner" style="--bg:url('{banner['bg']}')">
+    <div class="banner__inner">
+      <span class="banner__tag">{banner['tag']}</span>
+      <h1 class="banner__title"{(' data-text="' + slug + '.banner.title"') if banner.get('editable') else ''}>{banner['title']}</h1>
+      <p class="banner__sub"{(' data-text="' + slug + '.banner.sub"') if banner.get('editable') else ''}>{banner['sub']}</p>
+    </div>{('<img class="banner__art" src="' + banner['art'] + '" alt="">') if banner.get('art') else ''}
+  </section>
+
+  <main class="sub">
+{body}
+  </main>
+{FOOTER}
+</div>
+{extra_bottom}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="data.js"></script>
+<script src="store.js"></script>
+<script src="ui.js"></script>
+<script src="pages.js"></script>
+</body>
+</html>
+"""
+
+LIGHTBOX = """
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox__close" type="button" aria-label="Fechar">×</button>
+  <img class="lightbox__img" src="" alt="">
+</div>"""
+
+PAGES = {}
+
+# ---------------------------------------------------------------- O JOGO
+PAGES["o-jogo"] = dict(
+    title="O Jogo",
+    desc="Conheça o Pokeworld Universe: MOBA de Pokémon em equipes de 5, com cross-play entre celular, PC e Nintendo Switch.",
+    banner=dict(bg="assets/img/bg/champions-arena.jpg", tag="Sobre o jogo", title="Um universo<br>para batalhar",
+                sub="Forme seu time de cinco treinadores, escolha seu Pokémon e dispute arenas em partidas rápidas de 10 minutos.",
+                art="assets/img/art/player-girl.png"),
+    extra_bottom=LIGHTBOX,
+    body="""
+    <section class="sec">
+      <div class="wrap intro">
+        <div class="intro__text" data-reveal>
+          <h2 class="sec__title">O que é o <span class="grad">Pokeworld Universe</span></h2>
+          <p data-text="ojogo.intro.p1">Pokeworld Universe é um jogo online de batalhas em equipe. Dois times de cinco treinadores disputam uma arena, derrotam Pokémon selvagens, acumulam energia e marcam pontos nos gols adversários antes do tempo acabar.</p>
+          <p data-text="ojogo.intro.p2">Cada Pokémon evolui durante a partida e desbloqueia novos golpes. A sinergia entre funções, o controle dos objetivos e a comunicação decidem quem sai vitorioso.</p>
+          <div class="btn-row" style="margin-top:3rem">
+            <a class="btn btn--yellow" href="download.html">Jogar grátis</a>
+            <a class="btn btn--black" href="wiki.html">Ver Pokédex</a>
+          </div>
+        </div>
+        <div class="intro__art" data-reveal>
+          <img src="assets/img/art/screenshot-1.jpg" alt="Arena do Pokeworld Universe">
+          <img class="float" src="assets/img/art/pikachu.png" alt="">
+        </div>
+      </div>
+      <div class="wrap stats-row">
+        <div class="stat-box" data-reveal><b data-count="69">0</b><span>Pokémon jogáveis</span></div>
+        <div class="stat-box" data-reveal><b data-count="1342321">0</b><span>Jogadores online</span></div>
+        <div class="stat-box" data-reveal><b data-count="4">0</b><span>Plataformas com cross-play</span></div>
+        <div class="stat-box" data-reveal><b data-count="10" data-suffix=" min">0</b><span>Duração média da partida</span></div>
+      </div>
+    </section>
+
+    <section class="sec sec--white">
+      <div class="wrap">
+        <div class="sec__head"><div><h2 class="sec__title">Modos de <span class="grad">jogo</span></h2><p class="sec__sub">Do competitivo ranqueado às salas personalizadas com amigos.</p></div></div>
+        <div class="modes">
+          <a class="mode" href="ranking.html" data-reveal><img src="assets/img/art/screenshot-2.jpg" alt=""><div class="mode__body"><span class="mode__tag">Competitivo</span><h3>Ranqueada 5x5</h3><p>Suba de Iniciante a Mestre e garanta recompensas de temporada.</p></div></a>
+          <a class="mode" href="download.html" data-reveal><img src="assets/img/art/screenshot-3.jpg" alt=""><div class="mode__body"><span class="mode__tag">Casual</span><h3>Batalha Rápida</h3><p>Partidas de 5 minutos em mapas menores, ideais para aquecer.</p></div></a>
+          <a class="mode" href="noticia.html?id=modo-batalha-privada" data-reveal><img src="assets/img/art/screenshot-4.jpg" alt=""><div class="mode__body"><span class="mode__tag">Personalizado</span><h3>Batalha Privada</h3><p>Crie salas com regras próprias, espectadores e códigos de convite.</p></div></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec--dark">
+      <div class="wrap">
+        <div class="sec__head"><div><h2 class="sec__title">Sistemas do <span class="grad">jogo</span></h2><p class="sec__sub">Tudo o que faz o Pokeworld Universe ser diferente.</p></div></div>
+        <div class="features">
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Mundo livre para explorar</h3><p>Voe pelo mapa, use montarias e descubra cidades construídas do zero, como Lumiose City, com torre central, bairros e hunts espalhadas pela cidade.</p></div>
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Ascensão estelar e evolução</h3><p>Leve seu pokémon além da forma final com a ascensão estelar, subindo estrelas para desbloquear poder. Com evolução por pedras, helds e boost, o time fica do jeito que você montar.</p></div>
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Guildas com bosses e buffs</h3><p>Junte seu grupo, encare bosses exclusivos de guilda e libere buffs que valem para todos os membros. Quanto mais ativa a guilda, mais forte cada treinador fica.</p></div>
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Ranking de treinadores</h3><p>Quem está no topo do servidor aparece aqui: level, catches, conquistas e a disputa entre guildas.</p></div>
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Tasks e conquistas progressivas</h3><p>Complete tarefas diárias e por região para avançar em trilhas de recompensa. Quanto mais longe você chega, melhores os itens e as liberações.</p></div>
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Battle Pass exclusivo</h3><p>Cada temporada traz um passe com níveis de recompensa: cosméticos, itens e addons que só aparecem ali. Joga, sobe os níveis e leva o que a temporada oferece.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="wrap">
+        <div class="sec__head"><div><h2 class="sec__title">Conheça os <span class="grad">Pokémon</span></h2><p class="sec__sub">69 Pokémon jogáveis, cada um com seu estilo de batalha.</p></div><a class="sec__link" href="wiki.html">Ver todos →</a></div>
+      </div>
+      <div class="pk-marquee" data-reveal><div class="pk-marquee__track"></div></div>
+    </section>
+
+    <section class="sec sec--white">
+      <div class="wrap">
+        <div class="sec__head"><div><h2 class="sec__title">Galeria</h2><p class="sec__sub">Clique para ampliar.</p></div></div>
+        <div class="gallery-grid">
+          <a href="assets/img/art/screenshot-1.jpg" data-lightbox data-reveal><img src="assets/img/art/screenshot-1.jpg" alt=""></a>
+          <a href="assets/img/art/screenshot-2.jpg" data-lightbox data-reveal><img src="assets/img/art/screenshot-2.jpg" alt=""></a>
+          <a href="assets/img/art/trailer-thumb.jpg" data-lightbox data-reveal><img src="assets/img/art/trailer-thumb.jpg" alt=""></a>
+          <a href="assets/img/art/screenshot-3.jpg" data-lightbox data-reveal><img src="assets/img/art/screenshot-3.jpg" alt=""></a>
+          <a href="assets/img/art/update-thumb.jpg" data-lightbox data-reveal><img src="assets/img/art/update-thumb.jpg" alt=""></a>
+          <a href="assets/img/bg/battle-map.jpg" data-lightbox data-reveal><img src="assets/img/bg/battle-map.jpg" alt=""></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <img class="cta-band__pk cta-band__pk--l" src="assets/img/art/charizard.png" alt="">
+      <img class="cta-band__pk cta-band__pk--r" src="assets/img/art/greninja.png" alt="">
+      <div class="wrap" data-reveal>
+        <h2>Pronto para a sua primeira batalha?</h2>
+        <p>Crie sua conta, baixe o jogo e entre na arena. É grátis.</p>
+        <div class="btn-row"><a class="btn btn--yellow" href="#" data-auth="register">Criar conta</a><a class="btn btn--black" href="download.html">Baixar agora</a></div>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- NOTÍCIAS
+PAGES["noticias"] = dict(
+    title="Notícias",
+    desc="Últimas notícias, atualizações e eventos do Pokeworld Universe.",
+    banner=dict(bg="assets/img/bg/unite-city.jpg", tag="Central de notícias", editable=True, title="Últimas<br>notícias",
+                sub="Atualizações, balanceamento, eventos e tudo o que acontece no Pokeworld."),
+    body="""
+    <section class="sec">
+      <div class="wrap">
+        <div class="sec__head">
+          <div class="chips">
+            <button class="chip is-active" type="button" data-filter="todas">Todas</button>
+            <button class="chip" type="button" data-filter="Atualização">Atualizações</button>
+            <button class="chip" type="button" data-filter="Evento">Eventos</button>
+            <button class="chip" type="button" data-filter="Novidade">Novidades</button>
+            <button class="chip" type="button" data-filter="Comunidade">Comunidade</button>
+          </div>
+        </div>
+        <div class="news-featured" id="news-featured"></div>
+        <div class="news-grid" id="news-grid"></div>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- ARTIGO
+PAGES["noticia"] = dict(
+    title="Notícia",
+    desc="Notícia do Pokeworld Universe.",
+    banner=dict(bg="assets/img/bg/news-pattern.png", tag="Notícia", title="Central de<br>notícias",
+                sub="Fique por dentro de tudo o que acontece no Pokeworld."),
+    body="""
+    <section class="sec">
+      <div class="wrap article">
+        <article id="article"></article>
+        <aside class="aside">
+          <h4>Mais notícias</h4>
+          <div id="related" style="display:flex;flex-direction:column;gap:2rem"></div>
+          <a class="btn btn--black btn--sm" href="noticias.html">Ver todas</a>
+        </aside>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- DOWNLOAD
+PAGES["download"] = dict(
+    title="Download",
+    desc="Baixe o Pokeworld Universe para iOS, Android, Nintendo Switch e PC.",
+    banner=dict(bg="assets/img/bg/stadium-light.jpg", tag="Grátis para jogar", title="Baixe e<br>jogue agora",
+                sub="Disponível em quatro plataformas com progresso compartilhado.", art="assets/img/art/player-boy.png"),
+    body="""
+    <section class="sec">
+      <div class="wrap">
+        <div class="platforms">
+          <div class="platform" data-reveal><span class="platform__ribbon">Novo</span><div class="platform__icon">📱</div><h3>iOS</h3><p>iPhone e iPad com iOS 15 ou superior.</p><span class="size">1,9 GB · v12.0.1</span><a class="badge-img" href="#" data-require-auth><img src="assets/img/ui/appstore.svg" alt="App Store"></a></div>
+          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM.</p><span class="size">2,1 GB · v12.0.1</span><a class="badge-img" href="#" data-require-auth><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a></div>
+          <div class="platform" data-reveal><div class="platform__icon">🎮</div><h3>Nintendo Switch</h3><p>Compatível com Switch, Lite e OLED.</p><span class="size">3,4 GB · v12.0.1</span><a class="badge-img" href="#" data-require-auth><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a></div>
+          <div class="platform" data-reveal><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10/11 de 64 bits. Suporte a controle.</p><span class="size">4,8 GB · v12.0.1</span><a class="btn btn--yellow btn--sm" href="#" data-require-auth>Baixar instalador</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec--dark">
+      <div class="wrap">
+        <div class="sec__head"><div><h2 class="sec__title">Como <span class="grad">instalar</span></h2><p class="sec__sub">Três passos e você está na arena.</p></div></div>
+        <div class="steps">
+          <div class="step" data-reveal><h3>Crie sua conta Pokeworld</h3><p>Use seu e-mail para criar uma conta gratuita. É ela que guarda seu progresso em todas as plataformas.</p></div>
+          <div class="step" data-reveal><h3>Baixe o jogo</h3><p>Escolha sua plataforma acima. O download inicial é leve e o restante do conteúdo é baixado dentro do jogo.</p></div>
+          <div class="step" data-reveal><h3>Entre e complete o tutorial</h3><p>O tutorial leva 5 minutos e já libera seu primeiro Pokémon e 2.000 moedas Aeos.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="wrap--narrow">
+        <div class="sec__head"><div><h2 class="sec__title">Requisitos <span class="grad">mínimos</span></h2></div></div>
+        <table class="req" data-reveal>
+          <thead><tr><th>Plataforma</th><th>Sistema</th><th>Memória</th><th>Armazenamento</th></tr></thead>
+          <tbody>
+            <tr><td>iOS</td><td>iOS 15+</td><td>3 GB</td><td>4 GB livres</td></tr>
+            <tr><td>Android</td><td>Android 9+</td><td>3 GB</td><td>4 GB livres</td></tr>
+            <tr><td>Nintendo Switch</td><td>Firmware 16+</td><td>—</td><td>4 GB livres</td></tr>
+            <tr><td>PC</td><td>Windows 10 64 bits</td><td>8 GB</td><td>8 GB livres · GTX 1050</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sec sec--white" id="faq">
+      <div class="wrap--narrow">
+        <div class="sec__head"><div><h2 class="sec__title">Perguntas <span class="grad">frequentes</span></h2></div></div>
+        <div class="faq">
+          <details data-reveal><summary>O jogo é realmente gratuito?</summary><p>Sim. Todos os modos e Pokémon podem ser obtidos jogando. As compras opcionais são cosméticas ou aceleram o progresso.</p></details>
+          <details data-reveal><summary>Meu progresso é compartilhado entre plataformas?</summary><p>Sim. Ao vincular sua conta Pokeworld, itens, Pokémon, amigos e ranking são sincronizados em todas as plataformas.</p></details>
+          <details data-reveal><summary>Posso jogar com amigos em outras plataformas?</summary><p>Sim. O cross-play é completo: jogadores de Switch, celular e PC compartilham as mesmas filas.</p></details>
+          <details data-reveal><summary>Preciso de internet para jogar?</summary><p>Sim, todas as partidas acontecem online. Recomendamos uma conexão estável de pelo menos 5 Mbps.</p></details>
+        </div>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- RANKING
+PAGES["ranking"] = dict(
+    title="Ranking",
+    desc="Rankings do Pokeworld Universe: experiência, ganho de experiência, mortes e guildas.",
+    banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Temporada 12", title="Os melhores<br>treinadores",
+                sub="Quatro rankings, troféus exclusivos e a disputa pelo topo do servidor.", art="assets/img/trophies/tier-1.png"),
+    body="""
+    <section class="sec rank-sec">
+      <div class="wrap">
+        <div class="season" data-reveal>
+          <div><b>Temporada 12 · Aurora</b><br><span id="rank-updated">Estatísticas atualizadas hoje. Cumulativo até agora.</span></div>
+          <div class="season__timer"><div><b id="t-d">0</b><small>dias</small></div><div><b id="t-h">00</b><small>horas</small></div><div><b id="t-m">00</b><small>min</small></div></div>
+        </div>
+
+        <div class="rank-cats" id="rank-cats"></div>
+
+        <div class="rank-tools">
+          <p class="sec__sub" id="rank-desc"></p>
+          <label class="search">🔍 <input id="rank-search" type="search" placeholder="Buscar treinador ou guilda"></label>
+        </div>
+
+        <div class="trophy-legend" data-reveal>
+          <span>Troféus da temporada</span>
+          <div id="trophy-legend"></div>
+        </div>
+
+        <div class="rank-list" id="rank-list"></div>
+      </div>
+    </section>
+""")
+
+# ---------------------------------------------------------------- LOJA
+PAGES["loja"] = dict(
+    title="Loja",
+    desc="Loja do Pokeworld Universe: Pokémon, holo-trajes, gemas e Passe de Aventura.",
+    banner=dict(bg="assets/img/bg/sky.jpg", tag="Loja oficial", title="Loja<br>Pokeworld",
+                sub="Novos Pokémon, holo-trajes exclusivos e o Passe de Aventura da temporada.", art="assets/img/art/charizard.png"),
+    body="""
+    <section class="sec">
+      <div class="wrap">
+        <div class="sec__head">
+          <div class="chips">
+            <button class="chip is-active" type="button" data-filter="todos">Todos</button>
+            <button class="chip" type="button" data-filter="pokemon">Pokémon</button>
+            <button class="chip" type="button" data-filter="traje">Holo-trajes</button>
+            <button class="chip" type="button" data-filter="gemas">Gemas</button>
+            <button class="chip" type="button" data-filter="passe">Passe</button>
+          </div>
+          <div class="wallet"><div><i class="coin"></i><b>24.500</b> moedas</div><div><i class="gem"></i><b>380</b> gemas</div></div>
+        </div>
+        <div class="shop-gate" id="shop-gate" hidden>
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para acessar a loja</h3>
+            <p>Você precisa estar conectado à sua conta Pokeworld para ver e comprar itens.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="#" data-auth="login">Iniciar sessão</a><a class="btn btn--ghost" href="#" data-auth="register">Criar conta</a></div>
+          </div>
+        </div>
+        <div class="shop-grid" id="shop-grid"></div>
+      </div>
+    </section>
+""",
+    extra_bottom="""
+<button class="cart-fab" id="cart-fab" type="button">🛒 Carrinho <b>0</b></button>
+<aside class="cart" id="cart">
+  <div class="cart__head">Seu carrinho <button type="button" data-cart-close aria-label="Fechar">×</button></div>
+  <div class="cart__list"></div>
+  <div class="cart__foot"><div class="cart__total"><span>Total</span><b>R$ 0,00</b></div><button class="btn btn--yellow" type="button" data-checkout>Finalizar compra</button></div>
+</aside>""")
+
+# ---------------------------------------------------------------- WIKI
+PAGES["wiki"] = dict(
+    title="Wiki",
+    desc="Pokédex do Pokeworld Universe: funções, alcance, dificuldade e estatísticas de todos os Pokémon.",
+    banner=dict(bg="assets/img/bg/battle-map.jpg", tag="Pokédex", editable=True, title="Todos os<br>Pokémon",
+                sub="Funções, alcance, dificuldade e estatísticas de cada um dos 69 Pokémon jogáveis.", art="assets/img/art/gengar.png"),
+    body="""
+    <section class="sec">
+      <div class="wrap">
+        <div class="dex-tools">
+          <div class="chips">
+            <button class="chip is-active" type="button" data-role="todos">Todos</button>
+            <button class="chip" type="button" data-role="atacante">Atacante</button>
+            <button class="chip" type="button" data-role="versatil">Versátil</button>
+            <button class="chip" type="button" data-role="defensor">Defensor</button>
+            <button class="chip" type="button" data-role="suporte">Suporte</button>
+            <button class="chip" type="button" data-role="velocista">Velocista</button>
+          </div>
+          <label class="search">🔍 <input id="dex-search" type="search" placeholder="Buscar Pokémon"></label>
+        </div>
+        <p class="sec__sub" style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;gap:2rem"><span><b id="dex-count">0</b> Pokémon encontrados</span><a class="btn btn--black btn--sm" href="admin.html?tab=pokemon">Painel admin</a></p>
+        <div class="dex-grid" id="dex-grid"></div>
+      </div>
+    </section>
+""",
+    extra_bottom="""
+<div class="dex-modal" id="dex-modal" hidden><div class="dex-modal__bd"></div><div class="dex-modal__card"></div></div>""")
+
+
+# ---------------------------------------------------------------- MINHA CONTA
+PAGES["minha-conta"] = dict(
+    title="Minha Conta",
+    desc="Sua conta Pokeworld Universe: dados, treinadores, doações e segurança.",
+    banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Área do treinador", title="Minha<br>conta",
+                sub="Gerencie seus dados, seus treinadores e apoie o servidor.", art="assets/img/art/player-boy.png"),
+    body="""
+    <section class="sec acc-sec">
+      <div class="wrap--narrow">
+        <div class="shop-gate" id="acc-gate" hidden style="margin-bottom:0">
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para ver sua conta</h3>
+            <p>Faça login ou crie sua conta Pokeworld para acessar esta área.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="#" data-auth="login">Iniciar sessão</a><a class="btn btn--ghost" href="#" data-auth="register">Criar conta</a></div>
+          </div>
+        </div>
+
+        <div id="acc" hidden>
+          <div class="acc-alert" id="acc-alert" hidden></div>
+
+          <article class="acc-card" data-reveal>
+            <h2 class="acc-card__title">Minha <span class="grad grad--yellow">conta</span></h2>
+            <div class="acc-grid">
+              <div>
+                <div class="acc-field">
+                  <div class="acc-field__head"><h5>Nome de usuário</h5><button type="button" class="acc-toggle" data-toggle="name">mostrar</button></div>
+                  <input type="text" readonly id="acc-name" value=" *  *  *  *  *">
+                </div>
+                <div class="acc-field">
+                  <div class="acc-field__head"><h5>E-mail</h5><button type="button" class="acc-toggle" data-toggle="email">mostrar</button></div>
+                  <input type="text" readonly id="acc-email" value=" *  *  *  *  *">
+                </div>
+              </div>
+              <div class="acc-side">
+                <div class="acc-stat"><b id="acc-diamonds">0</b><span>Coins · <a href="#coins" class="acc-buy-link">+ Comprar</a></span></div>
+                <div class="acc-stat"><b id="acc-plan">Conta Grátis</b><span>Plano</span></div>
+              </div>
+            </div>
+            <div class="acc-actions">
+              <button type="button" class="btn btn--lime btn--sm" data-acc="tickets">Tickets</button>
+              <a class="btn btn--yellow btn--sm" href="#coins">Efetuar doação</a>
+              <button type="button" class="btn btn--black btn--sm" data-acc="security">Segurança</button>
+              <button type="button" class="btn btn--twitch btn--sm" data-acc="twitch">Vincular Twitch</button>
+              <button type="button" class="btn btn--danger btn--sm" data-acc="logout">Sair</button>
+            </div>
+          </article>
+
+          <article class="acc-card" id="coins" data-reveal>
+            <div class="acc-card__head">
+              <h2 class="acc-card__title">Comprar <span class="grad grad--yellow">coins</span></h2>
+              <span class="acc-card__hint">Pix, cartão ou boleto pelo Mercado Pago</span>
+            </div>
+            <p class="acc-card__sub">Coins são a moeda premium do Pokeworld. A base é de 10 coins por R$ 1 e o bônus cresce com o pacote. Os coins entram na conta assim que o Mercado Pago confirmar o pagamento.</p>
+            <div class="packs" id="acc-packs"></div>
+          </article>
+
+          <article class="acc-card" data-reveal>
+            <div class="acc-card__head">
+              <h2 class="acc-card__title">Meus <span class="grad grad--yellow">treinadores</span> <small id="acc-tcount">(0)</small></h2>
+              <button type="button" class="btn btn--ghost btn--sm" data-acc="new-trainer">+ Novo treinador</button>
+            </div>
+            <div class="trainers" id="acc-trainers"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <img class="cta-band__pk cta-band__pk--l" src="assets/img/art/charizard.png" alt="">
+      <img class="cta-band__pk cta-band__pk--r" src="assets/img/art/greninja.png" alt="">
+      <div class="wrap" data-reveal>
+        <h2>Aventuras lendárias te esperam</h2>
+        <p>Entre no mundo Pokémon e seja o melhor. Baixe o cliente e jogue agora.</p>
+        <div class="btn-row"><a class="btn btn--yellow" href="download.html">Jogue agora!</a><a class="btn btn--black" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener">Entrar no Discord</a></div>
+      </div>
+    </section>
+""",
+    extra_bottom="""
+<div class="pmodal" id="pmodal" hidden><div class="pmodal__bd" data-pclose></div><div class="pmodal__card"><button class="pmodal__close" type="button" data-pclose aria-label="Fechar">×</button><div id="pmodal-body"></div></div></div>""")
+
+if __name__ == "__main__":
+    for slug, cfg in PAGES.items():
+        html = layout(slug, cfg["title"], cfg["desc"], cfg["banner"], cfg["body"],
+                      cfg.get("extra_head", ""), cfg.get("extra_bottom", ""))
+        (ROOT / f"{slug}.html").write_text(html, encoding="utf-8")
+        print("ok", slug + ".html")

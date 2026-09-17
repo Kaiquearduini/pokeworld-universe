@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel admin — Pokeworld Universe</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="assets/logo-sigla.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ---------- login ---------- -->
+<div class="admin-login" id="admin-login">
+  <form class="admin-login__card" id="admin-login-form" novalidate>
+    <img class="admin-login__logo" src="assets/logo-sigla.png" alt="">
+    <h1>Painel <span class="grad">admin</span></h1>
+    <p class="admin-login__mode" id="admin-mode-text"></p>
+    <label class="field" id="admin-email-field"><span>E-mail</span><input type="email" name="email" autocomplete="username" placeholder="admin@pokeworld.com"></label>
+    <label class="field"><span>Senha</span><input type="password" name="password" autocomplete="current-password" placeholder="Sua senha"></label>
+    <p class="auth__error" hidden></p>
+    <button class="auth__submit" type="submit"><span>Entrar no painel</span></button>
+    <a class="admin-login__back" href="index.html">← Voltar ao site</a>
+  </form>
+</div>
+
+<!-- ---------- painel ---------- -->
+<div class="admin" id="admin" hidden>
+  <aside class="admin__side">
+    <a class="admin__brand" href="index.html"><img src="assets/logo-sigla.png" alt=""><span>Pokeworld<br><small>Painel admin</small></span></a>
+    <nav class="admin__nav">
+      <button type="button" class="is-active" data-tab="news">📰 Notícias</button>
+      <button type="button" data-tab="pokemon">🔴 Pokémon</button>
+      <button type="button" data-tab="texts">✏️ Textos do site</button>
+      <button type="button" data-tab="config">⚙️ Configuração</button>
+    </nav>
+    <div class="admin__side-foot">
+      <span class="admin__mode" id="admin-mode-badge"></span>
+      <button type="button" class="admin__logout" id="admin-logout">Sair</button>
+    </div>
+  </aside>
+
+  <main class="admin__main">
+    <!-- Notícias -->
+    <section class="admin__panel" data-panel="news">
+      <header class="admin__head">
+        <div><h2>Notícias</h2><p>Publique, edite, oculte ou exclua as notícias do site.</p></div>
+        <div class="admin__actions"><label class="search">🔍 <input type="search" id="news-search" placeholder="Buscar notícia"></label><button type="button" class="btn btn--yellow btn--sm" id="news-new">+ Nova notícia</button></div>
+      </header>
+      <div class="admin__table-wrap"><table class="admin__table" id="news-table"><thead><tr><th></th><th>Título</th><th>Categoria</th><th>Data</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- Pokémon -->
+    <section class="admin__panel" data-panel="pokemon" hidden>
+      <header class="admin__head">
+        <div><h2>Pokémon</h2><p>Altere nome, função, dificuldade, descrição, imagem e estatísticas de cada personagem.</p></div>
+        <div class="admin__actions"><label class="search">🔍 <input type="search" id="pk-search" placeholder="Buscar Pokémon"></label><button type="button" class="btn btn--yellow btn--sm" id="pk-new">+ Novo Pokémon</button></div>
+      </header>
+      <div class="admin__table-wrap"><table class="admin__table" id="pk-table"><thead><tr><th></th><th>Nome</th><th>Função</th><th>Alcance</th><th>Dificuldade</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- Textos -->
+    <section class="admin__panel" data-panel="texts" hidden>
+      <header class="admin__head"><div><h2>Textos do site</h2><p>Edite os textos das páginas. As alterações aparecem no site na hora.</p></div></header>
+      <div class="admin__texts" id="texts-list"></div>
+    </section>
+
+    <!-- Configuração -->
+    <section class="admin__panel" data-panel="config" hidden>
+      <header class="admin__head"><div><h2>Configuração</h2><p>Como o painel está conectado e como ligar o Supabase.</p></div></header>
+      <div class="admin__config" id="config-panel"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ---------- gaveta de edição ---------- -->
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer__bd" data-drawer-close></div>
+  <form class="drawer__panel" id="drawer-form" novalidate>
+    <header class="drawer__head"><h3 id="drawer-title">Editar</h3><button type="button" class="drawer__close" data-drawer-close aria-label="Fechar">×</button></header>
+    <div class="drawer__body" id="drawer-body"></div>
+    <footer class="drawer__foot">
+      <p class="auth__error" hidden></p>
+      <div class="drawer__buttons">
+        <button type="button" class="btn btn--ghost btn--sm" data-drawer-close>Cancelar</button>
+        <button type="submit" class="btn btn--yellow btn--sm" id="drawer-save">Salvar</button>
+      </div>
+    </footer>
+  </form>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="data.js"></script>
+<script src="store.js"></script>
+<script src="ui.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

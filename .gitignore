@@ -1,0 +1,19 @@
+# dependências e build
+node_modules/
+.vercel/
+
+# segredos — nunca versionar
+.env
+.env.*
+!.env.example
+
+# sistema
+.DS_Store
+
+# material bruto (não é necessário para rodar o site; os assets otimizados ficam em site/assets)
+/pokemon_champions_images/
+/pokemon_unite_images/
+/POKEWORLD.aep_AME/
+/*.mp4
+/*.png
+/BUTTON/

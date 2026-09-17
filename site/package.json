@@ -1,0 +1,9 @@
+{
+  "name": "pokeworld-universe-site",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "mercadopago": "^3.6.1"
+  }
+}

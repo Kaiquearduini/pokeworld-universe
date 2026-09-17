@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokeworld Universe</title>
+  <link rel="icon" href="assets/logo-sigla.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="scroll-progress" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+<div class="page">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <img class="hero__bg" src="assets/hero-bg.png" alt="">
+    <img class="hero__logo-central" src="assets/logo-central.png" alt="Pokeworld Universe">
+
+    <!-- Intro em vídeo (desktop): intro.mp4 toca uma vez, depois loop.mp4 fica em loop -->
+    <div class="hero__video" aria-hidden="true">
+      <video class="hero__intro" muted playsinline preload="auto" poster="assets/hero-video-poster.jpg"
+             data-src="assets/intro.mp4"></video>
+      <video class="hero__loop" muted playsinline loop preload="auto"
+             data-src="assets/loop.mp4"></video>
+    </div>
+
+    <div class="header-shape header-shape--white"></div>
+    <div class="header-shape header-shape--grad"></div>
+
+    <a class="logo-sigla" href="#"><img src="assets/logo-sigla.png" alt="PWU"></a>
+
+    <nav class="nav">
+      <a href="o-jogo.html">O JOGO</a>
+      <a href="wiki.html">wiki</a>
+      <a href="download.html">download</a>
+      <a href="ranking.html">ranking</a>
+      <a href="loja.html">loja</a>
+    </nav>
+    <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
+
+    <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <img class="hero__girl" src="assets/player-girl.png" alt="">
+    <img class="hero__boy" src="assets/player-boy.png" alt="">
+
+    <div class="cta-card">
+      <h1 class="cta-card__title"><span data-text="home.cta.title">Comece agora sua aventura no</span> <span class="grad">pokeworld</span></h1>
+      <div class="cta-card__buttons">
+        <a class="pill pill--yellow" href="#" data-auth="login">Iniciar sessão</a>
+        <a class="pill pill--black" href="download.html">jogue grátis</a>
+      </div>
+    </div>
+
+    <div class="trailer">
+      <p>TRAILER</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stats-bar__inner">
+        <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/icon-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
+        <div class="stat__divider"></div>
+        <div class="stat"><img class="stat__icon stat__icon--server" src="assets/icon-server.svg" alt=""><span><i class="live-dot"></i>SERVIDOR ONLINE</span></div>
+        <div class="stat__divider"></div>
+        <div class="stat"><img class="stat__icon stat__icon--event" src="assets/icon-event.svg" alt=""><span>PRÓXIMO EVENTO</span></div>
+      </div>
+    </div>
+
+    <!-- ===================== ABOUT (dentro do hero no desktop, seção própria no mobile) ===================== -->
+    <div class="about">
+      <div class="about__white"></div>
+      <div class="about__swoosh"></div>
+      <div class="about__blue"></div>
+
+      <div class="about-card">
+        <div class="about-card__body"></div>
+        <div class="about-card__head"></div>
+        <h2 class="about-card__title">O que é o <span class="grad">PokeWorld Universe</span></h2>
+      </div>
+
+      <img class="about__grid" src="assets/grid-floor.png" alt="">
+      <div class="about__gengar-wrap"><img class="about__gengar" src="assets/img/art/maos-filippo.png" alt="Treinadores do Pokeworld"></div>
+      <img class="corner-art corner-art--lance" src="assets/img/art/corner-lance.png" alt="" data-corner="left">
+      <div class="about__particles" aria-hidden="true"></div>
+      <img class="about__pokeball" src="assets/pokeball-logo.svg" alt="">
+
+      <p class="about__text" data-text="home.about.text">O PokeWorld Universe é um mundo Pokémon online moderno e <b>GRÁTIS</b>, que convida você a explorar regiões e cidades incríveis e colecionar pokémon únicos. Com cliente próprio desenvolvido pela nossa equipe, o jogo traz uma perspectiva que dá profundidade ao mundo e cidades construídas do zero, como a nossa Lumiose City.</p>
+
+      <a class="btn-jogar" href="download.html">
+        <span class="btn-jogar__text">JOGAR <span class="grad">GRÁTIS</span></span>
+        <img class="btn-jogar__icon" src="assets/d-btn-pokeball.svg" alt="">
+      </a>
+
+      <div class="corner corner--left"></div>
+      <div class="corner corner--right"></div>
+    </div>
+  </section>
+
+  <!-- ===================== SISTEMAS DO JOGO ===================== -->
+  <section class="systems">
+    <h2 class="systems__title">Sistemas do<span class="grad"> jogo</span></h2>
+
+    <div class="sys-grid">
+      <article class="sys-card">
+        <div class="sys-card__head"></div>
+        <img class="sys-card__icon" src="assets/d-sys-icon.svg" alt="">
+        <div class="sys-card__dots"><i></i><i></i><i></i></div>
+        <h3 class="sys-card__title">Mundo livre para explorar</h3>
+        <p class="sys-card__text">Voe pelo mapa, use montarias e descubra cidades construídas do zero, como Lumiose City, com torre central, bairros e hunts espalhadas pela cidade.</p>
+      </article>
+      <article class="sys-card">
+        <div class="sys-card__head"></div>
+        <img class="sys-card__icon" src="assets/d-sys-icon.svg" alt="">
+        <div class="sys-card__dots"><i></i><i></i><i></i></div>
+        <h3 class="sys-card__title">Ascensão estelar e evolução</h3>
+        <p class="sys-card__text">Leve seu pokémon além da forma final com a ascensão estelar, subindo estrelas para desbloquear poder. Com evolução por pedras, helds e boost, o time fica do jeito que você montar.</p>
+      </article>
+      <article class="sys-card">
+        <div class="sys-card__head"></div>
+        <img class="sys-card__icon" src="assets/d-sys-icon.svg" alt="">
+        <div class="sys-card__dots"><i></i><i></i><i></i></div>
+        <h3 class="sys-card__title">Guildas com bosses e buffs</h3>
+        <p class="sys-card__text">Junte seu grupo, encare bosses exclusivos de guilda e libere buffs que valem para todos os membros. Quanto mais ativa a guilda, mais forte cada treinador fica.</p>
+      </article>
+      <article class="sys-card">
+        <div class="sys-card__head"></div>
+        <img class="sys-card__icon" src="assets/d-sys-icon.svg" alt="">
+        <div class="sys-card__dots"><i></i><i></i><i></i></div>
+        <h3 class="sys-card__title">Ranking de treinadores</h3>
+        <p class="sys-card__text">Quem está no topo do servidor aparece aqui: level, catches, conquistas e a disputa entre guildas.</p>
+      </article>
+      <article class="sys-card">
+        <div class="sys-card__head"></div>
+        <img class="sys-card__icon" src="assets/d-sys-icon.svg" alt="">
+        <div class="sys-card__dots"><i></i><i></i><i></i></div>
+        <h3 class="sys-card__title">Tasks e conquistas progressivas</h3>
+        <p class="sys-card__text">Complete tarefas diárias e por região para avançar em trilhas de recompensa. Quanto mais longe você chega, melhores os itens e as liberações.</p>
+      </article>
+      <article class="sys-card sys-card--desktop-only">
+        <div class="sys-card__head"></div>
+        <img class="sys-card__icon" src="assets/d-sys-icon.svg" alt="">
+        <div class="sys-card__dots"><i></i><i></i><i></i></div>
+        <h3 class="sys-card__title">Battle Pass exclusivo</h3>
+        <p class="sys-card__text">Cada temporada traz um passe com níveis de recompensa: cosméticos, itens e addons que só aparecem ali. Joga, sobe os níveis e leva o que a temporada oferece.</p>
+      </article>
+    </div>
+
+    <img class="corner-art corner-art--cynthia" src="assets/img/art/corner-cynthia.png" alt="" data-corner="right">
+    <img class="systems__raichu" src="assets/raichu.png" alt="">
+    <img class="systems__dragonite" src="assets/dragonite.png" alt="">
+  </section>
+
+  <!-- ===================== JUNTE-SE À COMUNIDADE ===================== -->
+  <section class="community" id="comunidade">
+    <div class="community__inner">
+      <div class="community__text" data-reveal>
+        <span class="eyebrow eyebrow--light">Nossa comunidade</span>
+        <h2 class="community__title">Junte-se à <span class="grad grad--yellow">comunidade</span></h2>
+        <p>Treinadores de todo o Brasil, eventos ao vivo, sorteios, suporte direto da equipe e updates em primeira mão. Tudo acontece no nosso Discord.</p>
+        <div class="community__cta">
+          <a class="pill pill--discord pill--lg" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener"><span class="ico"><img src="assets/social-discord.png" alt=""></span><span class="txt">Entrar no Discord<small>discord.gg/pokeworlduniverse</small></span></a>
+          <a class="community__ig" href="https://instagram.com/pokeworlduniverse" target="_blank" rel="noopener"><img src="assets/social-instagram.svg" alt="">@pokeworlduniverse</a>
+        </div>
+      </div>
+      <div class="discord-card" data-reveal>
+        <div class="discord-card__head">
+          <img src="assets/logo-sigla.png" alt="">
+          <div><b>Pokeworld Universe</b><small>Servidor oficial · Comunidade verificada</small></div>
+        </div>
+        <div class="discord-card__stats">
+          <div><i class="live-dot"></i><b class="count" data-count="4820">4.820</b><span>online agora</span></div>
+          <div><b class="count" data-count="31540">31.540</b><span>membros</span></div>
+        </div>
+        <ul class="discord-card__channels">
+          <li><span>#</span>anúncios<em>updates e patch notes</em></li>
+          <li><span>#</span>eventos<em>torneios e sorteios</em></li>
+          <li><span>#</span>suporte<em>fale com a equipe</em></li>
+          <li><span>#</span>guildas<em>recrute seu time</em></li>
+        </ul>
+        <a class="pill pill--yellow" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener">Aceitar convite</a>
+      </div>
+    </div>
+    <img class="community__art community__art--l" src="assets/img/art/gengar.png" alt="" aria-hidden="true">
+    <img class="community__art community__art--r" src="assets/img/art/pikachu.png" alt="" aria-hidden="true">
+  </section>
+
+  <!-- ===================== ÚLTIMAS NOTÍCIAS ===================== -->
+  <section class="news" hidden>
+    <h2 class="news__title">ÚLTIMAS <span class="grad grad--news">NOTÍCIAS</span></h2>
+    <div class="news__line"></div>
+
+    <div class="news__list">
+      <article class="news-card">
+        <div class="news-card__bg"></div>
+        <a class="news-card__img" href="noticia.html?id=temporada-12-regiao-aurora"><img src="assets/img/news/article-15.jpg" alt=""></a>
+        <span class="news-card__badge">NOVO</span>
+        <span class="news-card__date">4 de novembro, 2026</span>
+        <h3 class="news-card__title"><a href="noticia.html?id=temporada-12-regiao-aurora">Temporada 12 chega com a região Aurora e 6 novos Pokémon</a></h3>
+        <a class="news-card__link" href="noticia.html?id=temporada-12-regiao-aurora">Saiba mais</a>
+      </article>
+      <article class="news-card">
+        <div class="news-card__bg"></div>
+        <a class="news-card__img" href="noticia.html?id=campeonato-mundial-2026"><img src="assets/img/news/article-24.jpg" alt=""></a>
+        <span class="news-card__badge">NOVO</span>
+        <span class="news-card__date">28 de outubro, 2026</span>
+        <h3 class="news-card__title"><a href="noticia.html?id=campeonato-mundial-2026">Campeonato Mundial 2026: inscrições abertas para as classificatórias</a></h3>
+        <a class="news-card__link" href="noticia.html?id=campeonato-mundial-2026">Saiba mais</a>
+      </article>
+      <article class="news-card">
+        <div class="news-card__bg"></div>
+        <a class="news-card__img" href="noticia.html?id=balanceamento-outubro"><img src="assets/img/news/article-17.jpg" alt=""></a>
+        <span class="news-card__badge">NOVO</span>
+        <span class="news-card__date">21 de outubro, 2026</span>
+        <h3 class="news-card__title"><a href="noticia.html?id=balanceamento-outubro">Notas de balanceamento: Raichu de Alola, Gengar e Mewtwo recebem ajustes</a></h3>
+        <a class="news-card__link" href="noticia.html?id=balanceamento-outubro">Saiba mais</a>
+      </article>
+    </div>
+
+    <a class="btn-veja" href="noticias.html">
+      <span class="btn-veja__text">VEJA MAIS</span>
+      <img class="btn-veja__icon" src="assets/d-veja-pokeball.svg" alt="">
+    </a>
+  </section>
+
+  <!-- ===================== JOGUE EM 3 PASSOS ===================== -->
+  <section class="steps-sec" id="como-jogar">
+    <div class="steps-sec__inner">
+      <div class="steps-sec__head" data-reveal>
+        <span class="eyebrow eyebrow--gold">Comece em minutos</span>
+        <h2 class="steps-sec__title">Jogue em apenas <span class="grad grad--yellow">3 passos</span></h2>
+      </div>
+      <div class="steps-path" aria-hidden="true"></div>
+      <div class="steps-grid">
+        <article class="step-card" data-reveal>
+          <span class="step-card__ghost">01</span>
+          <span class="step-card__num">01</span>
+          <h3>Baixe o cliente</h3>
+          <p>Cerca de 3 minutos para criar a conta e se aventurar.</p>
+          <a class="step-card__link" href="download.html">Baixar agora →</a>
+        </article>
+        <article class="step-card" data-reveal>
+          <span class="step-card__ghost">02</span>
+          <span class="step-card__num">02</span>
+          <h3>Crie seu treinador</h3>
+          <p>Crie sua conta de forma gratuita e se aventure no nosso universo.</p>
+          <a class="step-card__link" href="#" data-auth="register">Criar conta →</a>
+        </article>
+        <article class="step-card" data-reveal>
+          <span class="step-card__ghost">03</span>
+          <span class="step-card__num">03</span>
+          <h3>Capture o primeiro</h3>
+          <p>Explore, lance e capture. Lumiose City inteira espera por você.</p>
+          <a class="step-card__link" href="wiki.html">Conhecer os Pokémon →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SUA LENDA COMEÇA HOJE ===================== -->
+  <section class="legend-sec" id="sua-lenda">
+    <div class="legend-sec__glow" aria-hidden="true"></div>
+    <img class="legend-sec__art" src="assets/img/art/player-boy.png" alt="" data-reveal>
+    <div class="legend-sec__inner">
+      <div class="legend-sec__text" data-reveal>
+        <span class="eyebrow eyebrow--light">Pronto para capturar?</span>
+        <h2 class="legend-sec__title">Sua lenda<br>começa <span class="grad grad--yellow">hoje</span></h2>
+        <p>Baixe o cliente oficial, crie seu treinador e entre no Pokeworld. O cliente é o mesmo em qualquer lugar: seu progresso, seu time e seu ranking te acompanham.</p>
+        <div class="legend-sec__cta">
+          <a class="pill pill--yellow pill--lg" href="download.html">Baixar cliente</a>
+          <a class="pill pill--discord pill--lg" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener"><span class="ico"><img src="assets/social-discord.png" alt=""></span><span class="txt">Entrar no Discord<small>Bugs, sugestões e updates em primeira mão</small></span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PALCO DE SCROLL: imagem cheia -> esteira de cards -> fade preto + conteúdo final ===================== -->
+  <section class="stage" id="stage">
+    <div class="stage__sticky">
+      <div class="stage__frame">
+        <div class="marquee marquee--1" data-dir="1"><div class="marquee__track"></div></div>
+        <div class="marquee marquee--2" data-dir="-1"><div class="marquee__track"></div></div>
+        <div class="marquee marquee--3" data-dir="1"><div class="marquee__track"></div></div>
+
+        <img class="stage__hero" src="assets/bg-arceus.png" alt="">
+
+        <div class="stage__overlay"></div>
+
+        <div class="stage__content">
+          <img class="corner-art corner-art--blue" src="assets/img/art/corner-blue.png" alt="">
+          <img class="corner-art corner-art--arcanine" src="assets/img/art/corner-arcanine.png" alt="">
+          <div class="footer__box"></div>
+          <div class="footer__tag">Comece sua Aventura</div>
+          <h2 class="footer__title">pokeworld universe</h2>
+
+          <div class="footer__badges">
+            <a class="badge badge--apple" href="download.html"><img src="assets/badge-apple.png" alt="Disponível na App Store"></a>
+            <a class="badge badge--google" href="download.html"><img src="assets/badge-google.png" alt="Disponível no Google Play"></a>
+          </div>
+
+          <div class="footer__white"></div>
+          <div class="footer__stats">
+            <div class="stats-bar__inner">
+              <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/d-footer-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
+              <div class="stat__divider"></div>
+              <div class="stat"><img class="stat__icon stat__icon--server" src="assets/d-footer-server.svg" alt=""><span><i class="live-dot"></i>SERVIDOR ONLINE</span></div>
+              <div class="stat__divider"></div>
+              <div class="stat"><img class="stat__icon stat__icon--event" src="assets/d-footer-event.svg" alt=""><span>PRÓXIMO EVENTO</span></div>
+            </div>
+          </div>
+          <div class="footer__social">
+            <span>Nossas redes sociais:</span>
+            <div class="footer__social-icons">
+              <a class="social social--discord" href="#" aria-label="Discord"><img src="assets/social-discord.png" alt=""></a>
+              <a class="social social--instagram" href="#" aria-label="Instagram"><img src="assets/social-instagram.svg" alt=""></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Lightbox dos cards -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox__close" type="button" aria-label="Fechar">×</button>
+  <img class="lightbox__img" src="" alt="">
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="data.js"></script>
+<script src="store.js"></script>
+<script src="ui.js"></script>
+<script src="main.js"></script>
+<script src="animations.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja — Pokeworld Universe</title>
+  <meta name="description" content="Loja do Pokeworld Universe: Pokémon, holo-trajes, gemas e Passe de Aventura.">
+  <link rel="icon" href="assets/logo-sigla.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="pages.css">
+</head>
+<body data-page="loja">
+<div class="scroll-progress" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+<div class="page page--sub">
+
+  <header class="topbar">
+    <div class="header-shape header-shape--white"></div>
+    <div class="header-shape header-shape--grad"></div>
+    <a class="logo-sigla" href="index.html"><img src="assets/logo-sigla.png" alt="PWU"></a>
+    <nav class="nav"><a href="o-jogo.html">O JOGO</a><a href="wiki.html">wiki</a><a href="download.html">download</a><a href="ranking.html">ranking</a><a href="loja.html" class="is-active">loja</a></nav>
+    <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </header>
+
+  <section class="banner" style="--bg:url('assets/img/bg/sky.jpg')">
+    <div class="banner__inner">
+      <span class="banner__tag">Loja oficial</span>
+      <h1 class="banner__title">Loja<br>Pokeworld</h1>
+      <p class="banner__sub">Novos Pokémon, holo-trajes exclusivos e o Passe de Aventura da temporada.</p>
+    </div><img class="banner__art" src="assets/img/art/charizard.png" alt="">
+  </section>
+
+  <main class="sub">
+
+    <section class="sec">
+      <div class="wrap">
+        <div class="sec__head">
+          <div class="chips">
+            <button class="chip is-active" type="button" data-filter="todos">Todos</button>
+            <button class="chip" type="button" data-filter="pokemon">Pokémon</button>
+            <button class="chip" type="button" data-filter="traje">Holo-trajes</button>
+            <button class="chip" type="button" data-filter="gemas">Gemas</button>
+            <button class="chip" type="button" data-filter="passe">Passe</button>
+          </div>
+          <div class="wallet"><div><i class="coin"></i><b>24.500</b> moedas</div><div><i class="gem"></i><b>380</b> gemas</div></div>
+        </div>
+        <div class="shop-gate" id="shop-gate" hidden>
+          <div class="shop-gate__card">
+            <img src="assets/logo-sigla.png" alt="">
+            <h3>Entre para acessar a loja</h3>
+            <p>Você precisa estar conectado à sua conta Pokeworld para ver e comprar itens.</p>
+            <div class="btn-row" style="justify-content:center"><a class="btn btn--yellow" href="#" data-auth="login">Iniciar sessão</a><a class="btn btn--ghost" href="#" data-auth="register">Criar conta</a></div>
+          </div>
+        </div>
+        <div class="shop-grid" id="shop-grid"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="site-footer__top">
+        <div class="site-footer__brand">
+          <img src="assets/logo-sigla.png" alt="Pokeworld Universe">
+          <p>Pokeworld Universe é um jogo online moderno para explorar mundos incríveis, colecionar criaturas únicas e batalhar com treinadores do mundo todo.</p>
+          <div class="site-footer__social">
+            <a href="#" aria-label="Discord"><img src="assets/social-discord.png" alt="" style="object-fit:cover;width:100%;height:100%"></a>
+            <a href="#" aria-label="Instagram"><img src="assets/social-instagram.svg" alt=""></a>
+          </div>
+        </div>
+        <div>
+          <h4>Jogo</h4>
+          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="wiki.html">Pokédex</a></li><li><a href="ranking.html">Ranking</a></li><li><a href="loja.html">Loja</a></li></ul>
+        </div>
+        <div>
+          <h4>Suporte</h4>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="admin.html">Painel admin</a></li></ul>
+        </div>
+        <div>
+          <h4>Baixe agora</h4>
+          <div class="site-footer__badges">
+            <a href="download.html"><img src="assets/img/ui/appstore.svg" alt="App Store"></a>
+            <a href="download.html"><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a>
+            <a href="download.html"><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a>
+          </div>
+        </div>
+      </div>
+      <div class="site-footer__bar">
+        <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/icon-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
+        <span>© 2026 Pokeworld Universe. Projeto de demonstração, sem afiliação com The Pokémon Company.</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<button class="cart-fab" id="cart-fab" type="button">🛒 Carrinho <b>0</b></button>
+<aside class="cart" id="cart">
+  <div class="cart__head">Seu carrinho <button type="button" data-cart-close aria-label="Fechar">×</button></div>
+  <div class="cart__list"></div>
+  <div class="cart__foot"><div class="cart__total"><span>Total</span><b>R$ 0,00</b></div><button class="btn btn--yellow" type="button" data-checkout>Finalizar compra</button></div>
+</aside>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="data.js"></script>
+<script src="store.js"></script>
+<script src="ui.js"></script>
+<script src="pages.js"></script>
+</body>
+</html>

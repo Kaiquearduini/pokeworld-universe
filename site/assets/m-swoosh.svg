@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="451" height="180" viewBox="0 0 451 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="0102_swoosh-home-mask_9bf56cf3 1" clip-path="url(#clip0_0_65)">
+<path id="Vector" d="M-57.3146 -56.5C-57.3146 -56.5 116.039 264 490.776 59.5V150.711C490.776 150.711 114.942 288 -57.3146 -48.082V-56.5Z" fill="url(#paint0_linear_0_65)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_65" x1="483.607" y1="-66.0359" x2="-49.112" y2="-66.7204" gradientUnits="userSpaceOnUse">
+<stop stop-color="#DCEE4B"/>
+<stop offset="1" stop-color="#3AEBC7"/>
+</linearGradient>
+<clipPath id="clip0_0_65">
+<rect width="451" height="180" fill="white"/>
+</clipPath>
+</defs>
+</svg>

@@ -651,7 +651,7 @@
       }, 500);
     }
     var pacotes = PWU.coinPackages || [];
-    var corpo = document.getElementById('bonus-rows');
+    var corpo = document.getElementById('bonus-rows');   // a página de doação não usa mais a tabela
     if (corpo) {
       corpo.innerHTML = pacotes.map(function (k) {
         return '<tr><td class="val">' + PWU.brl(k.price) + '</td>' +
@@ -807,9 +807,11 @@
       var k = (PWU.coinPackages || []).find(function (x) { return x.id === pid; }) || (PWU.coinPackages || [])[0];
       var resumo = document.getElementById('resumo-pedido');
       if (k && resumo) {
-        resumo.innerHTML = '<div class="resumo__coins">' + k.coins.toLocaleString('pt-BR') + '</div>' +
-          '<div class="resumo__info"><b>créditos para sua conta</b><small>' + k.base.toLocaleString('pt-BR') + ' de base + ' + k.bonus.toLocaleString('pt-BR') + ' de bônus (' + k.bonusPct + '%)</small></div>' +
-          '<div class="resumo__preco">' + PWU.brl(k.price) + '</div>';
+        // só o que importa para quem está pagando: o bônus que recebe e o valor
+        resumo.innerHTML =
+          '<div class="resumo__bonus"><b>+' + k.bonusPct + '%</b><span>de bônus</span></div>' +
+          '<div class="resumo__lado"><div class="resumo__valor">' + PWU.brl(k.price) + '</div>' +
+          '<div class="resumo__legenda">valor da sua doação</div></div>';
       }
       var meios = document.getElementById('meios-pagamento');
       if (meios) meios.addEventListener('click', function (e) {

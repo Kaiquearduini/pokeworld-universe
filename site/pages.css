@@ -300,6 +300,7 @@ body[data-page="minha-conta"] .banner__title { font-size: 5.6rem; }
 body[data-page="minha-conta"] .banner__sub { font-size: 1.7rem; }
 body[data-page="minha-conta"] .banner__art { height: 30rem; bottom: -1rem; right: 6rem; }
 body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
+.acc-sec, .rank-sec { background-color: #0d1330; }
 .acc-sec { background: #0d1330 url("assets/img/bg/hex-plain.png") center / 40rem repeat; color: #fff; }
 .acc-sec::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,19,48,.92), rgba(13,19,48,.97)); pointer-events: none; }
 .acc-sec > * { position: relative; }
@@ -438,6 +439,10 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   .banner__title { font-size: 5rem; }
   body[data-page="minha-conta"] .banner { height: 22rem; }
   body[data-page="minha-conta"] .banner__title { font-size: 4.2rem; }
+  /* no celular o banner cresce com o texto, em vez de cortá-lo */
+  .banner--blend { height: auto !important; min-height: 26rem; }
+  .banner--blend .banner__inner { padding-top: 6rem !important; padding-bottom: 4rem; }
+  .banner--blend .banner__title { font-size: 4.4rem !important; }
   .banner__sub { font-size: 1.6rem; }
   .banner__art { display: none; }
   .sec { padding: 6rem 0; }
@@ -514,6 +519,9 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 /* =====================================================================
    PÁGINA /doar
    ===================================================================== */
+/* na página de doar o banner encosta direto nos pacotes: mesma cor de fundo */
+body[data-page="doar"] #pacotes { background-color: #0d1330; padding-top: 7rem; }
+body[data-page="doar"] #pacotes::before { background: linear-gradient(180deg, rgba(13,19,48,.92), rgba(13,19,48,.97)); }
 .doar-sec { background: #0d1330 url("assets/img/bg/hex-plain.png") center / 40rem repeat; color: #fff; }
 .doar-sec::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,19,48,.92), rgba(13,19,48,.97)); pointer-events: none; }
 .doar-sec > * { position: relative; }
@@ -605,6 +613,22 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
    Banner que emenda na seção escura (sem a faixa branca)
    ===================================================================== */
 .banner--blend { height: 46rem; background-position: center 35%; }
+/* páginas da conta e do ranking são um pouco mais curtas no topo */
+body[data-page="minha-conta"] .banner--blend,
+body[data-page="tickets"] .banner--blend,
+body[data-page="seguranca"] .banner--blend,
+body[data-page="perfil"] .banner--blend,
+body[data-page="pagamento"] .banner--blend { height: 28rem; }
+body[data-page="minha-conta"] .banner--blend .banner__inner,
+body[data-page="tickets"] .banner--blend .banner__inner,
+body[data-page="seguranca"] .banner--blend .banner__inner,
+body[data-page="perfil"] .banner--blend .banner__inner,
+body[data-page="pagamento"] .banner--blend .banner__inner { padding-top: 5.5rem; }
+body[data-page="minha-conta"] .banner--blend .banner__title,
+body[data-page="tickets"] .banner--blend .banner__title,
+body[data-page="seguranca"] .banner--blend .banner__title,
+body[data-page="perfil"] .banner--blend .banner__title,
+body[data-page="pagamento"] .banner--blend .banner__title { font-size: 5.6rem; }
 .banner--blend::before {
   background:
     radial-gradient(120rem 60rem at 18% 40%, rgba(5,48,239,.55), transparent 70%),
@@ -687,4 +711,33 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   .packs--3 { grid-template-columns: 1fr 1fr; gap: 2.4rem 1.4rem; }
   .packs--3 .pack b { font-size: 3.6rem; }
   .packs--3 .pack__gems { width: 9rem; height: 7rem; }
+}
+
+/* =====================================================================
+   Pagamento: resumo só com o valor + tabela de bônus em cards
+   ===================================================================== */
+.resumo { flex-direction: column; align-items: flex-start; gap: .6rem; }
+.resumo__valor { font: 400 6.4rem/1 var(--bebas); background: var(--grad-yellow); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.resumo__legenda { font: 400 1.6rem var(--montreal); color: rgba(255,255,255,.65); }
+.mp-regras { margin-top: .8rem; font: 400 1.4rem/1.5 var(--montreal); color: rgba(255,255,255,.5); }
+
+/* resumo: bônus grande de um lado, valor do outro */
+.resumo { flex-direction: row; align-items: center; justify-content: space-between; gap: 2.4rem; padding: 3rem 3.2rem; }
+.resumo__bonus { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 16rem; padding: 2rem 2.4rem; border-radius: 1.8rem; background: linear-gradient(180deg, #5fd35f, #3fae4f); box-shadow: 0 1rem 2.6rem rgba(95,211,95,.3); }
+.resumo__bonus b { font: 400 5.2rem/1 var(--bebas); color: #06210c; }
+.resumo__bonus span { margin-top: .2rem; font: 400 1.3rem var(--bebas); letter-spacing: .16em; text-transform: uppercase; color: rgba(6,33,12,.72); }
+.resumo__lado { text-align: right; }
+.resumo__legenda { font: 400 1.5rem var(--montreal); letter-spacing: .04em; color: rgba(255,255,255,.6); text-transform: lowercase; }
+
+/* passo a passo do pagamento */
+.passos { list-style: none; display: grid; gap: 1.4rem; margin-top: 2.4rem; counter-reset: passo; }
+.passos li { display: grid; grid-template-columns: 4.4rem 1fr; align-items: start; gap: 1.6rem; padding: 1.8rem 2rem; border-radius: 1.4rem; background: rgba(255,255,255,.04); border: .1rem solid rgba(255,255,255,.08); }
+.passos b { display: grid; place-items: center; width: 4.4rem; height: 4.4rem; border-radius: 50%; background: var(--grad-yellow); color: #000; font: 400 2.2rem/1 var(--bebas); }
+.passos strong { display: block; font: 500 1.9rem var(--montreal); }
+.passos span { display: block; margin-top: .4rem; font: 400 1.6rem/1.45 var(--montreal); color: rgba(255,255,255,.65); }
+
+@media (max-width: 900px) {
+  .resumo { flex-direction: column; align-items: stretch; text-align: center; gap: 1.8rem; }
+  .resumo__lado { text-align: center; }
+  .resumo__valor { font-size: 4.8rem; }
 }

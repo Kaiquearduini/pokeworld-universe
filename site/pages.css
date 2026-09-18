@@ -109,6 +109,15 @@
   margin-left: -13rem; border-radius: 50%;
   background: radial-gradient(ellipse, rgba(0,0,0,.45), transparent 70%);
 }
+/* dois personagens: o segundo fica atrás, menor e deslocado */
+.banner__stage--duo { width: 66rem; right: 2rem; }
+.banner__art--2 {
+  position: absolute; inset: auto auto 0 0; width: 62%; height: 74%;
+  object-fit: contain; object-position: bottom center; opacity: .92;
+  filter: drop-shadow(0 2rem 3.4rem rgba(0,0,0,.55)) brightness(.85);
+  animation: flutua 7s ease-in-out infinite; animation-delay: -2.4s;
+}
+.banner__stage--duo .banner__art { left: auto; right: 0; width: 66%; }
 .banner__art {
   position: absolute; inset: auto 0 0 0; width: 100%; height: 88%;
   object-fit: contain; object-position: bottom center;
@@ -185,7 +194,7 @@
 .pk-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
 .pk-marquee__track { display: flex; gap: 2.4rem; width: max-content; animation: pk-scroll 60s linear infinite; }
 .pk-marquee:hover .pk-marquee__track { animation-play-state: paused; }
-.pk-marquee__track img { width: 16rem; height: 16rem; object-fit: contain; filter: drop-shadow(0 1rem 2rem rgba(0,0,0,.4)); transition: transform .3s; }
+.pk-marquee__track img { width: 16rem; height: 16rem; margin: 0 auto; object-fit: contain; filter: drop-shadow(0 1rem 2rem rgba(0,0,0,.4)); transition: transform .3s; }
 .pk-marquee__track img:hover { transform: scale(1.15) rotate(-4deg); }
 @keyframes pk-scroll { to { transform: translateX(-50%); } }
 
@@ -247,11 +256,6 @@
 
 /* ---------- DOWNLOAD ---------- */
 .platforms { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; }
-/* o launcher do PC é o caminho principal, então ganha destaque */
-.platform--destaque { background: linear-gradient(160deg, #111a3d, #0a1030); color: #fff; box-shadow: 0 2rem 5rem rgba(5,48,239,.28); }
-.platform--destaque p { color: rgba(255,255,255,.72); }
-.platform--destaque .size { color: rgba(255,255,255,.55); }
-.platform--destaque .platform__icon { background: rgba(255,255,255,.08); }
 .platform { position: relative; padding: 3.2rem 2.6rem; border-radius: 2.4rem; background: #fff; text-align: center; box-shadow: 0 1rem 3rem rgba(0,0,0,.06); overflow: hidden; transition: transform .35s, box-shadow .35s; }
 .platform:hover { transform: translateY(-.8rem); box-shadow: 0 2.4rem 5rem rgba(5,48,239,.18); }
 .platform__icon { font-size: 5rem; line-height: 1; }
@@ -260,7 +264,18 @@
 .platform .size { display: block; margin: 1.2rem 0 1.8rem; font: 400 1.4rem var(--montreal); color: rgba(0,0,0,.45); }
 .platform .badge-img { display: block; width: 18rem; margin: 0 auto; }
 .platform .badge-img img { width: 100%; }
-.platform__ribbon { position: absolute; top: 1.6rem; right: -3.6rem; padding: .4rem 4rem; background: var(--lime); font: 400 1.3rem var(--bebas); letter-spacing: .1em; transform: rotate(45deg); }
+.platform__ribbon {
+  position: absolute; top: 4.6rem; right: -6.6rem; width: 26rem; padding: .5rem 0;
+  background: var(--lime); color: #000; font: 400 1.4rem/1.2 var(--bebas);
+  letter-spacing: .1em; text-align: center; transform: rotate(45deg);
+  box-shadow: 0 .4rem 1.2rem rgba(0,0,0,.25);
+}
+/* o launcher do PC é o caminho principal, então ganha destaque */
+.platform.platform--destaque { background: linear-gradient(160deg, #141d47, #0a1030); color: #fff; box-shadow: 0 2rem 5rem rgba(5,48,239,.3); }
+.platform.platform--destaque h3 { color: #fff; }
+.platform.platform--destaque p { color: rgba(255,255,255,.75); }
+.platform.platform--destaque .size { color: rgba(255,255,255,.55); }
+.platform.platform--destaque:hover { background: linear-gradient(160deg, #18225a, #0c1440); }
 
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.6rem; counter-reset: step; }
 .step { position: relative; padding: 3.2rem 2.8rem 2.8rem; border-radius: 2rem; background: rgba(255,255,255,.06); border: .1rem solid rgba(255,255,255,.12); }
@@ -315,7 +330,7 @@
 .trophy-legend > span { font: 400 1.5rem var(--bebas); letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255,.55); white-space: nowrap; }
 .trophy-legend div { display: flex; gap: 1rem; flex-wrap: wrap; }
 .trophy-legend figure { display: flex; flex-direction: column; align-items: center; gap: .4rem; margin: 0; font: 400 1.3rem var(--bebas); letter-spacing: .1em; color: rgba(255,255,255,.7); }
-.trophy-legend img { height: 5.2rem; filter: drop-shadow(0 .4rem .8rem rgba(0,0,0,.5)); }
+.trophy-legend img { height: 5.2rem; margin: 0 auto; filter: drop-shadow(0 .4rem .8rem rgba(0,0,0,.5)); }
 
 .rank-list { display: flex; flex-direction: column; gap: 1.6rem; }
 .rank-card { position: relative; padding: 2.4rem 3rem 2.6rem; background: rgba(6,10,30,.55); border: .1rem solid rgba(255,255,255,.08); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.6rem), calc(100% - 1.6rem) 100%, 0 100%); transition: background .25s, border-color .25s; }
@@ -334,7 +349,7 @@
 .rank-card__value small { font: 400 1.3rem var(--bebas); letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.55); }
 .rank-team { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.2rem; margin-top: 2rem; }
 .slot { position: relative; padding: 1.2rem 1rem .9rem; border-radius: 1.4rem; background: rgba(255,255,255,.05); text-align: center; }
-.slot img { width: 8rem; height: 8rem; object-fit: contain; filter: drop-shadow(0 .6rem 1rem rgba(0,0,0,.5)); transition: transform .3s; }
+.slot img { width: 8rem; height: 8rem; margin: 0 auto; object-fit: contain; filter: drop-shadow(0 .6rem 1rem rgba(0,0,0,.5)); transition: transform .3s; }
 .slot:hover img { transform: scale(1.1); }
 .slot__lvl { display: block; margin-top: .4rem; font: 400 1.3rem var(--bebas); letter-spacing: .12em; color: rgba(255,255,255,.7); }
 .slot__lvl b { color: #fff; font-size: 1.6rem; }
@@ -383,6 +398,7 @@
 .cart__list { flex: 1; overflow: auto; padding: 1.6rem 2.6rem; display: flex; flex-direction: column; gap: 1.2rem; }
 .cart__item { display: flex; align-items: center; gap: 1.4rem; padding: 1.2rem; border-radius: 1.4rem; background: var(--offwhite); }
 .cart__item img { width: 5.6rem; height: 5.6rem; object-fit: contain; }
+.item__img img, .dex-modal__img img { margin: 0 auto; }
 .cart__item div { flex: 1; font: 500 1.5rem var(--montreal); }
 .cart__item small { display: block; font-weight: 400; color: rgba(0,0,0,.55); }
 .cart__item button { border: 0; background: none; font-size: 2rem; cursor: pointer; color: rgba(0,0,0,.4); }
@@ -418,7 +434,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .trainers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 2.6rem; }
 .trainer { position: relative; padding: 2.6rem 1.6rem 2.2rem; border-radius: 2rem; background: rgba(255,255,255,.05); border: .1rem solid rgba(255,255,255,.1); text-align: center; transition: transform .3s, border-color .3s; }
 .trainer:hover { transform: translateY(-.5rem); border-color: rgba(112,244,255,.6); }
-.trainer img { width: 9rem; height: 9rem; object-fit: contain; filter: drop-shadow(0 .8rem 1.4rem rgba(0,0,0,.4)); }
+.trainer img { width: 9rem; height: 9rem; margin: 0 auto; object-fit: contain; filter: drop-shadow(0 .8rem 1.4rem rgba(0,0,0,.4)); }
 .trainer h5 { margin-top: 1.2rem; font: 500 1.9rem var(--montreal); }
 .trainer .lvl { display: block; margin-top: .3rem; font: 400 1.6rem var(--bebas); letter-spacing: .1em; color: var(--lime); }
 .trainer .world { display: block; margin-top: .2rem; font: 400 1.3rem var(--bebas); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
@@ -444,7 +460,18 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .pack:hover .pack__moeda img { transform: translateY(-.6rem) scale(1.06); }
 .pack b { font: 400 4.4rem/1 var(--bebas); }
 .pack small { display: block; margin-top: .2rem; font: 400 1.3rem var(--bebas); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
-.pack em { display: inline-block; margin-top: .8rem; padding: .3rem 1rem; border-radius: 10rem; background: rgba(220,238,75,.15); color: var(--lime); font: 400 1.3rem var(--bebas); font-style: normal; letter-spacing: .1em; }
+/* selo de bônus: só a porcentagem, com a moeda P ao lado */
+.pack em, .pack__bonus {
+  display: inline-flex; align-items: center; gap: .6rem;
+  margin-top: 1.2rem; padding: .7rem 1.8rem .7rem 1rem; border-radius: 10rem;
+  background: linear-gradient(135deg, rgba(220,238,75,.22), rgba(112,244,255,.14));
+  border: .1rem solid rgba(220,238,75,.35);
+  color: var(--lime); font: 400 2.8rem/1 var(--bebas); font-style: normal; letter-spacing: .04em;
+}
+.pack em::before, .pack__bonus::before {
+  content: ""; width: 2.6rem; height: 2.6rem; flex: none;
+  background: url("assets/img/coins/pcoin.png") center / contain no-repeat;
+}
 .pack em.is-none { visibility: hidden; }
 .pack .btn { width: 100%; margin-top: 1.6rem; padding: 1.1rem 1rem; }
 
@@ -513,21 +540,48 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 @keyframes payBrilho { 0% { left: -60%; } 55%, 100% { left: 130%; } }
 @media (prefers-reduced-motion: reduce) { .pay-way, .pay-way::after { animation: none; } }
 
-/* ---------- REGRAS ---------- */
-.regras-indice { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 3rem; }
-.regras-indice a { padding: .9rem 1.8rem; border-radius: 10rem; background: rgba(255,255,255,.06); border: .1rem solid rgba(255,255,255,.12); font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.8); transition: background .2s, color .2s, border-color .2s; }
-.regras-indice a:hover { background: var(--grad-yellow); border-color: transparent; color: #000; }
-.regras { counter-reset: r; list-style: none; margin-top: 2.2rem; }
-.regras li { position: relative; padding: 0 0 1.8rem 4.4rem; font: 400 1.65rem/1.6 var(--montreal); color: rgba(255,255,255,.78); }
-.regras li::before {
-  counter-increment: r; content: counter(r);
-  position: absolute; left: 0; top: -.1rem; display: grid; place-items: center;
-  width: 3rem; height: 3rem; border-radius: 50%;
-  background: rgba(252,208,92,.14); color: #fcd05c; font: 400 1.6rem var(--bebas);
+/* ---------- REGRAS (documento legal) ---------- */
+.legal { padding: 6rem 0 9rem; }
+.legal__wrap { width: min(96rem, 100% - 8rem); margin: 0 auto; color: rgba(255,255,255,.8); font: 400 1.6rem/1.75 var(--montreal); }
+.legal__doc { padding-bottom: 2.6rem; margin-bottom: 3rem; border-bottom: .2rem solid rgba(252,208,92,.4); }
+.legal__doc h1 { font: 400 4.6rem/1.1 var(--bebas); color: #fff; letter-spacing: .01em; }
+.legal .meta { margin-top: 1.4rem; font-size: 1.5rem; color: rgba(255,255,255,.55); }
+.legal .meta strong { color: rgba(255,255,255,.85); font-weight: 500; }
+.legal .age {
+  margin-top: 2rem; padding: 1.3rem 1.8rem; border-radius: 0 1rem 1rem 0;
+  border-left: .4rem solid #f87171; background: rgba(248,113,113,.12);
+  font-size: 1.55rem; font-weight: 500; color: #ffd9d9;
 }
-.regras li:last-child { padding-bottom: 0; }
-.regras-texto { margin-top: 2rem; font: 400 1.65rem/1.6 var(--montreal); color: rgba(255,255,255,.78); }
-.regras-data { margin-top: 2.4rem; padding-top: 2rem; border-top: .1rem solid rgba(255,255,255,.1); font: 400 1.4rem var(--montreal); color: rgba(255,255,255,.45); }
+/* índice */
+.legal__sumario { margin-bottom: 4rem; padding: 2.6rem 3rem; border-radius: 1.8rem; background: rgba(255,255,255,.04); border: .1rem solid rgba(255,255,255,.1); }
+.legal__sumario h2 { margin-bottom: 1.4rem; font: 400 1.4rem var(--montreal); letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+.legal__toc { list-style: none; columns: 2; column-gap: 3rem; }
+.legal__toc li { break-inside: avoid; padding: .3rem 0; font-size: 1.5rem; }
+.legal__toc li.grp { margin-top: 1.2rem; font-weight: 500; }
+.legal__toc li.grp:first-child { margin-top: 0; }
+.legal__toc a { color: rgba(255,255,255,.72); transition: color .2s; }
+.legal__toc a:hover { color: var(--lime); }
+/* corpo */
+.legal h2 {
+  margin: 4.6rem 0 1.6rem; padding-top: 2.6rem; border-top: .1rem solid rgba(255,255,255,.1);
+  font: 400 3.4rem/1.15 var(--bebas); color: #fff;
+}
+.legal__doc + nav + h2, .legal__sumario + h2 { border-top: 0; padding-top: 0; }
+.legal h3 { margin: 2.8rem 0 1rem; font: 500 1.9rem var(--montreal); color: #fcd05c; }
+.legal p { margin-bottom: 1.4rem; }
+.legal ul, .legal ol { margin: 0 0 1.8rem 2.2rem; }
+.legal li { margin-bottom: .7rem; }
+.legal strong { color: #fff; font-weight: 500; }
+.legal em { color: rgba(255,255,255,.7); }
+.legal a { color: #70f5ff; text-decoration: underline; text-underline-offset: .3rem; }
+.legal a:hover { color: var(--lime); }
+.legal hr { margin: 4rem 0; border: 0; border-top: .1rem solid rgba(255,255,255,.1); }
+.legal table { width: 100%; margin: 2rem 0 2.6rem; border-collapse: collapse; font-size: 1.5rem; }
+.legal th, .legal td { padding: 1.2rem 1.4rem; text-align: left; border-bottom: .1rem solid rgba(255,255,255,.1); vertical-align: top; }
+.legal th { background: rgba(255,255,255,.06); color: #fff; font-weight: 500; }
+.legal tr.odd td { background: rgba(255,255,255,.02); }
+.legal .citation { display: block; margin: 1.6rem 0; padding: 1.4rem 1.8rem; border-left: .3rem solid rgba(112,244,255,.5); background: rgba(112,244,255,.06); border-radius: 0 1rem 1rem 0; font-size: 1.5rem; }
+.legal footer { margin-top: 5rem; padding-top: 2.4rem; border-top: .1rem solid rgba(255,255,255,.1); font-size: 1.4rem; color: rgba(255,255,255,.45); }
 /* o "as regras" do aviso do checkout é clicável */
 .mp-regras a { color: #70f5ff; text-decoration: underline; text-underline-offset: .3rem; }
 .mp-regras a:hover { color: var(--lime); }
@@ -538,7 +592,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .dex { position: relative; padding: 2rem 1.6rem 1.8rem; border-radius: 2rem; background: #fff; text-align: center; box-shadow: 0 .8rem 2.4rem rgba(0,0,0,.06); cursor: pointer; overflow: hidden; transition: transform .3s, box-shadow .3s; }
 .dex::before { content: ""; position: absolute; inset: 0 0 auto; height: .6rem; background: var(--role, #0530ef); }
 .dex:hover { transform: translateY(-.6rem); box-shadow: 0 2rem 4rem rgba(0,0,0,.14); }
-.dex img { width: 12rem; height: 12rem; object-fit: contain; filter: drop-shadow(0 .8rem 1.4rem rgba(0,0,0,.25)); transition: transform .3s; }
+.dex img { width: 12rem; height: 12rem; margin: 0 auto; object-fit: contain; filter: drop-shadow(0 .8rem 1.4rem rgba(0,0,0,.25)); transition: transform .3s; }
 .dex:hover img { transform: scale(1.1); }
 .dex h3 { margin-top: .8rem; font: 500 1.6rem var(--montreal); }
 .dex span { display: inline-block; margin-top: .4rem; padding: .3rem 1rem; border-radius: 10rem; background: var(--role, #0530ef); color: #fff; font: 400 1.2rem var(--bebas); letter-spacing: .1em; }
@@ -603,7 +657,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   body[data-page="seguranca"] .banner__title,
   body[data-page="perfil"] .banner__title,
   body[data-page="pagamento"] .banner__title { font-size: 5rem; }
-  .banner__stage { display: none; }
+  .banner__stage, .banner__stage--duo { display: none; }
   .sec { padding: 6rem 0; }
   .wrap, .wrap--narrow { width: calc(100% - 4rem); }
   .sec__head { flex-direction: column; align-items: flex-start; gap: 1.2rem; margin-bottom: 3rem; }
@@ -696,6 +750,13 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   .login-page__art { display: none; }
   .login-box { padding: 3rem 2.2rem 2.6rem; }
   .login-grid { grid-template-columns: 1fr; gap: 0; }
+  .legal__wrap { width: calc(100% - 4rem); font-size: 1.55rem; }
+  .legal__doc h1 { font-size: 3.4rem; }
+  .legal__toc { columns: 1; }
+  .legal__sumario { padding: 2rem 1.8rem; }
+  .legal h2 { font-size: 2.8rem; margin-top: 3.4rem; }
+  .legal table { font-size: 1.35rem; }
+  .legal th, .legal td { padding: .9rem 1rem; }
   .pay-ways { grid-template-columns: 1fr; gap: 1.4rem; }
   .pay-way { padding: 2rem 2.2rem 2.2rem; }
   .pay-way b { font-size: 2.2rem; }
@@ -926,7 +987,8 @@ body[data-page="doar"] .banner__stage { width: 46rem; }
 .packs--3 .pack__moeda img { max-width: 24rem; max-height: 20rem; }
 .packs--3 .pack b { font-size: 5rem; }
 .packs--3 .pack small { font-size: 1.5rem; letter-spacing: .2em; }
-.packs--3 .pack em { margin-top: 1.2rem; font-size: 1.5rem; padding: .5rem 1.4rem; }
+.packs--3 .pack em { margin-top: 1.6rem; font-size: 3.2rem; padding: .8rem 2.2rem .8rem 1.2rem; }
+.packs--3 .pack em::before { width: 3rem; height: 3rem; }
 .packs--3 .pack .btn { margin-top: 2.4rem; padding: 1.4rem 1rem; font-size: 2.2rem; }
 .packs--3 .pack__badge { top: -1.4rem; font-size: 1.4rem; padding: .5rem 1.6rem; }
 

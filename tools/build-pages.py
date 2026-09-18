@@ -5,6 +5,11 @@ Uso: python3 tools/build-pages.py
 import os, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "site"
+AQUI = pathlib.Path(__file__).resolve().parent
+
+# Documento legal completo (termos, serviços pagos, regras do jogo e cookies).
+# Editar em tools/regras-conteudo.html e rodar este script de novo.
+REGRAS_HTML = (AQUI / "regras-conteudo.html").read_text(encoding="utf-8")
 
 NAV = [
     ("o-jogo.html", "O JOGO"),
@@ -96,7 +101,7 @@ def layout(slug, title, desc, banner, body, extra_head="", extra_bottom=""):
       <span class="banner__tag">{banner['tag']}</span>
       <h1 class="banner__title"{(' data-text="' + slug + '.banner.title"') if banner.get('editable') else ''}>{banner['title']}</h1>
       <p class="banner__sub"{(' data-text="' + slug + '.banner.sub"') if banner.get('editable') else ''}>{banner['sub']}</p>{banner.get('selos','')}
-    </div>{('<div class="banner__stage"><img class="banner__art" src="' + banner['art'] + '" alt=""></div>') if banner.get('art') else ''}
+    </div>{('<div class="banner__stage' + (' banner__stage--duo' if banner.get('art2') else '') + '">' + (('<img class="banner__art banner__art--2" src="' + banner['art2'] + '" alt="">') if banner.get('art2') else '') + '<img class="banner__art" src="' + banner['art'] + '" alt=""></div>') if banner.get('art') else ''}
   </section>
 
   <main class="sub">
@@ -131,7 +136,7 @@ PAGES["o-jogo"] = dict(
     desc="Conheça o Pokeworld Universe: MOBA de Pokémon em equipes de 5, com cross-play entre celular, PC e Nintendo Switch.",
     banner=dict(bg="assets/img/bg/champions-arena.jpg", tag="Sobre o jogo", title="Um universo<br>para batalhar",
                 sub="Forme seu time de cinco treinadores, escolha seu Pokémon e dispute arenas em partidas rápidas de 10 minutos.",
-                art="assets/img/art/player-girl.png"),
+                art="assets/img/art/player-girl.png", art2="assets/img/art/trainer-amarela.png"),
     extra_bottom=LIGHTBOX,
     body="""
     <section class="sec">
@@ -263,7 +268,9 @@ PAGES["download"] = dict(
     title="Download",
     desc="Baixe o Pokeworld Universe para iOS, Android, Nintendo Switch e PC.",
     banner=dict(bg="assets/img/bg/stadium-light.jpg", tag="Grátis para jogar", title="Baixe e<br>jogue agora",
-                sub="Baixe o launcher no PC ou o APK no Android. A conta e o progresso são os mesmos nos dois.", art="assets/img/art/player-boy.png"),
+                sub="Baixe o launcher no PC ou o APK no Android. A conta e o progresso são os mesmos nos dois.",
+                art="assets/img/art/player-boy.png", art2="assets/img/art/blastoise.png",
+                selos='<div class="banner__selos"><span><i></i>Grátis para sempre</span><span><i></i>PC e Android</span><span><i></i>Mesma conta nos dois</span></div>'),
     body="""
     <section class="sec">
       <div class="wrap">
@@ -318,7 +325,8 @@ PAGES["ranking"] = dict(
     title="Ranking",
     desc="Rankings do Pokeworld Universe: experiência, ganho de experiência, mortes e guildas.",
     banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Temporada 12", blend=True, title="Os melhores<br>treinadores",
-                sub="Quatro rankings, troféus exclusivos e a disputa pelo topo do servidor.", art="assets/img/trophies/tier-1.png"),
+                sub="Quatro rankings, troféus exclusivos e a disputa pelo topo do servidor.",
+                art="assets/img/art/volkner.png", art2="assets/img/trophies/tier-1.png"),
     body="""
     <section class="sec rank-sec">
       <div class="wrap">
@@ -701,82 +709,12 @@ PAGES["pagamento"] = dict(
 # ---------------------------------------------------------------- REGRAS
 PAGES["regras"] = dict(
     title="Regras",
-    desc="Regras de uso da conta, das doações e da conduta dentro do Pokeworld Universe.",
-    banner=dict(bg="assets/img/bg/battle-map.jpg", tag="Termos", blend=True, title="Regras do<br>Pokeworld",
-                sub="Valem para a sua conta, para as doações e para a convivência dentro do jogo."),
+    desc="Termos de Uso, Contrato de Utilização, Termos de Serviços Pagos, Regras do Jogo e Política de Cookies do PokeWorld Universe.",
+    banner=dict(bg="assets/img/bg/battle-map.jpg", tag="Documento oficial", blend=True, title="Termos e<br>regras",
+                sub="Termos de Uso, serviços pagos, regras do jogo e política de cookies. Operado por Avante Labs LTDA."),
     body="""
-    <section class="sec acc-sec">
-      <div class="wrap--narrow">
-        <nav class="regras-indice" aria-label="Seções">
-          <a href="#conta">Conta</a><a href="#doacoes">Doações</a><a href="#creditos">Créditos</a>
-          <a href="#conduta">Conduta</a><a href="#punicoes">Punições</a><a href="#suporte">Suporte</a>
-        </nav>
-
-        <article class="acc-card" id="conta">
-          <h2 class="acc-card__title">1 · Sua <span class="grad grad--yellow">conta</span></h2>
-          <ol class="regras">
-            <li>A conta é pessoal e intransferível. Vender, emprestar ou trocar contas não é permitido.</li>
-            <li>Você é responsável por tudo o que acontece na sua conta, inclusive por quem você deixa entrar nela.</li>
-            <li>A senha é sua. A equipe do Pokeworld nunca vai pedir sua senha, nem no jogo, nem no Discord, nem por e-mail.</li>
-            <li>Um novo computador precisa ser autorizado pelo código enviado ao e-mail cadastrado. Mantenha esse e-mail sempre acessível.</li>
-            <li>Contas paradas continuam existindo, mas o nome de um personagem pode ser liberado depois de longos períodos de inatividade.</li>
-          </ol>
-        </article>
-
-        <article class="acc-card" id="doacoes">
-          <h2 class="acc-card__title">2 · <span class="grad grad--yellow">Doações</span></h2>
-          <ol class="regras">
-            <li>A doação é voluntária e serve para manter o servidor, o desenvolvimento e os eventos no ar.</li>
-            <li>Ao gerar o QR Code ou abrir o checkout você declara que leu e aceita estas regras.</li>
-            <li>O valor e o bônus são os que aparecem na tela de pagamento no momento da compra. Promoções antigas não são retroativas.</li>
-            <li>O pagamento acontece no site do Mercado Pago ou da Stripe. Nenhum dado de cartão passa pelo Pokeworld.</li>
-            <li>Doações feitas fora dos canais oficiais do site não são reconhecidas e não geram créditos.</li>
-            <li>Por se tratar de bem digital entregue na hora, não há estorno depois que os créditos entram na conta, salvo o que a lei exigir.</li>
-          </ol>
-        </article>
-
-        <article class="acc-card" id="creditos">
-          <h2 class="acc-card__title">3 · <span class="grad grad--yellow">Créditos</span></h2>
-          <ol class="regras">
-            <li>Os créditos entram na conta que estava logada no site no momento do pagamento. Confira a conta antes de pagar.</li>
-            <li>A entrega é automática assim que o provedor confirma o pagamento. Pix costuma levar segundos; boleto pode levar até 3 dias úteis.</li>
-            <li>Créditos não são convertidos de volta em dinheiro e não podem ser transferidos entre contas.</li>
-            <li>Créditos são itens virtuais sem valor fora do jogo e podem ser perdidos junto com a conta em caso de banimento.</li>
-            <li>Se o pagamento foi confirmado e os créditos não apareceram em 24 horas, abra um ticket com o comprovante.</li>
-          </ol>
-        </article>
-
-        <article class="acc-card" id="conduta">
-          <h2 class="acc-card__title">4 · <span class="grad grad--yellow">Conduta</span></h2>
-          <ol class="regras">
-            <li>Não é permitido usar bot, macro, script ou qualquer programa que jogue por você.</li>
-            <li>Não é permitido explorar falhas do jogo. Encontrou um bug, avise a equipe em vez de tirar proveito dele.</li>
-            <li>Racismo, homofobia, ameaças, assédio e discurso de ódio não são tolerados em nenhum canal.</li>
-            <li>Não se passe por membro da equipe nem divulgue outros servidores dentro do jogo.</li>
-            <li>Respeite os outros jogadores. Divergência faz parte; ofensa pessoal, não.</li>
-          </ol>
-        </article>
-
-        <article class="acc-card" id="punicoes">
-          <h2 class="acc-card__title">5 · <span class="grad grad--yellow">Punições</span></h2>
-          <ol class="regras">
-            <li>Dependendo da gravidade, a punição vai de aviso e silenciamento a banimento temporário ou definitivo.</li>
-            <li>Banimento por quebra de regra não gera devolução de créditos nem de doações.</li>
-            <li>Toda punição pode ser contestada por ticket, uma única vez, com a sua versão dos fatos.</li>
-            <li>A decisão final sobre punições é da equipe do Pokeworld Universe.</li>
-          </ol>
-        </article>
-
-        <article class="acc-card" id="suporte">
-          <h2 class="acc-card__title">6 · <span class="grad grad--yellow">Suporte</span></h2>
-          <p class="regras-texto">Os canais oficiais são o sistema de tickets do site e o Discord da comunidade. Guarde o comprovante das suas doações: ele é o que permite resolver qualquer problema de entrega.</p>
-          <div class="btn-row" style="margin-top:2.4rem">
-            <a class="btn btn--yellow btn--sm" href="tickets.html">Abrir um ticket</a>
-            <a class="btn btn--black btn--sm" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener">Entrar no Discord</a>
-          </div>
-          <p class="regras-data">Estas regras podem mudar. A versão que vale é sempre a publicada nesta página.</p>
-        </article>
-      </div>
+    <section class="sec acc-sec legal">
+""" + REGRAS_HTML + """
     </section>
 """)
 

@@ -580,7 +580,7 @@
         var moeda = 'assets/img/coins/pcoin-' + Math.min(6, i + 1) + '.png';
         return '<div class="pack' + (k.badge ? ' is-hot' : '') + '">' + (k.badge ? '<span class="pack__badge">' + esc(k.badge) + '</span>' : '') +
           '<div class="pack__moeda"><img src="' + moeda + '" alt="" loading="lazy"></div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
-          '<em>+' + k.bonusPct + '% · ' + k.bonus.toLocaleString('pt-BR') + ' de bônus</em>' +
+          '<em class="pack__bonus">+' + k.bonusPct + '%</em>' +
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
       packsEl.addEventListener('click', function (e) {
@@ -667,7 +667,7 @@
         var moeda = 'assets/img/coins/pcoin-' + Math.min(6, i + 1) + '.png';
         return '<div class="pack' + (k.badge ? ' is-hot' : '') + '">' + (k.badge ? '<span class="pack__badge">' + esc(k.badge) + '</span>' : '') +
           '<div class="pack__moeda"><img src="' + moeda + '" alt="" loading="lazy"></div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
-          '<em>+' + k.bonusPct + '% · ' + k.bonus.toLocaleString('pt-BR') + ' de bônus</em>' +
+          '<em class="pack__bonus">+' + k.bonusPct + '%</em>' +
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
     }

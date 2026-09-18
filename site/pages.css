@@ -338,18 +338,18 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .acc-card__hint { font: 400 1.4rem var(--montreal); color: rgba(255,255,255,.55); }
 .acc-card__sub { margin-top: 1.2rem; max-width: 78rem; font: 400 1.6rem/1.55 var(--montreal); color: rgba(255,255,255,.72); }
 .acc-buy-link { color: var(--lime); font-weight: 500; text-decoration: underline; text-underline-position: from-font; }
-.packs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4rem 1.6rem; margin-top: 2.8rem; }
+.packs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.8rem 2.2rem; margin-top: 2.8rem; }
 .pack { position: relative; display: flex; flex-direction: column; align-items: center; padding: 3rem 1.4rem 2rem; border-radius: 2rem; background: rgba(255,255,255,.05); border: .12rem solid rgba(255,255,255,.1); text-align: center; transition: transform .3s, border-color .3s, background .3s; }
 .pack:hover { transform: translateY(-.6rem); border-color: rgba(112,244,255,.7); background: rgba(112,244,255,.06); }
 .pack.is-hot { background: linear-gradient(rgba(6,10,30,.85), rgba(6,10,30,.85)) padding-box, var(--grad-yellow) border-box; border: .2rem solid transparent; }
 .pack__badge { position: absolute; top: -1.2rem; left: 50%; transform: translateX(-50%); padding: .4rem 1.2rem; border-radius: 10rem; background: var(--grad-yellow); color: #000; font: 400 1.3rem var(--bebas); letter-spacing: .1em; white-space: nowrap; }
-.pack__gems { position: relative; width: 9rem; height: 7rem; margin-bottom: 1.4rem; }
+.pack__gems { position: relative; width: 11rem; height: 8rem; margin-bottom: 1.8rem; }
 .pack__gems i { position: absolute; left: 50%; bottom: 0; width: 4.6rem; height: 5.2rem; margin-left: -2.3rem; background: linear-gradient(160deg, #b6fbff 0%, #70f5ff 35%, #0530ef 100%); clip-path: polygon(50% 0, 100% 35%, 50% 100%, 0 35%); filter: drop-shadow(0 .6rem 1.2rem rgba(112,244,255,.45)); }
 .pack__gems i:nth-child(2) { transform: translateX(-2.6rem) scale(.7); opacity: .85; }
 .pack__gems i:nth-child(3) { transform: translateX(2.6rem) scale(.7); opacity: .85; }
 .pack__gems i:nth-child(4) { transform: translate(-1.3rem, -2.4rem) scale(.5); opacity: .7; }
 .pack__gems i:nth-child(5) { transform: translate(1.3rem, -2.4rem) scale(.5); opacity: .7; }
-.pack b { font: 400 3.6rem/1 var(--bebas); }
+.pack b { font: 400 4.4rem/1 var(--bebas); }
 .pack small { display: block; margin-top: .2rem; font: 400 1.3rem var(--bebas); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
 .pack em { display: inline-block; margin-top: .8rem; padding: .3rem 1rem; border-radius: 10rem; background: rgba(220,238,75,.15); color: var(--lime); font: 400 1.3rem var(--bebas); font-style: normal; letter-spacing: .1em; }
 .pack em.is-none { visibility: hidden; }
@@ -598,4 +598,92 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   .resumo__preco { margin-left: 0; }
   .device { grid-template-columns: 4.6rem 1fr; }
   .device > :last-child { grid-column: 2; }
+}
+
+/* =====================================================================
+   Banner que emenda na seção escura (sem a faixa branca)
+   ===================================================================== */
+.banner--blend { height: 46rem; background-position: center 35%; }
+.banner--blend::before {
+  background:
+    radial-gradient(120rem 60rem at 18% 40%, rgba(5,48,239,.55), transparent 70%),
+    linear-gradient(90deg, rgba(8,11,30,.94) 0%, rgba(8,11,30,.78) 45%, rgba(8,11,30,.35) 100%);
+}
+/* a curva branca vira o degradê do fundo escuro da seção seguinte */
+.banner--blend::after {
+  background: linear-gradient(180deg, rgba(13,19,48,0) 0%, rgba(13,19,48,.65) 45%, #0d1330 100%);
+  height: 18rem;
+}
+.banner--blend .banner__inner { padding-top: 9rem; }
+.banner--blend .banner__title { font-size: 8.6rem; line-height: .92; text-shadow: 0 1rem 4rem rgba(0,0,0,.6); }
+.banner--blend .banner__title .grad { background-size: 100% 100%; }
+.banner--blend .banner__sub { max-width: 56rem; font-size: 1.9rem; color: rgba(255,255,255,.8); }
+.banner--blend .banner__tag { background: rgba(0,0,0,.35); }
+.banner--blend .banner__art {
+  height: 46rem; right: 4rem; bottom: -2rem;
+  filter: drop-shadow(0 2rem 5rem rgba(0,0,0,.65)) drop-shadow(0 0 6rem rgba(252,208,92,.35));
+  animation: flutua 5s ease-in-out infinite;
+}
+@keyframes flutua { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.6rem); } }
+
+/* selos de confiança logo abaixo do título */
+.banner__selos { display: flex; flex-wrap: wrap; gap: 1rem 2.4rem; margin-top: 2.2rem; }
+.banner__selos span { display: inline-flex; align-items: center; gap: .7rem; font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.75); }
+.banner__selos i { width: .7rem; height: .7rem; border-radius: 50%; background: var(--lime); box-shadow: 0 0 .8rem var(--lime); }
+
+/* =====================================================================
+   Seção escura com textura (Escolha seu pacote)
+   ===================================================================== */
+.sec--textura {
+  background: linear-gradient(180deg, #0d1330 0%, #080b20 45%, #05060f 100%);
+  position: relative;
+  overflow: hidden;
+}
+/* textura: padrão bem discreto por cima do fundo escuro */
+.sec--textura::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("assets/pattern-frame6.png") repeat;
+  background-size: 34rem 59rem;
+  opacity: .05;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+/* brilho azul no topo, para emendar com a seção de cima */
+.sec--textura::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -18rem;
+  width: 120rem;
+  height: 60rem;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(5,48,239,.4), transparent 75%);
+  pointer-events: none;
+}
+.sec--textura > * { position: relative; z-index: 1; }
+.sec--textura .sec__title { color: #fff; }
+.sec--textura .sec__sub { color: rgba(255,255,255,.7); }
+
+/* pacotes em 3 colunas, mais largos */
+.packs--3 { grid-template-columns: repeat(3, 1fr); gap: 3rem 2.6rem; }
+.packs--3 .pack { padding: 4rem 2.6rem 2.6rem; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12); backdrop-filter: blur(.6rem); }
+.packs--3 .pack:hover { background: rgba(112,244,255,.08); transform: translateY(-.8rem); }
+.packs--3 .pack__gems { width: 12rem; height: 9rem; margin-bottom: 2rem; }
+.packs--3 .pack__gems i { width: 6rem; height: 6.8rem; margin-left: -3rem; }
+.packs--3 .pack b { font-size: 5rem; }
+.packs--3 .pack small { font-size: 1.5rem; letter-spacing: .2em; }
+.packs--3 .pack em { margin-top: 1.2rem; font-size: 1.5rem; padding: .5rem 1.4rem; }
+.packs--3 .pack .btn { margin-top: 2.4rem; padding: 1.4rem 1rem; font-size: 2.2rem; }
+.packs--3 .pack__badge { top: -1.4rem; font-size: 1.4rem; padding: .5rem 1.6rem; }
+
+@media (max-width: 900px) {
+  .banner--blend { height: 36rem; }
+  .banner--blend .banner__title { font-size: 5.4rem; }
+  .banner--blend .banner__inner { padding-top: 6rem; }
+  .banner__selos { display: none; }
+  .packs--3 { grid-template-columns: 1fr 1fr; gap: 2.4rem 1.4rem; }
+  .packs--3 .pack b { font-size: 3.6rem; }
+  .packs--3 .pack__gems { width: 9rem; height: 7rem; }
 }

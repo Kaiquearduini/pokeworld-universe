@@ -88,11 +88,11 @@ def layout(slug, title, desc, banner, body, extra_head="", extra_bottom=""):
     <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </header>
 
-  <section class="banner" style="--bg:url('{banner['bg']}')">
+  <section class="banner{(' banner--blend') if banner.get('blend') else ''}" style="--bg:url('{banner['bg']}')">
     <div class="banner__inner">
       <span class="banner__tag">{banner['tag']}</span>
       <h1 class="banner__title"{(' data-text="' + slug + '.banner.title"') if banner.get('editable') else ''}>{banner['title']}</h1>
-      <p class="banner__sub"{(' data-text="' + slug + '.banner.sub"') if banner.get('editable') else ''}>{banner['sub']}</p>
+      <p class="banner__sub"{(' data-text="' + slug + '.banner.sub"') if banner.get('editable') else ''}>{banner['sub']}</p>{banner.get('selos','')}
     </div>{('<img class="banner__art" src="' + banner['art'] + '" alt="">') if banner.get('art') else ''}
   </section>
 
@@ -468,7 +468,7 @@ PAGES["minha-conta"] = dict(
           <article class="acc-card" id="coins" data-reveal>
             <div class="acc-card__head">
               <h2 class="acc-card__title">Comprar <span class="grad grad--yellow">coins</span></h2>
-              <span class="acc-card__hint">Pix, cartão ou boleto pelo Mercado Pago</span>
+              <a class="btn btn--yellow btn--sm" href="doar.html#pacotes">Efetuar doação</a>
             </div>
             <p class="acc-card__sub">Coins são a moeda premium do Pokeworld. A base é de 10 coins por R$ 1 e o bônus cresce com o pacote. Os coins entram na conta assim que o Mercado Pago confirmar o pagamento.</p>
             <div class="packs" id="acc-packs"></div>
@@ -502,9 +502,11 @@ PAGES["minha-conta"] = dict(
 PAGES["doar"] = dict(
     title="Doar",
     desc="Apoie o Pokeworld Universe e receba coins com bônus. Pix, boleto ou cartão.",
-    banner=dict(bg="assets/img/bg/sky.jpg", tag="Apoie o servidor", title="Doe e ganhe<br>mais coins",
-                sub="Sua doação paga os servidores e o desenvolvimento. Quanto maior o pacote, maior o bônus em coins.",
-                art="assets/img/art/charizard.png"),
+    banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Apoie o servidor", blend=True,
+                title="Doe e ganhe<br><span class=\"grad grad--yellow\">mais coins</span>",
+                sub="Sua doação paga os servidores, o desenvolvimento e os eventos. Quanto maior o pacote, maior o bônus que volta pra você em coins.",
+                art="assets/img/art/charizard.png",
+                selos='<div class="banner__selos"><span><i></i>Coins na conta em segundos</span><span><i></i>Pix, boleto ou cartão</span><span><i></i>Até 30% de bônus</span></div>'),
     body="""
     <section class="sec doar-sec">
       <div class="wrap--narrow">
@@ -550,10 +552,10 @@ PAGES["doar"] = dict(
       </div>
     </section>
 
-    <section class="sec sec--white" id="pacotes">
+    <section class="sec sec--dark sec--textura" id="pacotes">
       <div class="wrap">
-        <div class="sec__head"><div><h2 class="sec__title">Escolha seu <span class="grad">pacote</span></h2><p class="sec__sub">Clique no valor e escolha entre Mercado Pago ou Stripe.</p></div></div>
-        <div class="packs packs--light" id="doar-packs"></div>
+        <div class="sec__head"><div><h2 class="sec__title">Escolha seu <span class="grad grad--yellow">pacote</span></h2><p class="sec__sub">Clique no valor e escolha entre Mercado Pago ou Stripe. Os coins caem na sua conta do jogo em segundos.</p></div></div>
+        <div class="packs packs--3" id="doar-packs"></div>
       </div>
     </section>
 

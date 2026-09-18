@@ -247,8 +247,6 @@ PWU.trophies = [1, 2, 3, 4, 5, 6, 7].map(function (t) { return 'assets/img/troph
 
 /* ---------- Pacotes de coins — SÓ EXIBIÇÃO. O preço real vive no servidor (api/_lib/packages.js). ---------- */
 PWU.coinPackages = [
-  { id: 'starter', coins: 100, price: 10, bonusPct: 0 },
-  { id: 'basic', coins: 500, price: 50, bonusPct: 0 },
   { id: 'plus', coins: 1080, price: 100, bonusPct: 8 },
   { id: 'premium', coins: 1680, price: 150, bonusPct: 12, badge: 'Mais popular' },
   { id: 'master', coins: 2360, price: 200, bonusPct: 18 },

@@ -325,7 +325,7 @@
     function writeCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); renderCart(); }
     function price(it) {
       var parts = [];
-      if (it.coins) parts.push('<span>🪙 ' + it.coins.toLocaleString('pt-BR') + '</span>');
+      if (it.coins) parts.push('<span><img class="moeda-mini" src="assets/img/coins/pcoin.png" alt="">' + it.coins.toLocaleString('pt-BR') + '</span>');
       if (it.gems) parts.push('<span>💎 ' + it.gems.toLocaleString('pt-BR') + '</span>');
       if (it.price) parts.push('<span>' + PWU.brl(it.price) + '</span>');
       return parts.join('');
@@ -359,7 +359,7 @@
       var c = readCart(), items = c.map(function (id) { return PWU.shop.find(function (i) { return i.id === id; }); }).filter(Boolean);
       fab.querySelector('b').textContent = items.length;
       var list = cart.querySelector('.cart__list');
-      list.innerHTML = items.map(function (it, i) { return '<div class="cart__item"><img src="' + it.image + '" alt=""><div>' + esc(it.name) + '<small>' + (it.price ? PWU.brl(it.price) : it.gems ? it.gems + ' gemas' : it.coins + ' moedas') + '</small></div><button type="button" data-rm="' + i + '" aria-label="Remover">×</button></div>'; }).join('') || '<p class="empty">Seu carrinho está vazio.</p>';
+      list.innerHTML = items.map(function (it, i) { return '<div class="cart__item"><img src="' + it.image + '" alt=""><div>' + esc(it.name) + '<small>' + (it.price ? PWU.brl(it.price) : it.gems ? it.gems + ' gemas' : it.coins + ' créditos') + '</small></div><button type="button" data-rm="' + i + '" aria-label="Remover">×</button></div>'; }).join('') || '<p class="empty">Seu carrinho está vazio.</p>';
       var total = items.reduce(function (s, it) { return s + (it.price || 0); }, 0), gems = items.reduce(function (s, it) { return s + (it.gems || 0); }, 0);
       cart.querySelector('.cart__total b').textContent = (total ? PWU.brl(total) : '') + (gems ? (total ? ' + ' : '') + gems + ' gemas' : '') || 'R$ 0,00';
     }
@@ -577,9 +577,9 @@
     var packsEl = document.getElementById('acc-packs');
     if (packsEl && PWU.coinPackages) {
       packsEl.innerHTML = PWU.coinPackages.map(function (k, i) {
-        var gems = ''; for (var g = 0; g < Math.min(5, Math.ceil((i + 1) / 1.6)); g++) gems += '<i></i>';
+        var moeda = 'assets/img/coins/pcoin-' + Math.min(6, i + 1) + '.png';
         return '<div class="pack' + (k.badge ? ' is-hot' : '') + '">' + (k.badge ? '<span class="pack__badge">' + esc(k.badge) + '</span>' : '') +
-          '<div class="pack__gems">' + gems + '</div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
+          '<div class="pack__moeda"><img src="' + moeda + '" alt="" loading="lazy"></div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
           '<em>+' + k.bonusPct + '% · ' + k.bonus.toLocaleString('pt-BR') + ' de bônus</em>' +
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
@@ -664,9 +664,9 @@
     var grade = document.getElementById('doar-packs');
     if (grade) {
       grade.innerHTML = pacotes.map(function (k, i) {
-        var gems = ''; for (var g = 0; g < Math.min(5, Math.ceil((i + 1) / 1.6)); g++) gems += '<i></i>';
+        var moeda = 'assets/img/coins/pcoin-' + Math.min(6, i + 1) + '.png';
         return '<div class="pack' + (k.badge ? ' is-hot' : '') + '">' + (k.badge ? '<span class="pack__badge">' + esc(k.badge) + '</span>' : '') +
-          '<div class="pack__gems">' + gems + '</div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
+          '<div class="pack__moeda"><img src="' + moeda + '" alt="" loading="lazy"></div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
           '<em>+' + k.bonusPct + '% · ' + k.bonus.toLocaleString('pt-BR') + ' de bônus</em>' +
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');

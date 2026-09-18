@@ -358,7 +358,8 @@
 .wallet { display: flex; align-items: center; gap: 1.6rem; }
 .wallet div { display: flex; align-items: center; gap: .8rem; padding: 1rem 1.8rem; border-radius: 10rem; background: #fff; box-shadow: 0 .6rem 2rem rgba(0,0,0,.06); font: 400 1.6rem var(--montreal); }
 .wallet b { font: 400 2.2rem var(--bebas); }
-.wallet .coin { width: 2.2rem; height: 2.2rem; border-radius: 50%; background: var(--grad-yellow); }
+.wallet .coin { width: 2.6rem; height: 2.6rem; object-fit: contain; }
+.moeda-mini { width: 1.8rem; height: 1.8rem; margin-right: .5rem; vertical-align: -.35rem; object-fit: contain; }
 .wallet .gem { width: 2rem; height: 2rem; background: var(--grad-blue); clip-path: polygon(50% 0, 100% 40%, 50% 100%, 0 40%); }
 .shop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4rem; }
 .item { position: relative; display: flex; flex-direction: column; padding: 2.4rem; border-radius: 2.4rem; background: #fff; box-shadow: 0 1rem 3rem rgba(0,0,0,.06); overflow: hidden; transition: transform .35s, box-shadow .35s; }
@@ -408,6 +409,8 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .acc-side { display: flex; flex-direction: column; gap: 1.6rem; text-align: right; }
 .acc-stat b { display: block; font: 400 4rem/1 var(--bebas); background: var(--grad-yellow); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .acc-stat span { font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.65); }
+.acc-stat--moeda { display: flex; align-items: center; justify-content: flex-end; gap: 1.2rem; }
+.acc-stat--moeda img { width: 4.6rem; height: 4.6rem; flex: none; object-fit: contain; filter: drop-shadow(0 .4rem 1rem rgba(0,0,0,.35)); }
 .acc-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.4rem; margin-top: 3.4rem; padding-top: 3rem; border-top: .1rem solid rgba(255,255,255,.1); }
 .btn--twitch { background: #9146ff; color: #fff; }
 .btn--danger { background: transparent; color: #ff8d78; border: .15rem solid rgba(255,107,74,.6); }
@@ -435,12 +438,10 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .pack:hover { transform: translateY(-.6rem); border-color: rgba(112,244,255,.7); background: rgba(112,244,255,.06); }
 .pack.is-hot { background: linear-gradient(rgba(6,10,30,.85), rgba(6,10,30,.85)) padding-box, var(--grad-yellow) border-box; border: .2rem solid transparent; }
 .pack__badge { position: absolute; top: -1.2rem; left: 50%; transform: translateX(-50%); padding: .4rem 1.2rem; border-radius: 10rem; background: var(--grad-yellow); color: #000; font: 400 1.3rem var(--bebas); letter-spacing: .1em; white-space: nowrap; }
-.pack__gems { position: relative; width: 11rem; height: 8rem; margin-bottom: 1.8rem; }
-.pack__gems i { position: absolute; left: 50%; bottom: 0; width: 4.6rem; height: 5.2rem; margin-left: -2.3rem; background: linear-gradient(160deg, #b6fbff 0%, #70f5ff 35%, #0530ef 100%); clip-path: polygon(50% 0, 100% 35%, 50% 100%, 0 35%); filter: drop-shadow(0 .6rem 1.2rem rgba(112,244,255,.45)); }
-.pack__gems i:nth-child(2) { transform: translateX(-2.6rem) scale(.7); opacity: .85; }
-.pack__gems i:nth-child(3) { transform: translateX(2.6rem) scale(.7); opacity: .85; }
-.pack__gems i:nth-child(4) { transform: translate(-1.3rem, -2.4rem) scale(.5); opacity: .7; }
-.pack__gems i:nth-child(5) { transform: translate(1.3rem, -2.4rem) scale(.5); opacity: .7; }
+/* moeda P do pacote: quanto maior o pacote, maior o monte */
+.pack__moeda { display: grid; place-items: end center; width: 100%; height: 11rem; margin-bottom: 1.6rem; }
+.pack__moeda img { max-width: 13rem; max-height: 11rem; object-fit: contain; filter: drop-shadow(0 .8rem 1.6rem rgba(0,0,0,.35)); transition: transform .35s; }
+.pack:hover .pack__moeda img { transform: translateY(-.6rem) scale(1.06); }
 .pack b { font: 400 4.4rem/1 var(--bebas); }
 .pack small { display: block; margin-top: .2rem; font: 400 1.3rem var(--bebas); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
 .pack em { display: inline-block; margin-top: .8rem; padding: .3rem 1rem; border-radius: 10rem; background: rgba(220,238,75,.15); color: var(--lime); font: 400 1.3rem var(--bebas); font-style: normal; letter-spacing: .1em; }
@@ -691,7 +692,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
    PÁGINA /doar
    ===================================================================== */
 /* na página de doar o banner encosta direto nos pacotes: mesma cor de fundo */
-body[data-page="doar"] #pacotes { background-color: #0d1330; padding-top: 7rem; }
+body[data-page="doar"] #pacotes { background-color: #0d1330; padding-top: 3rem; }
 body[data-page="doar"] #pacotes::before { background: linear-gradient(180deg, rgba(13,19,48,.92), rgba(13,19,48,.97)); }
 .doar-sec { background: #0d1330 url("assets/img/bg/hex-plain.png") center / 40rem repeat; color: #fff; }
 .doar-sec::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,19,48,.92), rgba(13,19,48,.97)); pointer-events: none; }
@@ -857,8 +858,8 @@ body[data-page="minha-conta"] .banner__stage { width: 44rem; right: 6rem; }
 .packs--3 { grid-template-columns: repeat(3, 1fr); gap: 3rem 2.6rem; }
 .packs--3 .pack { padding: 4rem 2.6rem 2.6rem; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12); backdrop-filter: blur(.6rem); }
 .packs--3 .pack:hover { background: rgba(112,244,255,.08); transform: translateY(-.8rem); }
-.packs--3 .pack__gems { width: 12rem; height: 9rem; margin-bottom: 2rem; }
-.packs--3 .pack__gems i { width: 6rem; height: 6.8rem; margin-left: -3rem; }
+.packs--3 .pack__moeda { height: 20rem; margin-bottom: 1.6rem; }
+.packs--3 .pack__moeda img { max-width: 24rem; max-height: 20rem; }
 .packs--3 .pack b { font-size: 5rem; }
 .packs--3 .pack small { font-size: 1.5rem; letter-spacing: .2em; }
 .packs--3 .pack em { margin-top: 1.2rem; font-size: 1.5rem; padding: .5rem 1.4rem; }
@@ -869,7 +870,8 @@ body[data-page="minha-conta"] .banner__stage { width: 44rem; right: 6rem; }
   .banner__selos { display: none; }
   .packs--3 { grid-template-columns: 1fr 1fr; gap: 2.4rem 1.4rem; }
   .packs--3 .pack b { font-size: 3.6rem; }
-  .packs--3 .pack__gems { width: 9rem; height: 7rem; }
+  .packs--3 .pack__moeda { height: 9rem; }
+  .packs--3 .pack__moeda img { max-width: 10rem; max-height: 9rem; }
 }
 
 /* =====================================================================

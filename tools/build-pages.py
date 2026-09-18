@@ -361,7 +361,7 @@ PAGES["loja"] = dict(
             <button class="chip" type="button" data-filter="gemas">Gemas</button>
             <button class="chip" type="button" data-filter="passe">Passe</button>
           </div>
-          <div class="wallet"><div><i class="coin"></i><b>24.500</b> moedas</div><div><i class="gem"></i><b>380</b> gemas</div></div>
+          <div class="wallet"><div><img class="coin" src="assets/img/coins/pcoin.png" alt=""><b>24.500</b> créditos</div><div><i class="gem"></i><b>380</b> gemas</div></div>
         </div>
         <div class="shop-gate" id="shop-gate" hidden>
           <div class="shop-gate__card">
@@ -453,7 +453,7 @@ PAGES["minha-conta"] = dict(
                 </div>
               </div>
               <div class="acc-side">
-                <div class="acc-stat"><b id="acc-diamonds">0</b><span>Créditos · <a href="#coins" class="acc-buy-link">+ Comprar</a></span></div>
+                <div class="acc-stat acc-stat--moeda"><img src="assets/img/coins/pcoin.png" alt=""><div><b id="acc-diamonds">0</b><span>Créditos · <a href="#coins" class="acc-buy-link">+ Comprar</a></span></div></div>
                 <div class="acc-stat"><b id="acc-plan">Conta Grátis</b><span>Plano</span></div>
               </div>
             </div>

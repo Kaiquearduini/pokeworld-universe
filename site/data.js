@@ -245,14 +245,14 @@ PWU.trophies = [1, 2, 3, 4, 5, 6, 7].map(function (t) { return 'assets/img/troph
   };
 })();
 
-/* ---------- Pacotes de coins — SÓ EXIBIÇÃO. O preço real vive no servidor (api/_lib/packages.js). ---------- */
+/* ---------- Pacotes de créditos — SÓ EXIBIÇÃO. O preço real vive no servidor (api/_lib/packages.js). ---------- */
 PWU.coinPackages = [
-  { id: 'plus', coins: 1080, price: 100, bonusPct: 8 },
-  { id: 'premium', coins: 1680, price: 150, bonusPct: 12, badge: 'Mais popular' },
-  { id: 'master', coins: 2360, price: 200, bonusPct: 18 },
-  { id: 'ultra', coins: 5000, price: 400, bonusPct: 25 },
-  { id: 'legend', coins: 12800, price: 1000, bonusPct: 28 },
-  { id: 'mythic', coins: 19500, price: 1500, bonusPct: 30, badge: 'Melhor valor' }
+  { id: 'plus', coins: 108, base: 100, price: 100, bonusPct: 8, bonus: 8 },
+  { id: 'premium', coins: 168, base: 150, price: 150, bonusPct: 12, bonus: 18, badge: 'Mais popular' },
+  { id: 'master', coins: 236, base: 200, price: 200, bonusPct: 18, bonus: 36 },
+  { id: 'ultra', coins: 500, base: 400, price: 400, bonusPct: 25, bonus: 100 },
+  { id: 'legend', coins: 1280, base: 1000, price: 1000, bonusPct: 28, bonus: 280 },
+  { id: 'mythic', coins: 1950, base: 1500, price: 1500, bonusPct: 30, bonus: 450, badge: 'Melhor valor' }
 ];
 
 /* ---------- Loja ---------- */

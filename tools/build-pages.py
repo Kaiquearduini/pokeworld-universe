@@ -452,7 +452,7 @@ PAGES["minha-conta"] = dict(
                 </div>
               </div>
               <div class="acc-side">
-                <div class="acc-stat"><b id="acc-diamonds">0</b><span>Coins · <a href="#coins" class="acc-buy-link">+ Comprar</a></span></div>
+                <div class="acc-stat"><b id="acc-diamonds">0</b><span>Créditos · <a href="#coins" class="acc-buy-link">+ Comprar</a></span></div>
                 <div class="acc-stat"><b id="acc-plan">Conta Grátis</b><span>Plano</span></div>
               </div>
             </div>
@@ -467,10 +467,10 @@ PAGES["minha-conta"] = dict(
 
           <article class="acc-card" id="coins" data-reveal>
             <div class="acc-card__head">
-              <h2 class="acc-card__title">Comprar <span class="grad grad--yellow">coins</span></h2>
+              <h2 class="acc-card__title">Comprar <span class="grad grad--yellow">créditos</span></h2>
               <a class="btn btn--yellow btn--sm" href="doar.html#pacotes">Efetuar doação</a>
             </div>
-            <p class="acc-card__sub">Coins são a moeda premium do Pokeworld. A base é de 10 coins por R$ 1 e o bônus cresce com o pacote. Os coins entram na conta assim que o Mercado Pago confirmar o pagamento.</p>
+            <p class="acc-card__sub">Créditos são a moeda premium do Pokeworld. A base é de 1 crédito por R$ 1 e o bônus cresce com o pacote. Eles entram na conta assim que o pagamento for confirmado.</p>
             <div class="packs" id="acc-packs"></div>
           </article>
 
@@ -501,23 +501,23 @@ PAGES["minha-conta"] = dict(
 # ---------------------------------------------------------------- DOAR
 PAGES["doar"] = dict(
     title="Doar",
-    desc="Apoie o Pokeworld Universe e receba coins com bônus. Pix, boleto ou cartão.",
+    desc="Apoie o Pokeworld Universe e receba créditos com bônus. Pix, boleto ou cartão.",
     banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Apoie o servidor", blend=True,
-                title="Doe e ganhe<br><span class=\"grad grad--yellow\">mais coins</span>",
-                sub="Sua doação paga os servidores, o desenvolvimento e os eventos. Quanto maior o pacote, maior o bônus que volta pra você em coins.",
+                title="Doe e ganhe<br><span class=\"grad grad--yellow\">mais créditos</span>",
+                sub="Sua doação paga os servidores, o desenvolvimento e os eventos. Quanto maior o pacote, maior o bônus que volta pra você em créditos.",
                 art="assets/img/art/charizard.png",
-                selos='<div class="banner__selos"><span><i></i>Coins na conta em segundos</span><span><i></i>Pix, boleto ou cartão</span><span><i></i>Até 30% de bônus</span></div>'),
+                selos='<div class="banner__selos"><span><i></i>Créditos na conta em segundos</span><span><i></i>Pix, boleto ou cartão</span><span><i></i>Até 30% de bônus</span></div>'),
     body="""
     <section class="sec doar-sec">
       <div class="wrap--narrow">
         <div class="doar-intro" data-reveal>
           <h2 class="sec__title">Como funciona o <span class="grad grad--yellow">bônus</span></h2>
-          <p class="sec__sub">A base é de <b>10 coins por R$ 1</b>. A partir de R$ 100 cada faixa dá um bônus extra, que já vem somado no total que você recebe. Os coins caem na conta do jogo assim que o pagamento é confirmado.</p>
+          <p class="sec__sub">A base é de <b>1 crédito por R$ 1</b>. Cada faixa dá um bônus extra, que já vem somado no total que você recebe. Os créditos caem na conta do jogo assim que o pagamento é confirmado.</p>
         </div>
 
         <div class="bonus-table" data-reveal>
           <table>
-            <thead><tr><th>Pacote</th><th>Bônus</th><th>Coins que você recebe</th><th></th></tr></thead>
+            <thead><tr><th>Pacote</th><th>Créditos-base</th><th>Bônus</th><th>Total recebido</th><th></th></tr></thead>
             <tbody id="bonus-rows"></tbody>
           </table>
         </div>
@@ -542,7 +542,7 @@ PAGES["doar"] = dict(
           <article class="doar-card" data-reveal>
             <h3>Precisa de conta</h3>
             <ul>
-              <li>Os coins são creditados na sua conta do jogo</li>
+              <li>Os créditos são creditados na sua conta do jogo</li>
               <li>Entre ou crie a sua antes de doar</li>
               <li>É a mesma conta que você usa no cliente</li>
             </ul>
@@ -554,7 +554,7 @@ PAGES["doar"] = dict(
 
     <section class="sec sec--dark sec--textura" id="pacotes">
       <div class="wrap">
-        <div class="sec__head"><div><h2 class="sec__title">Escolha seu <span class="grad grad--yellow">pacote</span></h2><p class="sec__sub">Clique no valor e escolha entre Mercado Pago ou Stripe. Os coins caem na sua conta do jogo em segundos.</p></div></div>
+        <div class="sec__head"><div><h2 class="sec__title">Escolha seu <span class="grad grad--yellow">pacote</span></h2><p class="sec__sub">Clique no valor e escolha entre Mercado Pago ou Stripe. Os créditos caem na sua conta do jogo em segundos.</p></div></div>
         <div class="packs packs--3" id="doar-packs"></div>
       </div>
     </section>
@@ -565,7 +565,7 @@ PAGES["doar"] = dict(
       <div class="wrap" data-reveal>
         <h2>Obrigado por apoiar o Pokeworld</h2>
         <p>Cada doação mantém o mundo no ar e acelera as próximas atualizações.</p>
-        <div class="btn-row"><a class="btn btn--yellow" href="minha-conta.html#coins">Ver meus coins</a><a class="btn btn--black" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener">Falar com a equipe</a></div>
+        <div class="btn-row"><a class="btn btn--yellow" href="minha-conta.html#coins">Ver meus créditos</a><a class="btn btn--black" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener">Falar com a equipe</a></div>
       </div>
     </section>
 """,
@@ -693,7 +693,7 @@ PAGES["perfil"] = dict(
 # ---------------------------------------------------------------- PAGAMENTO
 PAGES["pagamento"] = dict(
     title="Pagamento",
-    desc="Escolha como pagar seus coins do Pokeworld Universe.",
+    desc="Escolha como pagar seus créditos do Pokeworld Universe.",
     banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Checkout", title="Como quer<br>pagar?",
                 sub="Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld."),
     body="""
@@ -717,7 +717,7 @@ PAGES["pagamento"] = dict(
               <button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>
               <button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>
             </div>
-            <p class="mp-note">🔒 O pagamento acontece no site do provedor. Os coins entram na sua conta do jogo assim que for confirmado.</p>
+            <p class="mp-note">🔒 O pagamento acontece no site do provedor. Os créditos entram na sua conta do jogo assim que for confirmado.</p>
           </article>
         </div>
       </div>

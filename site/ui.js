@@ -256,7 +256,7 @@
           '<h3 class="auth__done-title">Tudo pronto, <span class="grad" data-name></span>!</h3>' +
           '<p class="auth__sub">Sua conta está ativa. Boa aventura no Pokeworld Universe.</p>' +
           '<button class="auth__submit" type="button" data-close><span>Ir para minha conta</span></button>' +
-          '<a class="auth__buy" href="minha-conta.html#coins">Comprar coins</a>' +
+          '<a class="auth__buy" href="minha-conta.html#coins">Comprar créditos</a>' +
         '</div>' +
       '</div>';
     document.body.appendChild(modal);

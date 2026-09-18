@@ -528,6 +528,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .bonus-table tbody tr { transition: background .2s; }
 .bonus-table tbody tr:hover { background: rgba(112,244,255,.07); }
 .bonus-table .val { font: 400 2.6rem var(--bebas); }
+.bonus-table .base { font: 400 2rem var(--montreal); color: rgba(255,255,255,.75); }
 .bonus-table .bonus { display: inline-block; padding: .4rem 1.4rem; border-radius: 10rem; background: rgba(220,238,75,.16); color: var(--lime); font: 400 1.7rem var(--bebas); letter-spacing: .08em; }
 .bonus-table .bonus.is-zero { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); }
 .bonus-table .coins { font: 400 2.4rem var(--bebas); background: var(--grad-yellow); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -549,7 +550,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 
 @media (max-width: 900px) {
   .doar-cards { grid-template-columns: 1fr; }
-  .bonus-table th:nth-child(3), .bonus-table td:nth-child(3) { display: none; }
+  .bonus-table th:nth-child(2), .bonus-table td:nth-child(2) { display: none; }
   .bonus-table th, .bonus-table td { padding: 1.4rem 1.6rem; }
 }
 

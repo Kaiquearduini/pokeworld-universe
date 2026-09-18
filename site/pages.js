@@ -369,7 +369,7 @@
       var rm = e.target.closest('[data-rm]'); if (rm) { var c = readCart(); c.splice(+rm.dataset.rm, 1); writeCart(c); }
       if (e.target.closest('[data-checkout]')) {
         if (!readCart().length) return PWU.toast('Seu carrinho está vazio.');
-        PWU.toast('As compras usam coins. Vamos te levar para comprar coins na sua conta.');
+        PWU.toast('As compras usam créditos. Vamos te levar para comprar créditos.');
         setTimeout(function () { location.href = 'minha-conta.html#coins'; }, 1200);
       }
     });
@@ -579,8 +579,8 @@
       packsEl.innerHTML = PWU.coinPackages.map(function (k, i) {
         var gems = ''; for (var g = 0; g < Math.min(5, Math.ceil((i + 1) / 1.6)); g++) gems += '<i></i>';
         return '<div class="pack' + (k.badge ? ' is-hot' : '') + '">' + (k.badge ? '<span class="pack__badge">' + esc(k.badge) + '</span>' : '') +
-          '<div class="pack__gems">' + gems + '</div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>coins</small>' +
-          '<em class="' + (k.bonusPct ? '' : 'is-none') + '">+' + k.bonusPct + '% bônus</em>' +
+          '<div class="pack__gems">' + gems + '</div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
+          '<em>+' + k.bonusPct + '% · ' + k.bonus.toLocaleString('pt-BR') + ' de bônus</em>' +
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
       packsEl.addEventListener('click', function (e) {
@@ -608,7 +608,7 @@
         var el = document.getElementById('acc-diamonds'), before = +String(el.textContent).replace(/\D/g, '') || 0;
         el.textContent = c.toLocaleString('pt-BR');
         if (tries > 0 && c === before) setTimeout(function () { refreshCoins(tries - 1); }, 4000);
-        else if (c > before && tries < 8) PWU.toast('Coins creditados na sua conta!', 'ok');
+        else if (c > before && tries < 8) PWU.toast('Créditos adicionados na sua conta!', 'ok');
       }).catch(function () {});
     }
 
@@ -628,7 +628,7 @@
         if (!d || !d.id) return;
         var antes = jogo ? jogo.coins : null;
         jogo = d; renderAcc();
-        if (antes != null && d.coins > antes) PWU.toast('Coins creditados na sua conta!', 'ok');
+        if (antes != null && d.coins > antes) PWU.toast('Créditos adicionados na sua conta!', 'ok');
         else if (tries > 0) setTimeout(function () { puxarJogo(tries - 1); }, 4000);
       }).catch(function () {});
     }
@@ -655,8 +655,9 @@
     if (corpo) {
       corpo.innerHTML = pacotes.map(function (k) {
         return '<tr><td class="val">' + PWU.brl(k.price) + '</td>' +
-          '<td><span class="bonus' + (k.bonusPct ? '' : ' is-zero') + '">' + (k.bonusPct ? '+' + k.bonusPct + '%' : 'sem bônus') + '</span></td>' +
-          '<td class="coins">' + k.coins.toLocaleString('pt-BR') + ' coins</td>' +
+          '<td class="base">' + k.base.toLocaleString('pt-BR') + '</td>' +
+          '<td><span class="bonus">+' + k.bonusPct + '% · ' + k.bonus.toLocaleString('pt-BR') + '</span></td>' +
+          '<td class="coins">' + k.coins.toLocaleString('pt-BR') + ' créditos</td>' +
           '<td><button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">Doar</button></td></tr>';
       }).join('');
     }
@@ -665,8 +666,8 @@
       grade.innerHTML = pacotes.map(function (k, i) {
         var gems = ''; for (var g = 0; g < Math.min(5, Math.ceil((i + 1) / 1.6)); g++) gems += '<i></i>';
         return '<div class="pack' + (k.badge ? ' is-hot' : '') + '">' + (k.badge ? '<span class="pack__badge">' + esc(k.badge) + '</span>' : '') +
-          '<div class="pack__gems">' + gems + '</div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>coins</small>' +
-          '<em class="' + (k.bonusPct ? '' : 'is-none') + '">+' + k.bonusPct + '% bônus</em>' +
+          '<div class="pack__gems">' + gems + '</div><b>' + k.coins.toLocaleString('pt-BR') + '</b><small>créditos</small>' +
+          '<em>+' + k.bonusPct + '% · ' + k.bonus.toLocaleString('pt-BR') + ' de bônus</em>' +
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
     }
@@ -675,7 +676,7 @@
     pmD.addEventListener('click', function (e) { if (e.target.closest('[data-pclose]')) { pmD.hidden = true; document.body.classList.remove('is-locked'); } });
     document.addEventListener('click', function (e) {
       var b = e.target.closest('[data-pack]'); if (!b) return;
-      if (!PWU.auth.user) { PWU.toast('Entre na sua conta para doar e receber os coins.'); setTimeout(function () { location.href = 'login.html'; }, 1200); return; }
+      if (!PWU.auth.user) { PWU.toast('Entre na sua conta para doar e receber os créditos.'); setTimeout(function () { location.href = 'login.html'; }, 1200); return; }
       location.href = 'pagamento.html?pacote=' + encodeURIComponent(b.dataset.pack); return;
       var k = pacotes.find(function (x) { return x.id === b.dataset.pack; }) || {};
       abrirD('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + (k.bonusPct ? ' · já com ' + k.bonusPct + '% de bônus' : '') + '.</p>' +
@@ -807,7 +808,7 @@
       var resumo = document.getElementById('resumo-pedido');
       if (k && resumo) {
         resumo.innerHTML = '<div class="resumo__coins">' + k.coins.toLocaleString('pt-BR') + '</div>' +
-          '<div class="resumo__info"><b>coins para sua conta</b><small>' + (k.bonusPct ? 'Já com ' + k.bonusPct + '% de bônus' : 'Pacote sem bônus') + '</small></div>' +
+          '<div class="resumo__info"><b>créditos para sua conta</b><small>' + k.base.toLocaleString('pt-BR') + ' de base + ' + k.bonus.toLocaleString('pt-BR') + ' de bônus (' + k.bonusPct + '%)</small></div>' +
           '<div class="resumo__preco">' + PWU.brl(k.price) + '</div>';
       }
       var meios = document.getElementById('meios-pagamento');

@@ -32,11 +32,11 @@
   /* Pagamento (Mercado Pago, API de Orders): o site manda SÓ o id do pacote;
      o servidor define preço e coins, cria a order e devolve o checkout_url. */
   function pay(packageId, btn, provedor) {
-    var label = btn ? btn.textContent : '';
+    var conteudo = btn ? btn.innerHTML : '';
     var rota = provedor === 'stripe' ? '/api/stripe-checkout' : '/api/checkout';
     var nome = provedor === 'stripe' ? 'Stripe' : 'Mercado Pago';
-    function fail(msg) { PWU.toast(msg); if (btn) { btn.disabled = false; btn.textContent = label; } }
-    if (btn) { btn.disabled = true; btn.textContent = 'Abrindo ' + nome + '...'; }
+    function fail(msg) { PWU.toast(msg); if (btn) { btn.disabled = false; btn.classList.remove('is-indo'); btn.innerHTML = conteudo; } }
+    if (btn) { btn.disabled = true; btn.classList.add('is-indo'); btn.innerHTML = '<span class="pay-way__head"><b>Abrindo ' + nome + '…</b></span>'; }
     return PWU.auth.token().then(function (token) {
       if (!token) throw new Error('Pagamentos exigem a conta conectada ao servidor. Entre novamente.');
       return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ packageId: packageId }) });
@@ -150,7 +150,7 @@
   if (page === 'download') {
     fetch('/api/game?resource=links').then(function (r) { return r.ok ? r.json() : null; }).then(function (l) {
       if (!l) return;
-      var mapa = { 'dl-pc': l.pc, 'dl-android': l.mobile64 || l.mobile32, 'dl-ios': null, 'dl-switch': null };
+      var mapa = { 'dl-pc': l.pc, 'dl-android': l.mobile64 || l.mobile32 };
       Object.keys(mapa).forEach(function (id) {
         var el = document.getElementById(id); if (!el) return;
         if (mapa[id]) { el.href = mapa[id]; el.removeAttribute('data-require-auth'); el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener'); }

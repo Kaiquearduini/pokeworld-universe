@@ -38,3 +38,25 @@ export function emailCodigoDispositivo({ codigo, ip, quando }) {
     </div>
   </div>`;
 }
+
+/** Modelo do código para redefinir a senha esquecida. */
+export function emailCodigoSenha({ codigo, ip, quando }) {
+  return `
+  <div style="font-family:Arial,Helvetica,sans-serif;background:#0d1330;padding:32px;color:#fff">
+    <div style="max-width:520px;margin:0 auto;background:#111a3d;border:1px solid #1e2a5a;border-radius:16px;padding:32px">
+      <h1 style="margin:0 0 8px;font-size:22px;color:#fff">Redefinir sua senha Pokeworld</h1>
+      <p style="margin:0 0 24px;color:#b9c2e0;font-size:14px;line-height:1.5">
+        Recebemos um pedido para trocar a senha da sua conta. Use o código abaixo
+        na página de recuperação para escolher uma senha nova.
+      </p>
+      <div style="background:#0a0f2b;border:1px solid #243163;border-radius:12px;padding:20px;text-align:center;margin-bottom:24px">
+        <div style="font-size:34px;letter-spacing:10px;font-weight:bold;color:#fcd05c">${codigo}</div>
+        <div style="font-size:12px;color:#8b95bb;margin-top:8px">O código vale por 15 minutos</div>
+      </div>
+      <p style="margin:0;color:#8b95bb;font-size:12px;line-height:1.5">
+        Pedido feito em ${quando}${ip ? ` · IP ${ip}` : ''}.<br>
+        Se não foi você, ignore este e-mail: sua senha continua a mesma.
+      </p>
+    </div>
+  </div>`;
+}

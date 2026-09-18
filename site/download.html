@@ -27,11 +27,15 @@
   </header>
 
   <section class="banner" style="--bg:url('assets/img/bg/stadium-light.jpg')">
+    <span class="banner__glow" aria-hidden="true"></span>
+    <span class="banner__mesh" aria-hidden="true"></span>
+    <span class="banner__ball" aria-hidden="true"></span>
     <div class="banner__inner">
+      <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>Download</span></nav>
       <span class="banner__tag">Grátis para jogar</span>
       <h1 class="banner__title">Baixe e<br>jogue agora</h1>
-      <p class="banner__sub">Disponível em quatro plataformas com progresso compartilhado.</p>
-    </div><img class="banner__art" src="assets/img/art/player-boy.png" alt="">
+      <p class="banner__sub">Baixe o launcher no PC ou o APK no Android. A conta e o progresso são os mesmos nos dois.</p>
+    </div><div class="banner__stage"><img class="banner__art" src="assets/img/art/player-boy.png" alt=""></div>
   </section>
 
   <main class="sub">
@@ -39,10 +43,8 @@
     <section class="sec">
       <div class="wrap">
         <div class="platforms">
-          <div class="platform" data-reveal><span class="platform__ribbon">Novo</span><div class="platform__icon">📱</div><h3>iOS</h3><p>iPhone e iPad com iOS 15 ou superior.</p><span class="size">1,9 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-ios" data-require-auth><img src="assets/img/ui/appstore.svg" alt="App Store"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM.</p><span class="size">2,1 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-android" data-require-auth><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">🎮</div><h3>Nintendo Switch</h3><p>Compatível com Switch, Lite e OLED.</p><span class="size">3,4 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-switch" data-require-auth><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10/11 de 64 bits. Suporte a controle.</p><span class="size">4,8 GB · v12.0.1</span><a class="btn btn--yellow btn--sm" href="#" id="dl-pc" data-require-auth>Baixar instalador</a></div>
+          <div class="platform platform--destaque" data-reveal><span class="platform__ribbon">Recomendado</span><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10 e 11 de 64 bits. O launcher instala o jogo e mantém ele atualizado sozinho.</p><span class="size" id="size-pc">v12.0.1</span><a class="btn btn--yellow" href="#" id="dl-pc" data-require-auth>Baixar o launcher</a></div>
+          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM. Instale o APK e entre com a mesma conta.</p><span class="size" id="size-android">v12.0.1</span><a class="btn btn--lime" href="#" id="dl-android" data-require-auth>Baixar o APK</a></div>
         </div>
       </div>
     </section>
@@ -108,10 +110,9 @@
         </div>
         <div>
           <h4>Baixe agora</h4>
-          <div class="site-footer__badges">
-            <a href="download.html"><img src="assets/img/ui/appstore.svg" alt="App Store"></a>
-            <a href="download.html"><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a>
-            <a href="download.html"><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a>
+          <div class="site-footer__baixar">
+            <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
+            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>

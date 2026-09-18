@@ -151,6 +151,22 @@
     return gameFetch({ body: { action: 'password', password: current, next: next } }).then(function () {})
       .catch(function (e) { if (!e.offline) throw e; return anterior.changePassword(email, current, next); });
   };
+  /** Esqueci minha senha: pede o código de 6 dígitos por e-mail. */
+  api.forgot = function (email) {
+    return gameFetch({ body: { action: 'forgot', email: email } })
+      .catch(function (e) {
+        if (!e.offline) throw e;
+        throw new Error('A recuperação por e-mail depende do servidor do jogo, que está fora do ar agora. Fale com a equipe pelo Discord.');
+      });
+  };
+  /** Esqueci minha senha: troca a senha usando o código recebido. */
+  api.reset = function (email, code, next) {
+    return gameFetch({ body: { action: 'reset', email: email, code: code, next: next } })
+      .catch(function (e) {
+        if (!e.offline) throw e;
+        throw new Error('A recuperação por e-mail depende do servidor do jogo, que está fora do ar agora. Fale com a equipe pelo Discord.');
+      });
+  };
   /** Confirma o código de 6 dígitos que autoriza este computador. */
   api.confirmDevice = function (email, password, code) {
     return gameFetch({ body: { action: 'device-confirm', email: email, password: password, code: code, deviceId: deviceId() } }).then(fromGame);

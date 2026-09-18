@@ -2,13 +2,13 @@
  * Conta do jogador — grava direto na tabela `accounts` do banco do jogo.
  * A conta criada aqui é a MESMA que entra no cliente do Pokeworld.
  *
- * POST /api/account { action: 'register' | 'login' | 'password', ... }
+ * POST /api/account { action: 'register' | 'login' | 'password' | 'forgot' | 'reset', ... }
  * GET  /api/account            -> dados da conta + treinadores (Bearer token)
  */
 import crypto from 'crypto';
 import { gameConfigured, q, one, run, tableExists } from './_lib/gamedb.js';
 import { sign, accountFromRequest, hashSenha } from './_lib/session.js';
-import { mailConfigured, enviarEmail, emailCodigoDispositivo } from './_lib/mail.js';
+import { mailConfigured, enviarEmail, emailCodigoDispositivo, emailCodigoSenha } from './_lib/mail.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CODIGO_VALE_MIN = 15;
@@ -45,6 +45,20 @@ async function registrarAparelho(accountId, deviceId, req) {
     [accountId, String(deviceId).slice(0, 64), apelidoDoAparelho(req), ipDe(req)]
   );
 }
+async function mandarCodigoSenha(acc, req) {
+  const codigo = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
+  await run("UPDATE tokenvalidat SET expired = '1' WHERE id_account = ? AND expired = '0' AND token LIKE 'pwd:%'", [acc.id]);
+  await run(
+    "INSERT INTO tokenvalidat (id_account, token, expired, validation_date) VALUES (?, ?, '0', NOW())",
+    [acc.id, `pwd:${codigo}`]
+  );
+  await enviarEmail({
+    para: acc.email || acc.name,
+    assunto: 'Código para redefinir sua senha — Pokeworld Universe',
+    html: emailCodigoSenha({ codigo, ip: ipDe(req), quando: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) })
+  });
+}
+
 async function mandarCodigo(acc, deviceId, req) {
   const codigo = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
   await run("UPDATE tokenvalidat SET expired = '1' WHERE id_account = ? AND expired = '0'", [acc.id]);
@@ -207,6 +221,43 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Senha atual incorreta.' });
       }
       await run('UPDATE accounts SET password = ? WHERE id = ?', [hashSenha(nova), id]);
+      return res.status(200).json({ ok: true });
+    }
+
+    // ---------------- esqueci minha senha: pedir o código ----------------
+    if (action === 'forgot') {
+      if (!EMAIL.test(email)) return res.status(400).json({ error: 'Digite um e-mail válido.' });
+      if (!mailConfigured()) return res.status(503).json({ error: 'O envio de e-mail ainda não está configurado no servidor. Fale com a equipe pelo Discord.' });
+      const acc = await one('SELECT id, name, email FROM accounts WHERE email = ? OR name = ? LIMIT 1', [email, email]);
+      // a resposta é sempre a mesma: não dizemos se o e-mail existe ou não
+      if (acc) {
+        try { await mandarCodigoSenha(acc, req); }
+        catch (e) { console.error('[account] forgot', e); return res.status(502).json({ error: 'Não consegui enviar o e-mail agora. Tente de novo em instantes.' }); }
+      }
+      return res.status(200).json({ ok: true });
+    }
+
+    // ---------------- esqueci minha senha: trocar com o código ----------------
+    if (action === 'reset') {
+      const codigo = String(body.code || '').replace(/\D/g, '');
+      const nova = String(body.next || '');
+      if (!EMAIL.test(email) || codigo.length !== 6) return res.status(400).json({ error: 'Informe o código de 6 dígitos que chegou no seu e-mail.' });
+      if (nova.length < 8) return res.status(400).json({ error: 'A nova senha precisa ter pelo menos 8 caracteres.' });
+      const acc = await one('SELECT id FROM accounts WHERE email = ? OR name = ? LIMIT 1', [email, email]);
+      if (!acc) return res.status(401).json({ error: 'Código inválido. Peça um novo e tente de novo.' });
+
+      const reg = await one(
+        `SELECT id, validation_date FROM tokenvalidat
+          WHERE id_account = ? AND token = ? AND expired = '0'
+          ORDER BY id DESC LIMIT 1`,
+        [acc.id, `pwd:${codigo}`]
+      );
+      if (!reg) return res.status(401).json({ error: 'Código inválido. Peça um novo e tente de novo.' });
+      if (Date.now() - new Date(reg.validation_date).getTime() > CODIGO_VALE_MIN * 60000) {
+        return res.status(401).json({ error: 'Código expirado. Peça outro e tente de novo.' });
+      }
+      await run("UPDATE tokenvalidat SET expired = '1' WHERE id = ?", [reg.id]);
+      await run('UPDATE accounts SET password = ? WHERE id = ?', [hashSenha(nova), acc.id]);
       return res.status(200).json({ ok: true });
     }
 

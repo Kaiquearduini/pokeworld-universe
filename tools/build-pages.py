@@ -44,10 +44,9 @@ FOOTER = """
         </div>
         <div>
           <h4>Baixe agora</h4>
-          <div class="site-footer__badges">
-            <a href="download.html"><img src="assets/img/ui/appstore.svg" alt="App Store"></a>
-            <a href="download.html"><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a>
-            <a href="download.html"><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a>
+          <div class="site-footer__baixar">
+            <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
+            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>
@@ -88,12 +87,16 @@ def layout(slug, title, desc, banner, body, extra_head="", extra_bottom=""):
     <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </header>
 
-  <section class="banner{(' banner--blend') if banner.get('blend') else ''}" style="--bg:url('{banner['bg']}')">
+  <section class="banner{(' banner--blend') if banner.get('blend') else ''}{(' banner--solo') if not banner.get('art') else ''}" style="--bg:url('{banner['bg']}')">
+    <span class="banner__glow" aria-hidden="true"></span>
+    <span class="banner__mesh" aria-hidden="true"></span>
+    <span class="banner__ball" aria-hidden="true"></span>
     <div class="banner__inner">
+      <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>{banner.get('crumb', title)}</span></nav>
       <span class="banner__tag">{banner['tag']}</span>
       <h1 class="banner__title"{(' data-text="' + slug + '.banner.title"') if banner.get('editable') else ''}>{banner['title']}</h1>
       <p class="banner__sub"{(' data-text="' + slug + '.banner.sub"') if banner.get('editable') else ''}>{banner['sub']}</p>{banner.get('selos','')}
-    </div>{('<img class="banner__art" src="' + banner['art'] + '" alt="">') if banner.get('art') else ''}
+    </div>{('<div class="banner__stage"><img class="banner__art" src="' + banner['art'] + '" alt=""></div>') if banner.get('art') else ''}
   </section>
 
   <main class="sub">
@@ -260,15 +263,13 @@ PAGES["download"] = dict(
     title="Download",
     desc="Baixe o Pokeworld Universe para iOS, Android, Nintendo Switch e PC.",
     banner=dict(bg="assets/img/bg/stadium-light.jpg", tag="Grátis para jogar", title="Baixe e<br>jogue agora",
-                sub="Disponível em quatro plataformas com progresso compartilhado.", art="assets/img/art/player-boy.png"),
+                sub="Baixe o launcher no PC ou o APK no Android. A conta e o progresso são os mesmos nos dois.", art="assets/img/art/player-boy.png"),
     body="""
     <section class="sec">
       <div class="wrap">
         <div class="platforms">
-          <div class="platform" data-reveal><span class="platform__ribbon">Novo</span><div class="platform__icon">📱</div><h3>iOS</h3><p>iPhone e iPad com iOS 15 ou superior.</p><span class="size">1,9 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-ios" data-require-auth><img src="assets/img/ui/appstore.svg" alt="App Store"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM.</p><span class="size">2,1 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-android" data-require-auth><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">🎮</div><h3>Nintendo Switch</h3><p>Compatível com Switch, Lite e OLED.</p><span class="size">3,4 GB · v12.0.1</span><a class="badge-img" href="#" id="dl-switch" data-require-auth><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a></div>
-          <div class="platform" data-reveal><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10/11 de 64 bits. Suporte a controle.</p><span class="size">4,8 GB · v12.0.1</span><a class="btn btn--yellow btn--sm" href="#" id="dl-pc" data-require-auth>Baixar instalador</a></div>
+          <div class="platform platform--destaque" data-reveal><span class="platform__ribbon">Recomendado</span><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10 e 11 de 64 bits. O launcher instala o jogo e mantém ele atualizado sozinho.</p><span class="size" id="size-pc">v12.0.1</span><a class="btn btn--yellow" href="#" id="dl-pc" data-require-auth>Baixar o launcher</a></div>
+          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM. Instale o APK e entre com a mesma conta.</p><span class="size" id="size-android">v12.0.1</span><a class="btn btn--lime" href="#" id="dl-android" data-require-auth>Baixar o APK</a></div>
         </div>
       </div>
     </section>
@@ -667,10 +668,18 @@ PAGES["pagamento"] = dict(
           <article class="acc-card">
             <h2 class="acc-card__title">Seu <span class="grad grad--yellow">pedido</span></h2>
             <div class="resumo" id="resumo-pedido"></div>
-            <h3 class="pay-title">Escolha o meio de pagamento</h3>
+            <h3 class="pay-title">Escolha o meio de pagamento <span>clique em uma das opções</span></h3>
             <div class="pay-ways" id="meios-pagamento">
-              <button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>
-              <button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>
+              <button type="button" class="pay-way pay-way--mp" data-prov="mercadopago">
+                <span class="pay-way__head"><b>Mercado Pago</b><i class="pay-way__seta" aria-hidden="true"></i></span>
+                <span class="pay-way__li">Pix, boleto ou cartão</span>
+                <span class="pay-way__li">Confirmação na hora</span>
+              </button>
+              <button type="button" class="pay-way pay-way--st" data-prov="stripe">
+                <span class="pay-way__head"><b>Stripe</b><i class="pay-way__seta" aria-hidden="true"></i></span>
+                <span class="pay-way__li">Cartão de crédito ou débito</span>
+                <span class="pay-way__li">Aceita cartão internacional</span>
+              </button>
             </div>
             <p class="mp-note">🔒 O pagamento acontece no site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>
             <p class="mp-regras">** Ao gerar o QR Code você automaticamente declara aceitar as regras</p>

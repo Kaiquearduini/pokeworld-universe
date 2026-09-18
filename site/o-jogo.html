@@ -27,11 +27,15 @@
   </header>
 
   <section class="banner" style="--bg:url('assets/img/bg/champions-arena.jpg')">
+    <span class="banner__glow" aria-hidden="true"></span>
+    <span class="banner__mesh" aria-hidden="true"></span>
+    <span class="banner__ball" aria-hidden="true"></span>
     <div class="banner__inner">
+      <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>O Jogo</span></nav>
       <span class="banner__tag">Sobre o jogo</span>
       <h1 class="banner__title">Um universo<br>para batalhar</h1>
       <p class="banner__sub">Forme seu time de cinco treinadores, escolha seu Pokémon e dispute arenas em partidas rápidas de 10 minutos.</p>
-    </div><img class="banner__art" src="assets/img/art/player-girl.png" alt="">
+    </div><div class="banner__stage"><img class="banner__art" src="assets/img/art/player-girl.png" alt=""></div>
   </section>
 
   <main class="sub">
@@ -139,10 +143,9 @@
         </div>
         <div>
           <h4>Baixe agora</h4>
-          <div class="site-footer__badges">
-            <a href="download.html"><img src="assets/img/ui/appstore.svg" alt="App Store"></a>
-            <a href="download.html"><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a>
-            <a href="download.html"><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a>
+          <div class="site-footer__baixar">
+            <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
+            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>

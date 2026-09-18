@@ -10,22 +10,113 @@
 .nav a.is-active { color: var(--lime); }
 .nav a.is-active::after { transform: scaleX(1); background: var(--lime); }
 
-/* ---------- banner ---------- */
+/* ---------- hero das subpáginas ---------- */
 .banner {
   position: relative;
-  height: 38rem;
+  display: flex;
+  align-items: center;
+  min-height: 56rem;
+  padding: 9rem 0 11rem;
   overflow: hidden;
-  background: #0d1330 var(--bg) center / cover no-repeat;
+  isolation: isolate;
+  background: #070b1e var(--bg) center / cover no-repeat;
   color: #fff;
 }
-.banner::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,10,30,.85) 0%, rgba(8,10,30,.45) 55%, rgba(8,10,30,.1) 100%); }
-.banner::after { content: ""; position: absolute; left: 0; right: 0; bottom: -0.1rem; height: 6rem; background: url("assets/d-hero-vector3.svg") no-repeat center bottom / 100% 100%; }
-.banner__inner { position: relative; z-index: 1; max-width: 120rem; margin: 0 auto; padding: 7rem 10rem 0; }
-.banner__tag { display: inline-flex; align-items: center; gap: .8rem; padding: .7rem 1.6rem; border: .12rem solid rgba(255,255,255,.7); border-radius: 10rem; font: 400 1.7rem var(--montreal); backdrop-filter: blur(4px); }
-.banner__tag::before { content: ""; width: .8rem; height: .8rem; border-radius: 50%; background: var(--lime); box-shadow: 0 0 1rem var(--lime); }
-.banner__title { margin-top: 1.2rem; font: 400 7.6rem/0.95 var(--bebas); letter-spacing: .01em; text-shadow: 0 .6rem 3rem rgba(0,0,0,.5); }
-.banner__sub { margin-top: 1.4rem; max-width: 62rem; font: 400 2rem/1.4 var(--montreal); color: rgba(255,255,255,.85); }
-.banner__art { position: absolute; right: 8rem; bottom: -2rem; height: 42rem; z-index: 1; filter: drop-shadow(0 2rem 4rem rgba(0,0,0,.5)); pointer-events: none; }
+/* profundidade: escurece a esquerda, o topo e a base da foto */
+.banner::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(100deg, rgba(6,9,26,.95) 0%, rgba(6,9,26,.8) 34%, rgba(6,9,26,.3) 66%, rgba(6,9,26,.62) 100%),
+    linear-gradient(180deg, rgba(6,9,26,.72) 0%, rgba(6,9,26,0) 26%, rgba(6,9,26,.5) 76%, rgba(6,9,26,.88) 100%);
+}
+/* luz da marca: azul atrás da arte, índigo no rodapé, lime no canto */
+.banner__glow {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(40rem 40rem at 74% 48%, rgba(74,163,255,.4), transparent 66%),
+    radial-gradient(72rem 34rem at 6% 108%, rgba(5,48,239,.55), transparent 70%),
+    radial-gradient(26rem 26rem at 94% 6%, rgba(196,255,74,.13), transparent 70%);
+}
+/* trama hexagonal da identidade, bem discreta */
+.banner__mesh {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: url("assets/img/bg/hex-plain.png") center / 32rem repeat;
+  opacity: .08;
+  -webkit-mask-image: linear-gradient(180deg, #000 8%, transparent 86%);
+  mask-image: linear-gradient(180deg, #000 8%, transparent 86%);
+}
+/* pokébola gigante em contorno, girando devagar */
+.banner__ball {
+  position: absolute; z-index: 2; pointer-events: none;
+  right: -13rem; top: -16rem; width: 50rem; height: 50rem; border-radius: 50%;
+  border: .2rem solid rgba(255,255,255,.08);
+  animation: giraBola 60s linear infinite;
+}
+.banner__ball::before { content: ""; position: absolute; left: -.2rem; right: -.2rem; top: 50%; height: .2rem; background: rgba(255,255,255,.08); }
+.banner__ball::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 12rem; height: 12rem;
+  margin: -6rem 0 0 -6rem; border-radius: 50%; border: .2rem solid rgba(255,255,255,.1);
+  box-shadow: 0 0 6rem rgba(74,163,255,.25);
+}
+@keyframes giraBola { to { transform: rotate(360deg); } }
+/* curva branca da base, quando a próxima seção é clara */
+.banner::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -.1rem; z-index: 4;
+  height: 6rem; background: url("assets/d-hero-vector3.svg") no-repeat center bottom / 100% 100%;
+}
+
+/* ---- conteúdo, alinhado com o .wrap das seções ---- */
+.banner__inner { position: relative; z-index: 3; width: min(160rem, 100% - 8rem); margin: 0 auto; }
+.banner__crumb { display: flex; align-items: center; gap: .9rem; margin-bottom: 2rem; font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.75); }
+.banner__crumb a { color: rgba(255,255,255,.6); transition: color .2s; }
+.banner__crumb a:hover { color: var(--lime); }
+.banner__crumb i { width: .5rem; height: .5rem; border-radius: 50%; background: rgba(255,255,255,.35); }
+.banner__tag {
+  display: inline-flex; align-items: center; gap: .9rem; padding: .8rem 1.8rem;
+  border: .12rem solid rgba(255,255,255,.22); border-radius: 10rem;
+  background: rgba(255,255,255,.07); backdrop-filter: blur(8px);
+  font: 400 1.6rem var(--montreal); letter-spacing: .02em; color: rgba(255,255,255,.92);
+}
+.banner__tag::before {
+  content: ""; width: .8rem; height: .8rem; border-radius: 50%; background: var(--lime);
+  box-shadow: 0 0 1rem var(--lime); animation: pisca 2.4s ease-in-out infinite;
+}
+@keyframes pisca { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.75); } }
+.banner__title {
+  margin-top: 1.8rem; font: 400 9rem/0.92 var(--bebas); letter-spacing: .005em;
+  text-shadow: 0 1rem 4rem rgba(0,0,0,.55);
+}
+.banner__title .grad { background-size: 100% 100%; }
+.banner__sub {
+  position: relative; margin-top: 2rem; padding-left: 2rem; max-width: 60rem;
+  font: 400 1.9rem/1.55 var(--montreal); color: rgba(255,255,255,.82);
+}
+.banner__sub::before {
+  content: ""; position: absolute; left: 0; top: .3rem; bottom: .3rem; width: .3rem;
+  border-radius: .3rem; background: linear-gradient(180deg, var(--lime), rgba(5,48,239,0));
+}
+
+/* ---- arte do personagem ---- */
+.banner__stage { position: absolute; z-index: 3; right: 4rem; bottom: 0; width: 54rem; height: 100%; pointer-events: none; }
+.banner__stage::before {
+  content: ""; position: absolute; left: 50%; top: 48%; width: 40rem; height: 40rem;
+  margin: -20rem 0 0 -20rem; border-radius: 50%;
+  background: radial-gradient(circle, rgba(94,176,255,.32), transparent 62%);
+}
+/* sombra no chão, para o personagem não parecer flutuando solto */
+.banner__stage::after {
+  content: ""; position: absolute; left: 50%; bottom: 4rem; width: 26rem; height: 4rem;
+  margin-left: -13rem; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,.45), transparent 70%);
+}
+.banner__art {
+  position: absolute; inset: auto 0 0 0; width: 100%; height: 88%;
+  object-fit: contain; object-position: bottom center;
+  filter: drop-shadow(0 2.4rem 4.4rem rgba(0,0,0,.6));
+  animation: flutua 6s ease-in-out infinite;
+}
+/* sem personagem: a pokébola cresce e ocupa o lado direito */
+.banner--solo .banner__ball { right: -6rem; top: 50%; margin-top: -26rem; width: 52rem; height: 52rem; }
 
 /* ---------- seções ---------- */
 .sub { position: relative; }
@@ -155,7 +246,12 @@
 .share button:hover { border-color: #0530ef; }
 
 /* ---------- DOWNLOAD ---------- */
-.platforms { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4rem; }
+.platforms { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; }
+/* o launcher do PC é o caminho principal, então ganha destaque */
+.platform--destaque { background: linear-gradient(160deg, #111a3d, #0a1030); color: #fff; box-shadow: 0 2rem 5rem rgba(5,48,239,.28); }
+.platform--destaque p { color: rgba(255,255,255,.72); }
+.platform--destaque .size { color: rgba(255,255,255,.55); }
+.platform--destaque .platform__icon { background: rgba(255,255,255,.08); }
 .platform { position: relative; padding: 3.2rem 2.6rem; border-radius: 2.4rem; background: #fff; text-align: center; box-shadow: 0 1rem 3rem rgba(0,0,0,.06); overflow: hidden; transition: transform .35s, box-shadow .35s; }
 .platform:hover { transform: translateY(-.8rem); box-shadow: 0 2.4rem 5rem rgba(5,48,239,.18); }
 .platform__icon { font-size: 5rem; line-height: 1; }
@@ -294,11 +390,6 @@
 .cart__foot .btn { width: 100%; }
 
 /* ---------- MINHA CONTA ---------- */
-body[data-page="minha-conta"] .banner { height: 26rem; }
-body[data-page="minha-conta"] .banner__inner { padding-top: 5rem; }
-body[data-page="minha-conta"] .banner__title { font-size: 5.6rem; }
-body[data-page="minha-conta"] .banner__sub { font-size: 1.7rem; }
-body[data-page="minha-conta"] .banner__art { height: 30rem; bottom: -1rem; right: 6rem; }
 body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .acc-sec, .rank-sec { background-color: #0d1330; }
 .acc-sec { background: #0d1330 url("assets/img/bg/hex-plain.png") center / 40rem repeat; color: #fff; }
@@ -375,13 +466,51 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .ticket small { color: rgba(255,255,255,.55); }
 .mp-note { display: flex; align-items: center; gap: .8rem; margin-top: 1.4rem; font-size: 1.3rem; color: rgba(255,255,255,.55); }
 
-/* escolha do meio de pagamento */
-.pay-ways { display: grid; gap: 1.2rem; margin-bottom: 1.6rem; }
-.pay-way { display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; padding: 1.8rem 2rem; border-radius: 1.6rem; border: .15rem solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: #fff; text-align: left; cursor: pointer; transition: all .2s; }
-.pay-way:hover { border-color: #70f5ff; background: rgba(112,244,255,.1); transform: translateY(-.2rem); }
-.pay-way b { font: 500 2rem var(--montreal); }
-.pay-way small { font: 400 1.4rem var(--montreal); color: rgba(255,255,255,.6); }
-.pay-way:disabled { opacity: .6; cursor: wait; }
+/* escolha do meio de pagamento: dois cartões que pedem o clique */
+.pay-title span { display: block; margin-top: .4rem; font: 400 1.4rem var(--montreal); letter-spacing: 0; text-transform: none; color: rgba(255,255,255,.55); }
+.pay-ways { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem; margin-bottom: 1.8rem; }
+.pay-way {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: .7rem;
+  padding: 2.4rem 2.6rem 2.6rem; border: 0; border-radius: 2rem; overflow: hidden; isolation: isolate;
+  color: #fff; text-align: left; cursor: pointer;
+  transition: transform .25s, box-shadow .25s, filter .2s;
+  animation: payPulso 2.6s ease-in-out infinite;
+}
+.pay-way--mp { background: linear-gradient(135deg, #2f8fe0, #5fb8f2); box-shadow: 0 1.2rem 3rem rgba(47,143,224,.35); }
+.pay-way--st { background: linear-gradient(135deg, #d94f7a, #ef6b62); box-shadow: 0 1.2rem 3rem rgba(217,79,122,.35); animation-delay: -1.3s; }
+/* reflexo que atravessa o cartão, para o olho perceber que é clicável */
+.pay-way::after {
+  content: ""; position: absolute; top: -50%; left: -60%; width: 35%; height: 200%;
+  background: linear-gradient(100deg, rgba(255,255,255,0), rgba(255,255,255,.35) 50%, rgba(255,255,255,0));
+  transform: skewX(-20deg); animation: payBrilho 2.6s ease-in-out infinite; pointer-events: none;
+}
+.pay-way--st::after { animation-delay: -1.3s; }
+.pay-way__head { display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; width: 100%; }
+.pay-way b { font: 500 2.6rem/1.1 var(--montreal); }
+.pay-way__seta { position: relative; width: 3.4rem; height: 3.4rem; flex: none; border-radius: 50%; background: rgba(255,255,255,.22); transition: transform .25s, background .25s; }
+.pay-way__seta::before, .pay-way__seta::after {
+  content: ""; position: absolute; top: 50%; left: 50%; background: #fff; border-radius: .2rem;
+}
+.pay-way__seta::before { width: 1.3rem; height: .2rem; margin: -.1rem 0 0 -.65rem; }
+.pay-way__seta::after { width: .8rem; height: .8rem; margin: -.4rem 0 0 -.1rem; border: 0; border-top: .2rem solid #fff; border-right: .2rem solid #fff; background: none; transform: rotate(45deg); }
+.pay-way__li { position: relative; padding-left: 2.4rem; font: 400 1.5rem/1.5 var(--montreal); color: rgba(255,255,255,.9); }
+.pay-way__li::before {
+  content: ""; position: absolute; left: .4rem; top: .5rem; width: .6rem; height: 1.1rem;
+  border: 0; border-right: .22rem solid #fff; border-bottom: .22rem solid #fff; transform: rotate(45deg);
+}
+.pay-way:hover { transform: translateY(-.5rem); animation-play-state: paused; filter: brightness(1.06); }
+.pay-way:hover::after { animation-play-state: paused; }
+.pay-way--mp:hover { box-shadow: 0 2rem 4.4rem rgba(47,143,224,.55); }
+.pay-way--st:hover { box-shadow: 0 2rem 4.4rem rgba(217,79,122,.55); }
+.pay-way:hover .pay-way__seta { transform: translateX(.4rem); background: rgba(255,255,255,.38); }
+.pay-way:disabled, .pay-way.is-indo { opacity: .75; cursor: wait; animation: none; }
+.pay-way.is-indo::after { display: none; }
+@keyframes payPulso {
+  0%, 100% { box-shadow: 0 1.2rem 3rem rgba(0,0,0,.28), 0 0 0 0 rgba(255,255,255,.35); }
+  60%      { box-shadow: 0 1.2rem 3rem rgba(0,0,0,.28), 0 0 0 1rem rgba(255,255,255,0); }
+}
+@keyframes payBrilho { 0% { left: -60%; } 55%, 100% { left: 130%; } }
+@media (prefers-reduced-motion: reduce) { .pay-way, .pay-way::after { animation: none; } }
 
 /* ---------- WIKI ---------- */
 .dex-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem; margin-bottom: 3rem; }
@@ -420,8 +549,9 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .site-footer ul { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
 .site-footer ul a { font: 400 1.6rem var(--montreal); color: rgba(255,255,255,.8); transition: color .2s, padding-left .2s; }
 .site-footer ul a:hover { color: #fff; padding-left: .6rem; }
-.site-footer__badges { display: flex; flex-direction: column; gap: 1.2rem; }
-.site-footer__badges img { width: 16rem; }
+.site-footer__baixar { display: flex; flex-direction: column; align-items: flex-start; gap: 1.2rem; }
+.baixar-alt { font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.6); text-decoration: underline; text-underline-offset: .3rem; }
+.baixar-alt:hover { color: var(--lime); }
 .site-footer__social { display: flex; gap: 1.2rem; margin-top: 1.8rem; }
 .site-footer__social a { width: 4.4rem; height: 4.4rem; border-radius: 1.2rem; overflow: hidden; background: rgba(255,255,255,.08); display: grid; place-items: center; }
 .site-footer__social img { width: 70%; height: 70%; object-fit: contain; }
@@ -434,17 +564,26 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   .page--sub .topbar { height: 8.2rem; }
   .page--sub .topbar .header-shape--white { background-image: url("assets/m-header-vector2.svg"); }
   .page--sub .topbar .header-shape--grad { background-image: url("assets/m-header-vector1.svg"); }
-  .banner { height: 30rem; }
-  .banner__inner { padding: 6rem 2.4rem 0; }
-  .banner__title { font-size: 5rem; }
-  body[data-page="minha-conta"] .banner { height: 22rem; }
-  body[data-page="minha-conta"] .banner__title { font-size: 4.2rem; }
-  /* no celular o banner cresce com o texto, em vez de cortá-lo */
-  .banner--blend { height: auto !important; min-height: 26rem; }
-  .banner--blend .banner__inner { padding-top: 6rem !important; padding-bottom: 4rem; }
-  .banner--blend .banner__title { font-size: 4.4rem !important; }
-  .banner__sub { font-size: 1.6rem; }
-  .banner__art { display: none; }
+  .banner { min-height: 40rem; padding: 5rem 0 8rem; }
+  .banner__inner { width: calc(100% - 4rem); }
+  .banner__crumb { margin-bottom: 1.4rem; font-size: 1.4rem; }
+  .banner__tag { padding: .6rem 1.4rem; font-size: 1.5rem; }
+  .banner__title { margin-top: 1.4rem; font-size: 5.6rem; }
+  .banner__sub { margin-top: 1.6rem; padding-left: 1.4rem; font-size: 1.6rem; }
+  .banner--blend { padding-bottom: 10rem; }
+  .banner--blend::after { height: 12rem; }
+  .banner__ball, .banner--solo .banner__ball { right: -12rem; top: -9rem; margin-top: 0; width: 34rem; height: 34rem; }
+  body[data-page="minha-conta"] .banner,
+  body[data-page="tickets"] .banner,
+  body[data-page="seguranca"] .banner,
+  body[data-page="perfil"] .banner,
+  body[data-page="pagamento"] .banner { min-height: 32rem; padding: 4.5rem 0 8rem; }
+  body[data-page="minha-conta"] .banner__title,
+  body[data-page="tickets"] .banner__title,
+  body[data-page="seguranca"] .banner__title,
+  body[data-page="perfil"] .banner__title,
+  body[data-page="pagamento"] .banner__title { font-size: 5rem; }
+  .banner__stage { display: none; }
   .sec { padding: 6rem 0; }
   .wrap, .wrap--narrow { width: calc(100% - 4rem); }
   .sec__head { flex-direction: column; align-items: flex-start; gap: 1.2rem; margin-bottom: 3rem; }
@@ -490,6 +629,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .login-page__art--r { right: 2rem; }
 
 .login-box { position: relative; z-index: 1; width: min(52rem, 100%); padding: 4rem 4rem 3.4rem; border-radius: 2.8rem; color: #fff; font-family: var(--montreal); background: linear-gradient(rgba(6,10,30,.92), rgba(6,10,30,.92)) padding-box, var(--grad-blue) border-box; border: .3rem solid transparent; box-shadow: 0 3rem 9rem rgba(5,48,239,.45); }
+.login-box:has(.login-form--reg:not([hidden])), .login-box:has(.recover) { width: min(78rem, 100%); }
 .login-box__head { text-align: center; margin-bottom: 2.8rem; }
 .login-box__head img { width: 14rem; margin: -1rem auto .6rem; object-fit: contain; }
 .login-box__head h1 { font: 400 4.6rem/1 var(--bebas); }
@@ -502,6 +642,31 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 .login-form[hidden] { display: none; }
 .login-form .auth__submit { margin-top: .6rem; }
 
+/* ---- cadastro e recuperação em duas colunas no desktop ---- */
+.login-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2.4rem; }
+.login-grid > .field, .login-grid__pw { min-width: 0; }
+.login-grid__pw .field { margin-bottom: .8rem; }
+.login-dicas { list-style: none; align-self: start; margin-bottom: 1.6rem; padding: 1.4rem 1.6rem; border-radius: 1.2rem; background: rgba(255,255,255,.04); border: .1rem solid rgba(255,255,255,.08); }
+.login-dicas li { position: relative; padding-left: 1.8rem; font: 400 1.35rem/1.7 var(--montreal); color: rgba(255,255,255,.6); }
+.login-dicas li::before { content: ""; position: absolute; left: 0; top: 1rem; width: .6rem; height: .6rem; border-radius: 50%; background: var(--lime); opacity: .7; }
+
+/* termos e "esqueci minha senha" na mesma linha */
+.login-row { display: flex; align-items: center; justify-content: space-between; gap: 1.6rem; flex-wrap: wrap; }
+.login-row .check { margin-bottom: 0; }
+.login-forgot { flex: none; font: 400 1.4rem var(--montreal); color: #70f5ff; text-decoration: underline; text-underline-offset: .3rem; }
+.login-forgot:hover { color: var(--lime); }
+
+/* ---- recuperar acesso ---- */
+.is-oculto { display: none !important; }
+.recover__head { text-align: center; margin-bottom: 2rem; }
+.recover__head h2 { font: 400 3.6rem/1 var(--bebas); }
+.recover__head p { margin-top: .8rem; font: 400 1.5rem/1.5 var(--montreal); color: rgba(255,255,255,.7); }
+.recover__steps { display: flex; align-items: center; justify-content: center; gap: 1.2rem; margin-bottom: 2.4rem; }
+.recover__steps b { padding: .6rem 1.4rem; border-radius: 10rem; background: rgba(255,255,255,.06); font: 400 1.35rem var(--montreal); color: rgba(255,255,255,.5); transition: background .25s, color .25s; }
+.recover__steps b.is-on { background: var(--grad-yellow); color: #000; }
+.recover__steps i { width: 2.4rem; height: .1rem; background: rgba(255,255,255,.2); }
+.recover .auth__switch { margin-top: 1.4rem; }
+
 .login-perks { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-top: 2.8rem; padding-top: 2.4rem; border-top: .1rem solid rgba(255,255,255,.1); }
 .login-perks li { display: flex; align-items: center; gap: 1.2rem; font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.72); }
 .login-perks b { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; flex: none; border-radius: 50%; background: rgba(112,244,255,.15); color: #70f5ff; font: 400 1.6rem var(--bebas); }
@@ -510,6 +675,12 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   .login-page { padding: 4rem 1.6rem 6rem; min-height: 0; }
   .login-page__art { display: none; }
   .login-box { padding: 3rem 2.2rem 2.6rem; }
+  .login-grid { grid-template-columns: 1fr; gap: 0; }
+  .pay-ways { grid-template-columns: 1fr; gap: 1.4rem; }
+  .pay-way { padding: 2rem 2.2rem 2.2rem; }
+  .pay-way b { font-size: 2.2rem; }
+  .login-dicas { display: none; }
+  .login-row { flex-direction: column; align-items: flex-start; gap: .8rem; }
   .login-box__head h1 { font-size: 3.6rem; }
 }
 
@@ -612,44 +783,35 @@ body[data-page="doar"] #pacotes::before { background: linear-gradient(180deg, rg
 /* =====================================================================
    Banner que emenda na seção escura (sem a faixa branca)
    ===================================================================== */
-.banner--blend { height: 46rem; background-position: center 35%; }
-/* páginas da conta e do ranking são um pouco mais curtas no topo */
-body[data-page="minha-conta"] .banner--blend,
-body[data-page="tickets"] .banner--blend,
-body[data-page="seguranca"] .banner--blend,
-body[data-page="perfil"] .banner--blend,
-body[data-page="pagamento"] .banner--blend { height: 28rem; }
-body[data-page="minha-conta"] .banner--blend .banner__inner,
-body[data-page="tickets"] .banner--blend .banner__inner,
-body[data-page="seguranca"] .banner--blend .banner__inner,
-body[data-page="perfil"] .banner--blend .banner__inner,
-body[data-page="pagamento"] .banner--blend .banner__inner { padding-top: 5.5rem; }
-body[data-page="minha-conta"] .banner--blend .banner__title,
-body[data-page="tickets"] .banner--blend .banner__title,
-body[data-page="seguranca"] .banner--blend .banner__title,
-body[data-page="perfil"] .banner--blend .banner__title,
-body[data-page="pagamento"] .banner--blend .banner__title { font-size: 5.6rem; }
+.banner--blend { background-position: center 35%; padding-bottom: 14rem; }
 .banner--blend::before {
   background:
-    radial-gradient(120rem 60rem at 18% 40%, rgba(5,48,239,.55), transparent 70%),
-    linear-gradient(90deg, rgba(8,11,30,.94) 0%, rgba(8,11,30,.78) 45%, rgba(8,11,30,.35) 100%);
+    radial-gradient(120rem 60rem at 16% 45%, rgba(5,48,239,.5), transparent 70%),
+    linear-gradient(100deg, rgba(8,11,30,.94) 0%, rgba(8,11,30,.78) 42%, rgba(8,11,30,.34) 100%),
+    linear-gradient(180deg, rgba(8,11,30,.7) 0%, rgba(8,11,30,0) 30%, rgba(8,11,30,.5) 80%);
 }
 /* a curva branca vira o degradê do fundo escuro da seção seguinte */
 .banner--blend::after {
-  background: linear-gradient(180deg, rgba(13,19,48,0) 0%, rgba(13,19,48,.65) 45%, #0d1330 100%);
-  height: 18rem;
+  background: linear-gradient(180deg, rgba(13,19,48,0) 0%, rgba(13,19,48,.7) 45%, #0d1330 100%);
+  height: 20rem;
 }
-.banner--blend .banner__inner { padding-top: 9rem; }
-.banner--blend .banner__title { font-size: 8.6rem; line-height: .92; text-shadow: 0 1rem 4rem rgba(0,0,0,.6); }
-.banner--blend .banner__title .grad { background-size: 100% 100%; }
-.banner--blend .banner__sub { max-width: 56rem; font-size: 1.9rem; color: rgba(255,255,255,.8); }
-.banner--blend .banner__tag { background: rgba(0,0,0,.35); }
 .banner--blend .banner__art {
-  height: 46rem; right: 4rem; bottom: -2rem;
-  filter: drop-shadow(0 2rem 5rem rgba(0,0,0,.65)) drop-shadow(0 0 6rem rgba(252,208,92,.35));
-  animation: flutua 5s ease-in-out infinite;
+  filter: drop-shadow(0 2rem 5rem rgba(0,0,0,.65)) drop-shadow(0 0 6rem rgba(252,208,92,.3));
 }
 @keyframes flutua { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.6rem); } }
+
+/* páginas da conta: hero mais enxuta, porque o conteúdo vem logo abaixo */
+body[data-page="minha-conta"] .banner,
+body[data-page="tickets"] .banner,
+body[data-page="seguranca"] .banner,
+body[data-page="perfil"] .banner,
+body[data-page="pagamento"] .banner { min-height: 44rem; padding: 7rem 0 12rem; }
+body[data-page="minha-conta"] .banner__title,
+body[data-page="tickets"] .banner__title,
+body[data-page="seguranca"] .banner__title,
+body[data-page="perfil"] .banner__title,
+body[data-page="pagamento"] .banner__title { font-size: 7.2rem; }
+body[data-page="minha-conta"] .banner__stage { width: 44rem; right: 6rem; }
 
 /* selos de confiança logo abaixo do título */
 .banner__selos { display: flex; flex-wrap: wrap; gap: 1rem 2.4rem; margin-top: 2.2rem; }
@@ -704,9 +866,6 @@ body[data-page="pagamento"] .banner--blend .banner__title { font-size: 5.6rem; }
 .packs--3 .pack__badge { top: -1.4rem; font-size: 1.4rem; padding: .5rem 1.6rem; }
 
 @media (max-width: 900px) {
-  .banner--blend { height: 36rem; }
-  .banner--blend .banner__title { font-size: 5.4rem; }
-  .banner--blend .banner__inner { padding-top: 6rem; }
   .banner__selos { display: none; }
   .packs--3 { grid-template-columns: 1fr 1fr; gap: 2.4rem 1.4rem; }
   .packs--3 .pack b { font-size: 3.6rem; }

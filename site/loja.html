@@ -27,11 +27,15 @@
   </header>
 
   <section class="banner" style="--bg:url('assets/img/bg/sky.jpg')">
+    <span class="banner__glow" aria-hidden="true"></span>
+    <span class="banner__mesh" aria-hidden="true"></span>
+    <span class="banner__ball" aria-hidden="true"></span>
     <div class="banner__inner">
+      <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>Loja</span></nav>
       <span class="banner__tag">Loja oficial</span>
       <h1 class="banner__title">Loja<br>Pokeworld</h1>
       <p class="banner__sub">Novos Pokémon, holo-trajes exclusivos e o Passe de Aventura da temporada.</p>
-    </div><img class="banner__art" src="assets/img/art/charizard.png" alt="">
+    </div><div class="banner__stage"><img class="banner__art" src="assets/img/art/charizard.png" alt=""></div>
   </section>
 
   <main class="sub">
@@ -83,10 +87,9 @@
         </div>
         <div>
           <h4>Baixe agora</h4>
-          <div class="site-footer__badges">
-            <a href="download.html"><img src="assets/img/ui/appstore.svg" alt="App Store"></a>
-            <a href="download.html"><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a>
-            <a href="download.html"><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a>
+          <div class="site-footer__baixar">
+            <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
+            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>

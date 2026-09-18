@@ -26,8 +26,12 @@
     <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </header>
 
-  <section class="banner banner--blend" style="--bg:url('assets/img/bg/stadium-blue.jpg')">
+  <section class="banner banner--blend banner--solo" style="--bg:url('assets/img/bg/stadium-blue.jpg')">
+    <span class="banner__glow" aria-hidden="true"></span>
+    <span class="banner__mesh" aria-hidden="true"></span>
+    <span class="banner__ball" aria-hidden="true"></span>
     <div class="banner__inner">
+      <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>Pagamento</span></nav>
       <span class="banner__tag">Checkout</span>
       <h1 class="banner__title">Como quer<br>pagar?</h1>
       <p class="banner__sub">Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>
@@ -51,10 +55,18 @@
           <article class="acc-card">
             <h2 class="acc-card__title">Seu <span class="grad grad--yellow">pedido</span></h2>
             <div class="resumo" id="resumo-pedido"></div>
-            <h3 class="pay-title">Escolha o meio de pagamento</h3>
+            <h3 class="pay-title">Escolha o meio de pagamento <span>clique em uma das opções</span></h3>
             <div class="pay-ways" id="meios-pagamento">
-              <button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>
-              <button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>
+              <button type="button" class="pay-way pay-way--mp" data-prov="mercadopago">
+                <span class="pay-way__head"><b>Mercado Pago</b><i class="pay-way__seta" aria-hidden="true"></i></span>
+                <span class="pay-way__li">Pix, boleto ou cartão</span>
+                <span class="pay-way__li">Confirmação na hora</span>
+              </button>
+              <button type="button" class="pay-way pay-way--st" data-prov="stripe">
+                <span class="pay-way__head"><b>Stripe</b><i class="pay-way__seta" aria-hidden="true"></i></span>
+                <span class="pay-way__li">Cartão de crédito ou débito</span>
+                <span class="pay-way__li">Aceita cartão internacional</span>
+              </button>
             </div>
             <p class="mp-note">🔒 O pagamento acontece no site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>
             <p class="mp-regras">** Ao gerar o QR Code você automaticamente declara aceitar as regras</p>
@@ -95,10 +107,9 @@
         </div>
         <div>
           <h4>Baixe agora</h4>
-          <div class="site-footer__badges">
-            <a href="download.html"><img src="assets/img/ui/appstore.svg" alt="App Store"></a>
-            <a href="download.html"><img src="assets/img/ui/googleplay.svg" alt="Google Play"></a>
-            <a href="download.html"><img src="assets/img/ui/switch.svg" alt="Nintendo Switch"></a>
+          <div class="site-footer__baixar">
+            <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
+            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>

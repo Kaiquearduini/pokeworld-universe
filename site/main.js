@@ -96,7 +96,8 @@
    ===================================================================== */
 (function () {
   var stage = document.getElementById('stage');
-  if (!stage) return;
+  // no celular a cena final fica escondida (o rodapé normal entra no lugar)
+  if (!stage || window.matchMedia('(max-width: 900px)').matches) return;
   var sticky = stage.querySelector('.stage__sticky');
   var frame = stage.querySelector('.stage__frame');
   var hero = stage.querySelector('.stage__hero');

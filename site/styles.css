@@ -1757,3 +1757,40 @@ body.is-locked { overflow: hidden; }
   .topbar-actions:has(.user-chip) { display: flex; background: none; }
   .topbar-actions:has(.user-chip) .btn-jogue-agora { display: none; }
 }
+
+
+/* =====================================================================
+   Rodapé da home no celular
+   No desktop a home termina na cena de scroll (#stage). No celular essa
+   cena é escondida — ela quebra em tela estreita — e este rodapé, o mesmo
+   das subpáginas, entra no lugar.
+   ===================================================================== */
+.site-footer--mobile { display: none; }
+.site-footer { position: relative; overflow: hidden; background: #0d1330; color: #fff; padding: 6rem 0 3rem; }
+.site-footer::before { content: ""; position: absolute; inset: 0; background: url("assets/img/bg/stadium-blue.jpg") center / cover; opacity: .18; }
+.site-footer > * { position: relative; }
+.site-footer .wrap { width: min(160rem, 100% - 8rem); margin: 0 auto; }
+.site-footer__top { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 4rem; margin-bottom: 4rem; }
+.site-footer__brand img { width: 9rem; height: 9rem; object-fit: cover; }
+.site-footer__brand p { margin-top: 1.4rem; max-width: 34rem; font: 300 1.5rem/1.6 var(--montreal); color: rgba(255,255,255,.7); }
+.site-footer h4 { margin-bottom: 1.6rem; font: 400 2.4rem var(--bebas); letter-spacing: .06em; color: var(--lime); }
+.site-footer ul { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+.site-footer ul a { font: 400 1.6rem var(--montreal); color: rgba(255,255,255,.8); transition: color .2s, padding-left .2s; }
+.site-footer ul a:hover { color: #fff; padding-left: .6rem; }
+.site-footer__baixar { display: flex; flex-direction: column; align-items: flex-start; gap: 1.2rem; }
+.site-footer .baixar-alt { font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.6); text-decoration: underline; text-underline-offset: .3rem; }
+.site-footer__social { display: flex; gap: 1.2rem; margin-top: 1.8rem; }
+.site-footer__social a { width: 4.4rem; height: 4.4rem; border-radius: 1.2rem; overflow: hidden; background: rgba(255,255,255,.08); display: grid; place-items: center; }
+.site-footer__social img { width: 70%; height: 70%; object-fit: contain; }
+.site-footer__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.6rem; padding-top: 2.4rem; border-top: .1rem solid rgba(255,255,255,.1); font: 400 1.4rem var(--montreal); color: rgba(255,255,255,.5); }
+.site-footer__bar .stat { color: #fff; font-size: 1.6rem; }
+.site-footer__bar .stat__icon { filter: invert(1); width: 2.4rem; height: 2.4rem; }
+.site-footer .btn { display: inline-flex; align-items: center; justify-content: center; padding: 1rem 2.2rem; border-radius: 10rem; font: 400 1.8rem/1 var(--bebas); letter-spacing: .05em; background: var(--grad-yellow); color: #000; }
+
+@media (max-width: 900px) {
+  .stage { display: none; }
+  .site-footer--mobile { display: block; }
+  .site-footer .wrap { width: calc(100% - 4rem); }
+  .site-footer__top { grid-template-columns: 1fr; gap: 3rem; }
+  .site-footer__bar { flex-direction: column; align-items: flex-start; }
+}

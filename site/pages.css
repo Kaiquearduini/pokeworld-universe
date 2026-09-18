@@ -513,6 +513,25 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 @keyframes payBrilho { 0% { left: -60%; } 55%, 100% { left: 130%; } }
 @media (prefers-reduced-motion: reduce) { .pay-way, .pay-way::after { animation: none; } }
 
+/* ---------- REGRAS ---------- */
+.regras-indice { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 3rem; }
+.regras-indice a { padding: .9rem 1.8rem; border-radius: 10rem; background: rgba(255,255,255,.06); border: .1rem solid rgba(255,255,255,.12); font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.8); transition: background .2s, color .2s, border-color .2s; }
+.regras-indice a:hover { background: var(--grad-yellow); border-color: transparent; color: #000; }
+.regras { counter-reset: r; list-style: none; margin-top: 2.2rem; }
+.regras li { position: relative; padding: 0 0 1.8rem 4.4rem; font: 400 1.65rem/1.6 var(--montreal); color: rgba(255,255,255,.78); }
+.regras li::before {
+  counter-increment: r; content: counter(r);
+  position: absolute; left: 0; top: -.1rem; display: grid; place-items: center;
+  width: 3rem; height: 3rem; border-radius: 50%;
+  background: rgba(252,208,92,.14); color: #fcd05c; font: 400 1.6rem var(--bebas);
+}
+.regras li:last-child { padding-bottom: 0; }
+.regras-texto { margin-top: 2rem; font: 400 1.65rem/1.6 var(--montreal); color: rgba(255,255,255,.78); }
+.regras-data { margin-top: 2.4rem; padding-top: 2rem; border-top: .1rem solid rgba(255,255,255,.1); font: 400 1.4rem var(--montreal); color: rgba(255,255,255,.45); }
+/* o "as regras" do aviso do checkout é clicável */
+.mp-regras a { color: #70f5ff; text-decoration: underline; text-underline-offset: .3rem; }
+.mp-regras a:hover { color: var(--lime); }
+
 /* ---------- WIKI ---------- */
 .dex-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem; margin-bottom: 3rem; }
 .dex-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2rem; }
@@ -806,13 +825,58 @@ body[data-page="minha-conta"] .banner,
 body[data-page="tickets"] .banner,
 body[data-page="seguranca"] .banner,
 body[data-page="perfil"] .banner,
-body[data-page="pagamento"] .banner { min-height: 44rem; padding: 7rem 0 12rem; }
+body[data-page="pagamento"] .banner { min-height: 30rem; padding: 4.5rem 0 8rem; }
 body[data-page="minha-conta"] .banner__title,
 body[data-page="tickets"] .banner__title,
 body[data-page="seguranca"] .banner__title,
 body[data-page="perfil"] .banner__title,
-body[data-page="pagamento"] .banner__title { font-size: 7.2rem; }
-body[data-page="minha-conta"] .banner__stage { width: 44rem; right: 6rem; }
+body[data-page="pagamento"] .banner__title { font-size: 6rem; }
+body[data-page="minha-conta"] .banner__sub,
+body[data-page="tickets"] .banner__sub,
+body[data-page="seguranca"] .banner__sub,
+body[data-page="perfil"] .banner__sub,
+body[data-page="pagamento"] .banner__sub { margin-top: 1.4rem; font-size: 1.7rem; }
+body[data-page="minha-conta"] .banner__crumb,
+body[data-page="tickets"] .banner__crumb,
+body[data-page="seguranca"] .banner__crumb,
+body[data-page="perfil"] .banner__crumb,
+body[data-page="pagamento"] .banner__crumb { margin-bottom: 1.2rem; }
+body[data-page="minha-conta"] .banner__tag,
+body[data-page="tickets"] .banner__tag,
+body[data-page="seguranca"] .banner__tag,
+body[data-page="perfil"] .banner__tag,
+body[data-page="pagamento"] .banner__tag { padding: .6rem 1.4rem; font-size: 1.5rem; }
+body[data-page="minha-conta"] .banner--blend::after,
+body[data-page="tickets"] .banner--blend::after,
+body[data-page="seguranca"] .banner--blend::after,
+body[data-page="perfil"] .banner--blend::after,
+body[data-page="pagamento"] .banner--blend::after { height: 12rem; }
+body[data-page="minha-conta"] .banner__stage { width: 34rem; right: 6rem; }
+/* doar também fica mais enxuta */
+body[data-page="doar"] .banner { min-height: 40rem; padding: 5rem 0 10rem; }
+body[data-page="doar"] .banner__title { font-size: 7rem; }
+body[data-page="doar"] .banner--blend::after { height: 14rem; }
+body[data-page="doar"] .banner__stage { width: 46rem; }
+
+/* ---- hero sem personagem: tudo centralizado ---- */
+.banner--solo .banner__inner { text-align: center; }
+.banner--solo .banner__crumb { justify-content: center; }
+.banner--solo .banner__sub {
+  max-width: 64rem; margin-left: auto; margin-right: auto;
+  padding: 1.8rem 0 0;
+}
+.banner--solo .banner__sub::before {
+  left: 50%; top: 0; bottom: auto; width: 7rem; height: .3rem; margin-left: -3.5rem;
+  background: linear-gradient(90deg, rgba(196,255,74,0), var(--lime), rgba(196,255,74,0));
+}
+.banner--solo .banner__selos { justify-content: center; }
+/* sem arte à direita, a luz e a pokébola vão para o centro */
+.banner--solo .banner__glow {
+  background:
+    radial-gradient(44rem 34rem at 50% 52%, rgba(74,163,255,.34), transparent 66%),
+    radial-gradient(72rem 34rem at 50% 118%, rgba(5,48,239,.5), transparent 70%);
+}
+.banner--solo .banner__ball { left: 50%; right: auto; top: 50%; margin: -26rem 0 0 -26rem; width: 52rem; height: 52rem; opacity: .6; }
 
 /* selos de confiança logo abaixo do título */
 .banner__selos { display: flex; flex-wrap: wrap; gap: 1rem 2.4rem; margin-top: 2.2rem; }

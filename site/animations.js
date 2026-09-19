@@ -135,7 +135,8 @@
       .fromTo('.trailer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8 }, '-=0.6')
       .fromTo('.stats-bar', { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7 }, '-=0.5')
       .from('.stats-bar .stat', { y: 14, autoAlpha: 0, duration: 0.4, stagger: 0.1 }, '-=0.4')
-      .add(function () { countUp(document.querySelector('.stats-bar .count')); }, '-=0.3');
+      .add(function () { countUp(document.querySelector('.stats-bar .count')); }, '-=0.3')
+      .add(function () { document.dispatchEvent(new CustomEvent('hero:revealed')); });
   }
   if (hero && hero.classList.contains('has-video') && !hero.classList.contains('is-ready')) {
     document.addEventListener('hero:ready', revealHero, { once: true });
@@ -143,8 +144,8 @@
     revealHero();
   }
 
-  /* trailer: brilho passando de vez em quando */
-  gsap.to('.trailer p', { scale: 1.04, duration: 1.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  /* trailer: o botão pulsa de leve para chamar o clique */
+  gsap.to('.trailer__play i', { scale: 1.08, duration: 1.1, yoyo: true, repeat: -1, ease: 'sine.inOut' });
 
   /* =====================================================================
      5. Botões magnéticos + tilt de cards (desktop)

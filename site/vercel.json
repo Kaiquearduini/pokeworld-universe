@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
         }
       ]
     },
@@ -21,6 +21,14 @@
   ],
   "rewrites": [
     {
+      "source": "/Donate",
+      "destination": "/doar.html"
+    },
+    {
+      "source": "/donate",
+      "destination": "/doar.html"
+    },
+    {
       "source": "/login",
       "destination": "/login.html"
     },
@@ -33,20 +41,44 @@
       "destination": "/ranking.html"
     },
     {
-      "source": "/loja",
-      "destination": "/loja.html"
-    },
-    {
       "source": "/download",
       "destination": "/download.html"
     },
     {
-      "source": "/wiki",
-      "destination": "/wiki.html"
-    },
-    {
       "source": "/o-jogo",
       "destination": "/o-jogo.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/doar",
+      "destination": "/Donate",
+      "permanent": true
+    },
+    {
+      "source": "/doar.html",
+      "destination": "/Donate",
+      "permanent": true
+    },
+    {
+      "source": "/loja",
+      "destination": "/Donate",
+      "permanent": false
+    },
+    {
+      "source": "/loja.html",
+      "destination": "/Donate",
+      "permanent": false
+    },
+    {
+      "source": "/wiki",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/wiki.html",
+      "destination": "/",
+      "permanent": false
     }
   ]
 }

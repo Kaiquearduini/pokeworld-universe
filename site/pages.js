@@ -31,7 +31,7 @@
 
   /* Pagamento (Mercado Pago, API de Orders): o site manda SÓ o id do pacote;
      o servidor define preço e coins, cria a order e devolve o checkout_url. */
-  function pay(packageId, btn, provedor) {
+  function pay(packageId, btn, provedor, cupom) {
     var conteudo = btn ? btn.innerHTML : '';
     var rota = provedor === 'stripe' ? '/api/stripe-checkout' : '/api/checkout';
     var nome = provedor === 'stripe' ? 'Stripe' : 'Mercado Pago';
@@ -39,11 +39,12 @@
     if (btn) { btn.disabled = true; btn.classList.add('is-indo'); btn.innerHTML = '<span class="pay-way__head"><b>Abrindo ' + nome + '…</b></span>'; }
     return PWU.auth.token().then(function (token) {
       if (!token) throw new Error('Pagamentos exigem a conta conectada ao servidor. Entre novamente.');
-      return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ packageId: packageId }) });
+      return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(cupom ? { packageId: packageId, coupon: cupom } : { packageId: packageId }) });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (r.status === 401) throw new Error('Sua sessão expirou. Entre novamente.');
         if (r.status === 503) throw new Error('Pagamento ainda não configurado no servidor.');
+        if (r.status === 400 && d.error) throw new Error(d.error);
         if (!r.ok || !d.checkoutUrl) throw new Error('Não foi possível iniciar o pagamento.');
         location.href = d.checkoutUrl;   // redirect pro checkout do Mercado Pago
       });
@@ -271,8 +272,8 @@
         for (var k = 0; k < 6; k++) {
           var m = p.team && p.team[k];
           var id = m ? String(m.name || '').toLowerCase().replace(/\s+/g, '-') : null;
-          slots.push(m ? '<div class="slot"><img src="assets/img/pokemon/' + id + '.png" alt="" onerror="this.style.visibility=\'hidden\'"><span class="slot__lvl">LVL <b>' + (m.level || 0) + '</b></span><div class="bar"><i data-w="' + (m.pct != null ? m.pct : Math.min(100, (m.level || 0))) + '"></i></div><span class="slot__pct">' + String(m.name).replace(/^./, function (c) { return c.toUpperCase(); }) + '</span></div>'
-            : '<div class="slot slot--empty"><img src="assets/img/pokemon/pikachu.png" alt=""><span class="slot__lvl">LVL <b>0</b></span><div class="bar"><i></i></div><span class="slot__pct">—</span></div>');
+          slots.push(m ? '<div class="slot"><span class="slot__ini" aria-hidden="true">' + esc(String(m.name || '?').charAt(0).toUpperCase()) + '</span><span class="slot__lvl">LVL <b>' + (m.level || 0) + '</b></span><div class="bar"><i data-w="' + (m.pct != null ? m.pct : Math.min(100, (m.level || 0))) + '"></i></div><span class="slot__pct">' + String(m.name).replace(/^./, function (c) { return c.toUpperCase(); }) + '</span></div>'
+            : '<div class="slot slot--empty"><span class="slot__ini" aria-hidden="true">—</span><span class="slot__lvl">LVL <b>0</b></span><div class="bar"><i></i></div><span class="slot__pct">—</span></div>');
         }
         var you = me && p.name.toLowerCase() === (me.name || '').toLowerCase();
         var sub = current === 'guildas' ? esc(p.guild || '') + (p.members ? ' · ' + p.members + ' membros' : '') : esc(p.guild || 'Sem guilda') + (p.level ? ' · nível ' + p.level : '');
@@ -325,7 +326,7 @@
     function writeCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); renderCart(); }
     function price(it) {
       var parts = [];
-      if (it.coins) parts.push('<span><img class="moeda-mini" src="assets/img/coins/pcoin.png" alt="">' + it.coins.toLocaleString('pt-BR') + '</span>');
+      if (it.coins) parts.push('<span><img class="moeda-mini" src="assets/img/coins/pcoin.png?v=3" alt="">' + it.coins.toLocaleString('pt-BR') + '</span>');
       if (it.gems) parts.push('<span>💎 ' + it.gems.toLocaleString('pt-BR') + '</span>');
       if (it.price) parts.push('<span>' + PWU.brl(it.price) + '</span>');
       return parts.join('');
@@ -464,14 +465,14 @@
       document.getElementById('acc-name').value = shown.name ? (jogo ? jogo.name : u.name) : ' *  *  *  *  *';
       document.getElementById('acc-email').value = shown.email ? (jogo ? jogo.email : u.email) : ' *  *  *  *  *';
       var av = document.getElementById('acc-avatar');
-      if (av) av.src = (PWU.avatarUrl ? PWU.avatarUrl(u) : 'assets/img/pokemon/pikachu.png');
+      if (av) av.src = (PWU.avatarUrl ? PWU.avatarUrl(u) : 'assets/logo-sigla.png');
       document.getElementById('acc-diamonds').textContent = (pr.diamonds || 0).toLocaleString('pt-BR');
       document.getElementById('acc-plan').textContent = pr.plan || 'Conta Grátis';
       var tw = document.querySelector('[data-acc="twitch"]'); if (tw) tw.textContent = pr.twitch ? 'Twitch: ' + pr.twitch : 'Vincular Twitch';
       document.getElementById('acc-tcount').textContent = '(' + pr.trainers.length + ')';
       document.getElementById('acc-trainers').innerHTML = pr.trainers.map(function (t, i) {
         return '<div class="trainer">' + (jogo ? '' : '<button class="rm" type="button" data-rm-trainer="' + i + '" aria-label="Excluir">×</button>') +
-          '<img src="assets/img/pokemon/' + esc(t.avatar) + '.png" alt="" onerror="this.src=\'assets/img/pokemon/pikachu.png\'"><h5>' + esc(t.name) + '</h5><span class="lvl">Nível ' + t.level + '</span><span class="world">' + esc(t.world) + '</span></div>';
+          '<img src="assets/img/art/player-girl.png?v=3" alt=""><h5>' + esc(t.name) + '</h5><span class="lvl">Nível ' + t.level + '</span><span class="world">' + esc(t.world) + '</span></div>';
       }).join('') || '<div class="trainers__empty">' + (jogo ? 'Sua conta ainda não tem treinadores.<br>Baixe o cliente, entre no jogo e crie o primeiro.' : 'Você ainda não tem treinadores.<br>Crie o primeiro aqui ou baixe o cliente e comece sua jornada.') + '</div>';
       if (G) G.fromTo('#acc-trainers .trainer', { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .06, ease: 'power2.out', overwrite: true });
     }
@@ -505,7 +506,7 @@
       }
 
       if (act === 'avatar') {
-        var opcoes = (PWU.pokedex || []).slice(0, 40).map(function (x) { return { url: x.image, nome: x.name }; });
+        var opcoes = (PWU.avatares || []).map(function (x) { return { url: x.image, nome: x.name }; });
         var atual = PWU.avatarUrl ? PWU.avatarUrl(PWU.auth.user) : '';
         openP('<h3>Foto de perfil</h3><p class="sub">Escolha um parceiro para representar você no site, ou informe o endereço de uma imagem.</p>' +
           '<div class="avatar-grid">' + opcoes.map(function (o) { return '<button type="button" data-av="' + o.url + '" class="' + (o.url === atual ? 'is-active' : '') + '" title="' + esc(o.nome) + '"><img src="' + o.url + '" alt=""></button>'; }).join('') + '</div>' +
@@ -720,7 +721,7 @@
       if (grade && !grade.dataset.pronto) {
         grade.dataset.pronto = '1';
         var atual = PWU.avatarUrl ? PWU.avatarUrl(PWU.auth.user) : '';
-        grade.innerHTML = (PWU.pokedex || []).slice(0, 48).map(function (x) {
+        grade.innerHTML = (PWU.avatares || []).map(function (x) {
           return '<button type="button" data-av="' + x.image + '" class="' + (x.image === atual ? 'is-active' : '') + '" title="' + esc(x.name) + '"><img src="' + x.image + '" alt=""></button>';
         }).join('');
         grade.addEventListener('click', function (e) {
@@ -806,17 +807,51 @@
       var pid = qs('pacote') || 'plus';
       var k = (PWU.coinPackages || []).find(function (x) { return x.id === pid; }) || (PWU.coinPackages || [])[0];
       var resumo = document.getElementById('resumo-pedido');
-      if (k && resumo) {
+      var cupomAplicado = null;   // { code, pct, price } depois de validado
+      function desenharResumo() {
+        if (!k || !resumo) return;
         // só o que importa para quem está pagando: o bônus que recebe e o valor
-        resumo.innerHTML =
-          '<div class="resumo__bonus"><b>+' + k.bonusPct + '%</b><span>de bônus</span></div>' +
-          '<div class="resumo__lado"><div class="resumo__valor">' + PWU.brl(k.price) + '</div>' +
-          '<div class="resumo__legenda">valor da sua doação</div></div>';
+        var valor = cupomAplicado
+          ? '<div class="resumo__de">' + PWU.brl(k.price) + '</div><div class="resumo__valor">' + PWU.brl(cupomAplicado.price) + '</div>' +
+            '<div class="resumo__legenda">com o cupom <b>' + esc(cupomAplicado.code) + '</b> (−' + cupomAplicado.pct + '%)</div>'
+          : '<div class="resumo__valor">' + PWU.brl(k.price) + '</div><div class="resumo__legenda">valor da sua doação</div>';
+        resumo.innerHTML = '<div class="resumo__bonus"><b>+' + k.bonusPct + '%</b><span>de bônus</span></div><div class="resumo__lado">' + valor + '</div>';
       }
+      desenharResumo();
+
+      // cupom: confere no servidor e mostra o novo valor; o checkout valida de novo
+      var fCupom = document.getElementById('f-cupom');
+      if (fCupom && k) {
+        var campo = fCupom.querySelector('input'), msg = fCupom.querySelector('.cupom__msg'), bt = fCupom.querySelector('button');
+        function aviso(t, ok) { msg.textContent = t || ''; msg.hidden = !t; msg.classList.toggle('is-ok', !!ok); }
+        campo.addEventListener('input', function () {
+          campo.value = campo.value.toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+          if (cupomAplicado) { cupomAplicado = null; desenharResumo(); bt.textContent = 'Aplicar'; }
+          aviso('');
+        });
+        fCupom.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (cupomAplicado) { cupomAplicado = null; campo.value = ''; bt.textContent = 'Aplicar'; desenharResumo(); aviso(''); return; }
+          var code = campo.value.trim();
+          if (!code) return aviso('Digite o código do cupom.');
+          bt.disabled = true;
+          fetch('/api/coupon?code=' + encodeURIComponent(code) + '&pacote=' + encodeURIComponent(k.id))
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (!d.valid) return aviso(d.error || 'Cupom inválido ou expirado.');
+              cupomAplicado = { code: d.code, pct: d.pct, price: d.price };
+              desenharResumo(); bt.textContent = 'Remover';
+              aviso('Cupom aplicado: ' + d.pct + '% de desconto.', true);
+            })
+            .catch(function () { aviso('Não consegui conferir o cupom agora. Tente de novo.'); })
+            .then(function () { bt.disabled = false; });
+        });
+      }
+
       var meios = document.getElementById('meios-pagamento');
       if (meios) meios.addEventListener('click', function (e) {
         var w = e.target.closest('[data-prov]'); if (!w) return;
-        pay(k.id, w, w.dataset.prov);
+        pay(k.id, w, w.dataset.prov, cupomAplicado ? cupomAplicado.code : null);
       });
     }
 

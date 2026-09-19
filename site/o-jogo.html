@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>O Jogo — Pokeworld Universe</title>
-  <meta name="description" content="Conheça o Pokeworld Universe: MOBA de Pokémon em equipes de 5, com cross-play entre celular, PC e Nintendo Switch.">
+  <meta name="description" content="Conheça o Pokeworld Universe: um mundo online gratuito para explorar, colecionar criaturas e batalhar.">
   <link rel="icon" href="assets/logo-sigla.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="pages.css">
@@ -18,7 +18,7 @@
     <div class="header-shape header-shape--white"></div>
     <div class="header-shape header-shape--grad"></div>
     <a class="logo-sigla" href="index.html"><img src="assets/logo-sigla.png" alt="PWU"></a>
-    <nav class="nav"><a href="o-jogo.html" class="is-active">O JOGO</a><a href="wiki.html">wiki</a><a href="download.html">download</a><a href="ranking.html">ranking</a><a href="loja.html">loja</a><a href="doar.html">doar</a></nav>
+    <nav class="nav"><a href="o-jogo.html" class="is-active">O JOGO</a><a href="#" class="is-off" aria-disabled="true">wiki</a><a href="download.html">download</a><a href="ranking.html">ranking</a><a href="Donate">loja</a><a href="Donate">doar</a></nav>
     <div class="topbar-actions">
       <a class="btn-entrar" href="login.html" data-entrar>Iniciar sessão</a>
       <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
@@ -26,16 +26,16 @@
     <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </header>
 
-  <section class="banner" style="--bg:url('assets/img/bg/champions-arena.jpg')">
+  <section class="banner" style="--bg:url('assets/img/qg/qg-50.jpg')">
     <span class="banner__glow" aria-hidden="true"></span>
     <span class="banner__mesh" aria-hidden="true"></span>
     <span class="banner__ball" aria-hidden="true"></span>
     <div class="banner__inner">
       <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>O Jogo</span></nav>
       <span class="banner__tag">Sobre o jogo</span>
-      <h1 class="banner__title">Um universo<br>para batalhar</h1>
-      <p class="banner__sub">Forme seu time de cinco treinadores, escolha seu Pokémon e dispute arenas em partidas rápidas de 10 minutos.</p>
-    </div><div class="banner__stage banner__stage--duo"><img class="banner__art banner__art--2" src="assets/img/art/trainer-amarela.png" alt=""><img class="banner__art" src="assets/img/art/player-girl.png" alt=""></div>
+      <h1 class="banner__title">Um universo completo<br>para explorar</h1>
+      <p class="banner__sub">Crie sua conta de forma gratuita e se aventure no nosso universo.</p>
+    </div><div class="banner__stage banner__stage--duo"><img class="banner__art banner__art--2" src="assets/img/art/trainer-amarela.png" alt=""><img class="banner__art" src="assets/img/art/player-girl.png?v=3" alt=""></div>
   </section>
 
   <main class="sub">
@@ -44,43 +44,30 @@
       <div class="wrap intro">
         <div class="intro__text" data-reveal>
           <h2 class="sec__title">O que é o <span class="grad">Pokeworld Universe</span></h2>
-          <p data-text="ojogo.intro.p1">Pokeworld Universe é um jogo online de batalhas em equipe. Dois times de cinco treinadores disputam uma arena, derrotam Pokémon selvagens, acumulam energia e marcam pontos nos gols adversários antes do tempo acabar.</p>
-          <p data-text="ojogo.intro.p2">Cada Pokémon evolui durante a partida e desbloqueia novos golpes. A sinergia entre funções, o controle dos objetivos e a comunicação decidem quem sai vitorioso.</p>
+          <p data-text="ojogo.intro.p1">Pokeworld Universe é um jogo online de batalhas em equipe. Dois times de cinco treinadores disputam uma arena, derrotam criaturas selvagens, acumulam energia e marcam pontos nos gols adversários antes do tempo acabar.</p>
+          <p data-text="ojogo.intro.p2">Cada criatura evolui durante a partida e desbloqueia novos golpes. A sinergia entre funções, o controle dos objetivos e a comunicação decidem quem sai vitorioso.</p>
           <div class="btn-row" style="margin-top:3rem">
             <a class="btn btn--yellow" href="download.html">Jogar grátis</a>
-            <a class="btn btn--black" href="wiki.html">Ver Pokédex</a>
+            
           </div>
         </div>
         <div class="intro__art" data-reveal>
-          <img src="assets/img/art/screenshot-1.jpg" alt="Arena do Pokeworld Universe">
-          <img class="float" src="assets/img/art/pikachu.png" alt="">
+          <img src="assets/img/qg/qg-10.jpg" alt="Lumiose City no Pokeworld Universe">
         </div>
       </div>
       <div class="wrap stats-row">
-        <div class="stat-box" data-reveal><b data-count="69">0</b><span>Pokémon jogáveis</span></div>
-        <div class="stat-box" data-reveal><b data-count="1342321">0</b><span>Jogadores online</span></div>
-        <div class="stat-box" data-reveal><b data-count="4">0</b><span>Plataformas com cross-play</span></div>
+        <div class="stat-box" data-reveal><b data-count="69">0</b><span>criaturas disponíveis</span></div>
         <div class="stat-box" data-reveal><b data-count="10" data-suffix=" min">0</b><span>Duração média da partida</span></div>
       </div>
     </section>
 
-    <section class="sec sec--white">
-      <div class="wrap">
-        <div class="sec__head"><div><h2 class="sec__title">Modos de <span class="grad">jogo</span></h2><p class="sec__sub">Do competitivo ranqueado às salas personalizadas com amigos.</p></div></div>
-        <div class="modes">
-          <a class="mode" href="ranking.html" data-reveal><img src="assets/img/art/screenshot-2.jpg" alt=""><div class="mode__body"><span class="mode__tag">Competitivo</span><h3>Ranqueada 5x5</h3><p>Suba de Iniciante a Mestre e garanta recompensas de temporada.</p></div></a>
-          <a class="mode" href="download.html" data-reveal><img src="assets/img/art/screenshot-3.jpg" alt=""><div class="mode__body"><span class="mode__tag">Casual</span><h3>Batalha Rápida</h3><p>Partidas de 5 minutos em mapas menores, ideais para aquecer.</p></div></a>
-          <a class="mode" href="noticia.html?id=modo-batalha-privada" data-reveal><img src="assets/img/art/screenshot-4.jpg" alt=""><div class="mode__body"><span class="mode__tag">Personalizado</span><h3>Batalha Privada</h3><p>Crie salas com regras próprias, espectadores e códigos de convite.</p></div></a>
-        </div>
-      </div>
-    </section>
 
     <section class="sec sec--dark">
       <div class="wrap">
         <div class="sec__head"><div><h2 class="sec__title">Sistemas do <span class="grad">jogo</span></h2><p class="sec__sub">Tudo o que faz o Pokeworld Universe ser diferente.</p></div></div>
         <div class="features">
           <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Mundo livre para explorar</h3><p>Voe pelo mapa, use montarias e descubra cidades construídas do zero, como Lumiose City, com torre central, bairros e hunts espalhadas pela cidade.</p></div>
-          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Ascensão estelar e evolução</h3><p>Leve seu pokémon além da forma final com a ascensão estelar, subindo estrelas para desbloquear poder. Com evolução por pedras, helds e boost, o time fica do jeito que você montar.</p></div>
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Ascensão estelar e evolução</h3><p>Leve sua criatura além da forma final com a ascensão estelar, subindo estrelas para desbloquear poder. Com evolução por pedras, helds e boost, o time fica do jeito que você montar.</p></div>
           <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Guildas com bosses e buffs</h3><p>Junte seu grupo, encare bosses exclusivos de guilda e libere buffs que valem para todos os membros. Quanto mais ativa a guilda, mais forte cada treinador fica.</p></div>
           <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Ranking de treinadores</h3><p>Quem está no topo do servidor aparece aqui: level, catches, conquistas e a disputa entre guildas.</p></div>
           <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Tasks e conquistas progressivas</h3><p>Complete tarefas diárias e por região para avançar em trilhas de recompensa. Quanto mais longe você chega, melhores os itens e as liberações.</p></div>
@@ -89,30 +76,24 @@
       </div>
     </section>
 
-    <section class="sec">
-      <div class="wrap">
-        <div class="sec__head"><div><h2 class="sec__title">Conheça os <span class="grad">Pokémon</span></h2><p class="sec__sub">69 Pokémon jogáveis, cada um com seu estilo de batalha.</p></div><a class="sec__link" href="wiki.html">Ver todos →</a></div>
-      </div>
-      <div class="pk-marquee" data-reveal><div class="pk-marquee__track"></div></div>
-    </section>
 
     <section class="sec sec--white">
       <div class="wrap">
         <div class="sec__head"><div><h2 class="sec__title">Galeria</h2><p class="sec__sub">Clique para ampliar.</p></div></div>
         <div class="gallery-grid">
-          <a href="assets/img/art/screenshot-1.jpg" data-lightbox data-reveal><img src="assets/img/art/screenshot-1.jpg" alt=""></a>
-          <a href="assets/img/art/screenshot-2.jpg" data-lightbox data-reveal><img src="assets/img/art/screenshot-2.jpg" alt=""></a>
-          <a href="assets/img/art/trailer-thumb.jpg" data-lightbox data-reveal><img src="assets/img/art/trailer-thumb.jpg" alt=""></a>
-          <a href="assets/img/art/screenshot-3.jpg" data-lightbox data-reveal><img src="assets/img/art/screenshot-3.jpg" alt=""></a>
-          <a href="assets/img/art/update-thumb.jpg" data-lightbox data-reveal><img src="assets/img/art/update-thumb.jpg" alt=""></a>
-          <a href="assets/img/bg/battle-map.jpg" data-lightbox data-reveal><img src="assets/img/bg/battle-map.jpg" alt=""></a>
+          <a href="assets/img/qg/qg-3.jpg" data-lightbox data-reveal><img src="assets/img/qg/qg-3.jpg" alt="" loading="lazy"></a>
+          <a href="assets/img/qg/qg-18.jpg" data-lightbox data-reveal><img src="assets/img/qg/qg-18.jpg" alt="" loading="lazy"></a>
+          <a href="assets/img/qg/qg-26.jpg" data-lightbox data-reveal><img src="assets/img/qg/qg-26.jpg" alt="" loading="lazy"></a>
+          <a href="assets/img/qg/qg-34.jpg" data-lightbox data-reveal><img src="assets/img/qg/qg-34.jpg" alt="" loading="lazy"></a>
+          <a href="assets/img/qg/qg-42.jpg" data-lightbox data-reveal><img src="assets/img/qg/qg-42.jpg" alt="" loading="lazy"></a>
+          <a href="assets/img/qg/qg-50.jpg" data-lightbox data-reveal><img src="assets/img/qg/qg-50.jpg" alt="" loading="lazy"></a>
         </div>
       </div>
     </section>
 
     <section class="cta-band">
-      <img class="cta-band__pk cta-band__pk--l" src="assets/img/art/charizard.png" alt="">
-      <img class="cta-band__pk cta-band__pk--r" src="assets/img/art/greninja.png" alt="">
+      <img class="cta-band__pk cta-band__pk--l" src="assets/img/art/trainer-azul.png" alt="">
+      <img class="cta-band__pk cta-band__pk--r" src="assets/img/art/leon.png" alt="">
       <div class="wrap" data-reveal>
         <h2>Pronto para a sua primeira batalha?</h2>
         <p>Crie sua conta, baixe o jogo e entre na arena. É grátis.</p>
@@ -135,24 +116,24 @@
         </div>
         <div>
           <h4>Jogo</h4>
-          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="wiki.html">Pokédex</a></li><li><a href="ranking.html">Ranking</a></li><li><a href="loja.html">Loja</a></li></ul>
+          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="ranking.html">Ranking</a></li><li><a href="Donate">Doar</a></li></ul>
         </div>
         <div>
           <h4>Suporte</h4>
-          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="doar.html#pacotes">Doar</a></li><li><a href="regras.html">Regras</a></li><li><a href="admin.html">Painel admin</a></li></ul>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="tickets.html">Tickets</a></li><li><a href="regras.html">Regras</a></li><li><a href="admin.html">Painel admin</a></li></ul>
         </div>
         <div>
           <h4>Baixe agora</h4>
           <div class="site-footer__baixar">
             <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
-            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>
       <div class="site-footer__bar">
-        <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/icon-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
-        <span>© 2026 Pokeworld Universe. Projeto de demonstração, sem afiliação com The Pokémon Company.</span>
+        <div class="site-footer__status"><span><i class="live-dot"></i>Servidor online</span><span>Próximo evento</span></div>
+        <span>© 2026 Pokeworld Universe.</span>
       </div>
+      <p class="copy-pokemon">Pokémon Copyright © 1995 – 2026 Nintendo/Creatures Inc./GAME FREAK Inc. Pokémon e todos os respectivos nomes são marcas registradas da Nintendo 1996 – 2026. PokeWorld Universe não é afiliado à Nintendo, Creatures Inc. e GAME FREAK Inc.</p>
     </div>
   </footer>
 

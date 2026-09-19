@@ -38,8 +38,9 @@ export default async function handler(req, res) {
 
     // confere o valor contra o pacote (em centavos)
     const pkg = getPackage(local.package_id);
-    if (Number(s.amount_total || 0) < Math.round(pkg.price * 100)) {
-      console.error('[stripe] valor divergente', { sessao: s.id, pago: s.amount_total, esperado: pkg.price * 100 });
+    const esperado = Math.round(pkg.price * (local.fator || 1) * 100);   // centavos, com cupom se houver
+    if (Number(s.amount_total || 0) < esperado) {
+      console.error('[stripe] valor divergente', { sessao: s.id, pago: s.amount_total, esperado });
       return res.status(200).end();
     }
 

@@ -317,14 +317,14 @@ PWU.pokedex = [
 
 /* ---------- Textos editáveis pelo painel admin (chave -> valor padrão) ---------- */
 PWU.texts = {
-  'home.about.text': 'O PokeWorld Universe é um mundo Pokémon online moderno e <b>GRÁTIS</b>, que convida você a explorar regiões e cidades incríveis e colecionar pokémon únicos. Com cliente próprio desenvolvido pela nossa equipe, o jogo traz uma perspectiva que dá profundidade ao mundo e cidades construídas do zero, como a nossa Lumiose City.',
+  'home.about.text': 'O PokeWorld Universe é um mundo online moderno e <b>GRÁTIS</b>, que convida você a explorar regiões e cidades incríveis e colecionar criaturas únicas. Com cliente próprio desenvolvido pela nossa equipe, o jogo traz uma perspectiva que dá profundidade ao mundo e cidades construídas do zero, como a nossa Lumiose City.',
   'home.cta.title': 'Comece agora sua aventura no',
-  'wiki.banner.title': 'Todos os<br>Pokémon',
-  'wiki.banner.sub': 'Funções, alcance, dificuldade e estatísticas de cada um dos Pokémon jogáveis.',
+  'wiki.banner.title': 'Todas as<br>criaturas',
+  'wiki.banner.sub': 'Funções, alcance, dificuldade e estatísticas de cada criatura disponível.',
   'noticias.banner.title': 'Últimas<br>notícias',
   'noticias.banner.sub': 'Atualizações, balanceamento, eventos e tudo o que acontece no Pokeworld.',
-  'ojogo.intro.p1': 'Pokeworld Universe é um jogo online de batalhas em equipe. Dois times de cinco treinadores disputam uma arena, derrotam Pokémon selvagens, acumulam energia e marcam pontos nos gols adversários antes do tempo acabar.',
-  'ojogo.intro.p2': 'Cada Pokémon evolui durante a partida e desbloqueia novos golpes. A sinergia entre funções, o controle dos objetivos e a comunicação decidem quem sai vitorioso.'
+  'ojogo.intro.p1': 'Pokeworld Universe é um jogo online de batalhas em equipe. Dois times de cinco treinadores disputam uma arena, derrotam criaturas selvagens, acumulam energia e marcam pontos nos gols adversários antes do tempo acabar.',
+  'ojogo.intro.p2': 'Cada criatura evolui durante a partida e desbloqueia novos golpes. A sinergia entre funções, o controle dos objetivos e a comunicação decidem quem sai vitorioso.'
 };
 
 PWU.fmtDate = function (iso) {
@@ -332,3 +332,11 @@ PWU.fmtDate = function (iso) {
   return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 PWU.brl = function (v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
+
+/* ---------- Avatares de perfil (só treinadores, sem Pokémon) ---------- */
+PWU.avatares = [
+  { name: 'Leon', image: 'assets/img/art/leon.png' },
+  { name: 'Treinadora', image: 'assets/img/art/player-girl.png?v=3' },
+  { name: 'Treinadora azul', image: 'assets/img/art/trainer-azul.png' },
+  { name: 'Treinadora amarela', image: 'assets/img/art/trainer-amarela.png' }
+];

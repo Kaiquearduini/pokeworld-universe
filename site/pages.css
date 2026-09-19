@@ -110,14 +110,16 @@
   background: radial-gradient(ellipse, rgba(0,0,0,.45), transparent 70%);
 }
 /* dois personagens: o segundo fica atrás, menor e deslocado */
-.banner__stage--duo { width: 66rem; right: 2rem; }
+.banner__stage--duo { width: 84rem; right: 1rem; }
 .banner__art--2 {
   position: absolute; inset: auto auto 0 0; width: 62%; height: 74%;
   object-fit: contain; object-position: bottom center; opacity: .92;
   filter: drop-shadow(0 2rem 3.4rem rgba(0,0,0,.55)) brightness(.85);
   animation: flutua 7s ease-in-out infinite; animation-delay: -2.4s;
 }
-.banner__stage--duo .banner__art { left: auto; right: 0; width: 66%; }
+.banner__stage--duo .banner__art { left: auto; right: 0; width: 50%; }
+/* os dois lado a lado, com leve sobreposição, em vez de um atrás do outro */
+.banner__stage--duo .banner__art--2 { left: 0; right: auto; width: 56%; height: 90%; filter: drop-shadow(0 2rem 3.4rem rgba(0,0,0,.55)); opacity: 1; }
 .banner__art {
   position: absolute; inset: auto 0 0 0; width: 100%; height: 88%;
   object-fit: contain; object-position: bottom center;
@@ -470,7 +472,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
 }
 .pack em::before, .pack__bonus::before {
   content: ""; width: 2.6rem; height: 2.6rem; flex: none;
-  background: url("assets/img/coins/pcoin.png") center / contain no-repeat;
+  background: url("assets/img/coins/pcoin.png?v=3") center / contain no-repeat;
 }
 .pack em.is-none { visibility: hidden; }
 .pack .btn { width: 100%; margin-top: 1.6rem; padding: 1.1rem 1rem; }
@@ -1027,4 +1029,90 @@ body[data-page="doar"] .banner__stage { width: 46rem; }
   .resumo { flex-direction: column; align-items: stretch; text-align: center; gap: 1.8rem; }
   .resumo__lado { text-align: center; }
   .resumo__valor { font-size: 4.8rem; }
+}
+
+/* =====================================================================
+   /Donate: cabeçalho mínimo e os 6 pacotes na primeira tela
+   ===================================================================== */
+.banner--mini { min-height: 0 !important; padding: 3.6rem 0 2.4rem !important; }
+.banner--mini .banner__title { margin-top: 0; font-size: 7.2rem !important; text-align: center; }
+.banner--mini .banner__ball { display: none; }
+.banner--mini.banner--blend::after { height: 6rem !important; }
+body[data-page="doar"] #pacotes.doar-packs-sec { padding: 1.6rem 0 6rem; }
+.packs--6 { margin-top: 0; }
+@media (min-width: 1101px) {
+  .packs--6 { grid-template-columns: repeat(6, 1fr); gap: 1.6rem; }
+  .packs--6 .pack { padding: 2.8rem 1.4rem 1.8rem; }
+  .packs--6 .pack__moeda { height: 13rem; margin-bottom: 1.2rem; }
+  .packs--6 .pack__moeda img { max-width: 100%; max-height: 13rem; }
+  .packs--6 .pack b { font-size: 4.6rem; }
+  .packs--6 .pack em { font-size: 2.6rem; margin-top: 1.2rem; padding: .6rem 1.6rem .6rem 1rem; }
+  .packs--6 .pack em::before { width: 2.4rem; height: 2.4rem; }
+  .packs--6 .pack .btn { margin-top: 1.8rem; width: 100%; padding: 1.2rem .6rem; font-size: 2rem; }
+}
+
+/* moeda do pacote: a arte nunca é recortada pelo card */
+.pack__moeda { overflow: visible; }
+.pack__moeda img { width: auto; height: auto; object-fit: contain; }
+
+/* ---------- cupom no pagamento ---------- */
+.cupom { margin: 1.4rem 0 2.4rem; }
+.cupom label { display: block; margin-bottom: .8rem; font: 400 1.9rem var(--bebas); letter-spacing: .12em; color: #fcd05c; }
+.cupom__linha { display: flex; gap: 1rem; }
+.cupom__linha input {
+  flex: 1; min-width: 0; padding: 1.3rem 1.6rem; border-radius: 1.2rem;
+  border: .15rem dashed rgba(252,208,92,.45); background: rgba(0,0,0,.25);
+  color: #fff; font: 400 1.7rem var(--montreal); letter-spacing: .08em; text-transform: uppercase; outline: 0;
+}
+.cupom__linha input::placeholder { text-transform: none; letter-spacing: 0; color: rgba(255,255,255,.35); }
+.cupom__linha input:focus { border-style: solid; border-color: #fcd05c; box-shadow: 0 0 0 .4rem rgba(252,208,92,.15); }
+.cupom__linha button { flex: none; padding: 0 2.4rem; border: 0; border-radius: 1.2rem; background: var(--grad-yellow); color: #000; font: 400 2rem var(--bebas); letter-spacing: .06em; cursor: pointer; }
+.cupom__linha button:disabled { opacity: .6; cursor: wait; }
+.cupom__msg { margin-top: .8rem; font: 400 1.4rem var(--montreal); color: #ff9c9c; }
+.cupom__msg.is-ok { color: var(--lime); }
+.resumo__de { font: 400 2.4rem/1 var(--bebas); color: rgba(255,255,255,.45); text-decoration: line-through; }
+.resumo__legenda b { text-transform: uppercase; color: var(--lime); font-weight: 500; }
+
+/* ---------- verificação em duas etapas ---------- */
+.doisfa { margin: .6rem 0 1.6rem; padding: 1.6rem 1.8rem; border-radius: 1.4rem; background: rgba(112,244,255,.06); border: .1rem solid rgba(112,244,255,.2); }
+.doisfa__titulo { font: 400 1.9rem var(--bebas); letter-spacing: .08em; color: #fff; }
+.doisfa__titulo em, .doisfa__op em { margin-left: .6rem; padding: .2rem .8rem; border-radius: 10rem; background: rgba(255,255,255,.1); font: 400 1.2rem var(--montreal); font-style: normal; letter-spacing: .04em; color: rgba(255,255,255,.7); vertical-align: middle; }
+.doisfa__op em.ok { background: rgba(220,238,75,.18); color: var(--lime); }
+.doisfa__texto { margin: .6rem 0 1.2rem; font: 400 1.4rem/1.5 var(--montreal); color: rgba(255,255,255,.7); }
+.doisfa__texto b { color: #fff; font-weight: 500; }
+.doisfa__opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.doisfa__op { display: flex; gap: 1rem; align-items: flex-start; padding: 1.2rem 1.4rem; border-radius: 1.2rem; background: rgba(0,0,0,.22); border: .1rem solid rgba(255,255,255,.08); }
+.doisfa__op i { flex: none; font-style: normal; font-size: 2rem; line-height: 1.2; }
+.doisfa__op b { display: block; font: 500 1.5rem var(--montreal); color: #fff; }
+.doisfa__op span { display: block; margin-top: .3rem; font: 400 1.3rem/1.45 var(--montreal); color: rgba(255,255,255,.62); }
+.doisfa__op.is-on { border-color: rgba(220,238,75,.35); }
+.doisfa__opcoes--conta { margin-top: 2rem; }
+
+/* ---------- download: só PC ---------- */
+.platforms--solo { grid-template-columns: minmax(0, 64rem); justify-content: center; }
+
+/* ---------- ranking: time sem sprites ---------- */
+.slot__ini { display: grid; place-items: center; width: 6rem; height: 6rem; margin: 0 auto .6rem; border-radius: 50%; background: linear-gradient(145deg, rgba(112,244,255,.25), rgba(5,48,239,.35)); font: 400 3rem/1 var(--bebas); color: #fff; }
+.slot--empty .slot__ini { background: rgba(255,255,255,.06); color: rgba(255,255,255,.3); }
+
+@media (max-width: 900px) {
+  .banner--mini { padding: 3rem 0 2rem !important; }
+  .banner--mini .banner__title { font-size: 4.8rem !important; }
+  .doisfa__opcoes { grid-template-columns: 1fr; }
+  .cupom__linha button { padding: 0 1.6rem; }
+  .slot__ini { width: 4.4rem; height: 4.4rem; font-size: 2.2rem; }
+}
+
+@media (max-width: 1100px) {
+  .packs--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .packs--6 .pack { min-width: 0; }
+}
+@media (max-width: 900px) {
+  .packs--6 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem 1.2rem; }
+  .packs--6 .pack { padding: 2.6rem 1rem 1.6rem; }
+  .packs--6 .pack__moeda { height: 9rem; }
+  .packs--6 .pack__moeda img { max-width: 100%; max-height: 9rem; }
+  .packs--6 .pack em { font-size: 2.2rem; padding: .5rem 1.2rem .5rem .7rem; }
+  .packs--6 .pack em::before { width: 2.2rem; height: 2.2rem; }
+  .packs--6 .pack .btn { width: 100%; padding: 1.1rem .4rem; font-size: 1.9rem; }
 }

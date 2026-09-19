@@ -9,19 +9,23 @@
  *   account_id   conta que comprou
  *   currency     'BRL'
  *   valor        coins creditados (já com o bônus)
- *   id_pacote    pacote do catálogo (api/_lib/packages.js)
+ *   id_pacote    número do pacote do catálogo (packages.js, campo num: 901 a 906)
+ *   promocional_id % de desconto do cupom usado (0 = sem cupom)
  *   status       0 pendente · 1 pago
  *   entregue     0 não creditado · 1 creditado  <- trava de idempotência
  */
 import { q, one, run, tx } from './gamedb.js';
+import { PACKAGES, packageIdFromNum } from './packages.js';
 
 /** Cria o pedido local ANTES de chamar o Mercado Pago, com status pendente. */
-export async function createLocalOrder({ userId, packageId, amount, coins }) {
+export async function createLocalOrder({ userId, packageId, amount, coins, cupomPct = 0 }) {
+  const num = PACKAGES[packageId] ? PACKAGES[packageId].num : null;
+  if (!num) throw new Error(`Pacote inexistente: ${packageId}`);
   const r = await run(
     `INSERT INTO historico_pagamentos
        (payment_id, tipo, account_id, player_id, currency, valor, id_pacote, multiplicador, promocional_id, status, entregue, date_created)
-     VALUES ('', 'mercadopago', ?, 0, 'BRL', ?, ?, 1.0, 0, 0, 0, NOW())`,
-    [userId, coins, String(packageId).slice(0, 10)]
+     VALUES ('', 'mercadopago', ?, 0, 'BRL', ?, ?, 1.0, ?, 0, 0, NOW())`,
+    [userId, coins, num, Math.max(0, Math.min(90, Math.round(Number(cupomPct) || 0)))]
   );
   return { id: r.insertId, package_id: packageId, amount, coins, status: 'pending' };
 }
@@ -33,7 +37,7 @@ export async function attachMpOrderId(localOrderId, mpOrderId) {
 
 export async function findOrderByMpId(mpOrderId) {
   const r = await one(
-    'SELECT id, account_id, valor, id_pacote, status, entregue FROM historico_pagamentos WHERE payment_id = ? LIMIT 1',
+    'SELECT id, account_id, valor, id_pacote, promocional_id, status, entregue FROM historico_pagamentos WHERE payment_id = ? LIMIT 1',
     [String(mpOrderId)]
   );
   if (!r) return null;
@@ -41,7 +45,9 @@ export async function findOrderByMpId(mpOrderId) {
     id: r.id,
     account_id: r.account_id,
     coins: Number(r.valor || 0),
-    package_id: String(r.id_pacote || ''),
+    package_id: packageIdFromNum(r.id_pacote) || '',
+    // fração do preço que devia ser paga (cupom de 10% -> 0.9)
+    fator: (100 - Math.max(0, Math.min(90, Number(r.promocional_id) || 0))) / 100,
     status: Number(r.entregue) === 1 ? 'paid' : 'pending'
   };
 }

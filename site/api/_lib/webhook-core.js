@@ -60,7 +60,8 @@ export async function processar(mpOrderId, { fetchOrder, isPaid, findOrderByMpId
   // 4. Confere se o valor pago bate com o pacote comprado.
   const pkg = getPackage(local.package_id);
   const pago = Number(order.total_paid_amount ?? order.total_amount);
-  if (!(pago >= pkg.price)) return 'valor-divergente';
+  const esperado = Math.round(pkg.price * (local.fator || 1) * 100) / 100;   // com cupom, se houver
+  if (!(pago + 0.001 >= esperado)) return 'valor-divergente';
 
   // 5. Credita. O UPDATE condicional dentro de markPaidAndCredit é a trava real
   //    contra webhooks simultâneos.

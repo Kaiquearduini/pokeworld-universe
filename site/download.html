@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Download — Pokeworld Universe</title>
-  <meta name="description" content="Baixe o Pokeworld Universe para iOS, Android, Nintendo Switch e PC.">
+  <meta name="description" content="Baixe o launcher do Pokeworld Universe para PC.">
   <link rel="icon" href="assets/logo-sigla.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="pages.css">
@@ -18,7 +18,7 @@
     <div class="header-shape header-shape--white"></div>
     <div class="header-shape header-shape--grad"></div>
     <a class="logo-sigla" href="index.html"><img src="assets/logo-sigla.png" alt="PWU"></a>
-    <nav class="nav"><a href="o-jogo.html">O JOGO</a><a href="wiki.html">wiki</a><a href="download.html" class="is-active">download</a><a href="ranking.html">ranking</a><a href="loja.html">loja</a><a href="doar.html">doar</a></nav>
+    <nav class="nav"><a href="o-jogo.html">O JOGO</a><a href="#" class="is-off" aria-disabled="true">wiki</a><a href="download.html" class="is-active">download</a><a href="ranking.html">ranking</a><a href="Donate">loja</a><a href="Donate">doar</a></nav>
     <div class="topbar-actions">
       <a class="btn-entrar" href="login.html" data-entrar>Iniciar sessão</a>
       <a class="btn-jogue-agora" href="download.html">JOGUE AGORA</a>
@@ -34,17 +34,16 @@
       <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>Download</span></nav>
       <span class="banner__tag">Grátis para jogar</span>
       <h1 class="banner__title">Baixe e<br>jogue agora</h1>
-      <p class="banner__sub">Baixe o launcher no PC ou o APK no Android. A conta e o progresso são os mesmos nos dois.</p><div class="banner__selos"><span><i></i>Grátis para sempre</span><span><i></i>PC e Android</span><span><i></i>Mesma conta nos dois</span></div>
-    </div><div class="banner__stage banner__stage--duo"><img class="banner__art banner__art--2" src="assets/img/art/blastoise.png" alt=""><img class="banner__art" src="assets/img/art/player-boy.png" alt=""></div>
+      <p class="banner__sub">Baixe o launcher para Windows. Ele instala o jogo e mantém tudo atualizado sozinho.</p><div class="banner__selos"><span><i></i>Grátis para sempre</span><span><i></i>Windows 10 e 11</span><span><i></i>Atualização automática</span></div>
+    </div><div class="banner__stage banner__stage--duo"><img class="banner__art banner__art--2" src="assets/img/art/leon.png" alt=""><img class="banner__art" src="assets/img/art/ash.png" alt=""></div>
   </section>
 
   <main class="sub">
 
     <section class="sec">
       <div class="wrap">
-        <div class="platforms">
+        <div class="platforms platforms--solo">
           <div class="platform platform--destaque" data-reveal><span class="platform__ribbon">Recomendado</span><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10 e 11 de 64 bits. O launcher instala o jogo e mantém ele atualizado sozinho.</p><span class="size" id="size-pc">v12.0.1</span><a class="btn btn--yellow" href="#" id="dl-pc" data-require-auth>Baixar o launcher</a></div>
-          <div class="platform" data-reveal><div class="platform__icon">🤖</div><h3>Android</h3><p>Android 9 ou superior com 3 GB de RAM. Instale o APK e entre com a mesma conta.</p><span class="size" id="size-android">v12.0.1</span><a class="btn btn--lime" href="#" id="dl-android" data-require-auth>Baixar o APK</a></div>
         </div>
       </div>
     </section>
@@ -53,9 +52,9 @@
       <div class="wrap">
         <div class="sec__head"><div><h2 class="sec__title">Como <span class="grad">instalar</span></h2><p class="sec__sub">Três passos e você está na arena.</p></div></div>
         <div class="steps">
-          <div class="step" data-reveal><h3>Crie sua conta Pokeworld</h3><p>Use seu e-mail para criar uma conta gratuita. É ela que guarda seu progresso em todas as plataformas.</p></div>
-          <div class="step" data-reveal><h3>Baixe o jogo</h3><p>Escolha sua plataforma acima. O download inicial é leve e o restante do conteúdo é baixado dentro do jogo.</p></div>
-          <div class="step" data-reveal><h3>Entre e complete o tutorial</h3><p>O tutorial leva 5 minutos e já libera seu primeiro Pokémon e 2.000 moedas Aeos.</p></div>
+          <div class="step" data-reveal><h3>Crie sua conta Pokeworld</h3><p>Use seu e-mail para criar uma conta gratuita. É ela que guarda seu progresso.</p></div>
+          <div class="step" data-reveal><h3>Baixe o jogo</h3><p>Clique em Baixar o launcher acima. O download inicial é leve e o restante do conteúdo é baixado pelo próprio launcher.</p></div>
+          <div class="step" data-reveal><h3>Entre e complete o tutorial</h3><p>O tutorial leva 5 minutos e já libera sua primeira criatura e as moedas iniciais.</p></div>
         </div>
       </div>
     </section>
@@ -66,26 +65,12 @@
         <table class="req" data-reveal>
           <thead><tr><th>Plataforma</th><th>Sistema</th><th>Memória</th><th>Armazenamento</th></tr></thead>
           <tbody>
-            <tr><td>iOS</td><td>iOS 15+</td><td>3 GB</td><td>4 GB livres</td></tr>
-            <tr><td>Android</td><td>Android 9+</td><td>3 GB</td><td>4 GB livres</td></tr>
-            <tr><td>Nintendo Switch</td><td>Firmware 16+</td><td>—</td><td>4 GB livres</td></tr>
             <tr><td>PC</td><td>Windows 10 64 bits</td><td>8 GB</td><td>8 GB livres · GTX 1050</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <section class="sec sec--white" id="faq">
-      <div class="wrap--narrow">
-        <div class="sec__head"><div><h2 class="sec__title">Perguntas <span class="grad">frequentes</span></h2></div></div>
-        <div class="faq">
-          <details data-reveal><summary>O jogo é realmente gratuito?</summary><p>Sim. Todos os modos e Pokémon podem ser obtidos jogando. As compras opcionais são cosméticas ou aceleram o progresso.</p></details>
-          <details data-reveal><summary>Meu progresso é compartilhado entre plataformas?</summary><p>Sim. Ao vincular sua conta Pokeworld, itens, Pokémon, amigos e ranking são sincronizados em todas as plataformas.</p></details>
-          <details data-reveal><summary>Posso jogar com amigos em outras plataformas?</summary><p>Sim. O cross-play é completo: jogadores de Switch, celular e PC compartilham as mesmas filas.</p></details>
-          <details data-reveal><summary>Preciso de internet para jogar?</summary><p>Sim, todas as partidas acontecem online. Recomendamos uma conexão estável de pelo menos 5 Mbps.</p></details>
-        </div>
-      </div>
-    </section>
 
   </main>
 
@@ -102,24 +87,24 @@
         </div>
         <div>
           <h4>Jogo</h4>
-          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="wiki.html">Pokédex</a></li><li><a href="ranking.html">Ranking</a></li><li><a href="loja.html">Loja</a></li></ul>
+          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="ranking.html">Ranking</a></li><li><a href="Donate">Doar</a></li></ul>
         </div>
         <div>
           <h4>Suporte</h4>
-          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="doar.html#pacotes">Doar</a></li><li><a href="regras.html">Regras</a></li><li><a href="admin.html">Painel admin</a></li></ul>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="tickets.html">Tickets</a></li><li><a href="regras.html">Regras</a></li><li><a href="admin.html">Painel admin</a></li></ul>
         </div>
         <div>
           <h4>Baixe agora</h4>
           <div class="site-footer__baixar">
             <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
-            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>
       <div class="site-footer__bar">
-        <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/icon-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
-        <span>© 2026 Pokeworld Universe. Projeto de demonstração, sem afiliação com The Pokémon Company.</span>
+        <div class="site-footer__status"><span><i class="live-dot"></i>Servidor online</span><span>Próximo evento</span></div>
+        <span>© 2026 Pokeworld Universe.</span>
       </div>
+      <p class="copy-pokemon">Pokémon Copyright © 1995 – 2026 Nintendo/Creatures Inc./GAME FREAK Inc. Pokémon e todos os respectivos nomes são marcas registradas da Nintendo 1996 – 2026. PokeWorld Universe não é afiliado à Nintendo, Creatures Inc. e GAME FREAK Inc.</p>
     </div>
   </footer>
 

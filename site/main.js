@@ -105,6 +105,8 @@
   var content = stage.querySelector('.stage__content');
   var marquees = Array.prototype.slice.call(stage.querySelectorAll('.marquee'));
   var IMG = hero.getAttribute('src');
+  var TILES = ['assets/img/qg/qg-3.jpg', 'assets/img/qg/qg-10.jpg', 'assets/img/qg/qg-18.jpg', 'assets/img/qg/qg-26.jpg',
+               'assets/img/qg/qg-34.jpg', 'assets/img/qg/qg-42.jpg', IMG];
   var K = 4;                    // tiles por cópia (2 cópias por trilho)
   var SPEED = 5.5;              // rem por segundo
   var LAND = 0.32;              // progresso em que a imagem vira card
@@ -120,7 +122,7 @@
     for (var i = 0; i < K * 2; i++) {
       var img = document.createElement('img');
       img.className = 'tile';
-      img.src = IMG;
+      img.src = TILES[(i + marquees.indexOf(m) * 3) % TILES.length];
       img.alt = '';
       img.draggable = false;
       track.appendChild(img);
@@ -160,6 +162,7 @@
     tr.style.transform = saved;
     if (slot) slot.classList.remove('is-slot');
     slot = best; slot.classList.add('is-slot');
+    if (slot.getAttribute('src') !== IMG) slot.src = IMG;
 
     var t0 = tiles[0].getBoundingClientRect(), tk = tiles[K].getBoundingClientRect();
     loopW = tk.left - t0.left;
@@ -239,4 +242,52 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onResize);
   requestAnimationFrame(loop);
+})();
+
+
+/* =====================================================================
+   Trailer: prévia muda em loop na faixa (só toca quando está na tela)
+   e o vídeo completo, com som, numa janela ao clicar.
+   ===================================================================== */
+(function () {
+  var faixa = document.querySelector('.trailer__video');
+  var modal = document.getElementById('video-modal');
+  var player = document.getElementById('video-modal-player');
+  if (!faixa || !modal || !player) return;
+
+  // Só baixa e toca quando está na tela E visível: no desktop a faixa fica
+  // escondida atrás do vídeo de abertura até a logo assentar.
+  var bloco = faixa.closest('.trailer');
+  var naTela = false;
+  function tentarTocar() {
+    var visivel = bloco && getComputedStyle(bloco).visibility !== 'hidden' && Number(getComputedStyle(bloco).opacity) > 0.05;
+    if (naTela && visivel && modal.hidden) { var p = faixa.play(); if (p && p.catch) p.catch(function () {}); }
+    else faixa.pause();
+  }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (itens) {
+      itens.forEach(function (it) { naTela = it.isIntersecting; tentarTocar(); });
+    }, { threshold: 0.25 }).observe(faixa);
+  }
+  // a faixa só aparece quando a animação de entrada termina
+  document.addEventListener('hero:revealed', tentarTocar);
+  window.addEventListener('load', function () { setTimeout(tentarTocar, 2500); });
+
+  function abrir() {
+    modal.hidden = false;
+    document.body.classList.add('is-locked');
+    faixa.pause();
+    var p = player.play(); if (p && p.catch) p.catch(function () {});
+  }
+  function fechar() {
+    player.pause();
+    modal.hidden = true;
+    document.body.classList.remove('is-locked');
+    tentarTocar();
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-trailer]')) { e.preventDefault(); abrir(); }
+    else if (e.target.closest('[data-vclose]')) fechar();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) fechar(); });
 })();

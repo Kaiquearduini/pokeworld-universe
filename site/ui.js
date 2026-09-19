@@ -377,7 +377,7 @@
   /* ---------- estado de sessão no header ---------- */
   function avatarUrl(u) {
     var pr = u ? (auth.profile() || {}) : {};
-    return (u && u.avatar) || pr.avatar || 'assets/img/pokemon/pikachu.png';
+    return (u && u.avatar) || pr.avatar || 'assets/logo-sigla.png';
   }
 
   function renderSession() {
@@ -398,12 +398,18 @@
     if (u) {
       var chip = document.createElement('div');
       chip.className = 'user-chip';
-      chip.innerHTML = '<a href="' + ACCOUNT_URL + '"><img src="' + avatarUrl(u) + '" alt="" onerror="this.src=\'assets/img/pokemon/pikachu.png\'"><span>' + u.name + '</span></a><button type="button" aria-label="Sair">Sair</button>';
+      chip.innerHTML = '<a href="' + ACCOUNT_URL + '"><img src="' + avatarUrl(u) + '" alt="" onerror="this.src=\'assets/logo-sigla.png\'"><span>' + u.name + '</span></a><button type="button" aria-label="Sair">Sair</button>';
       chip.querySelector('button').addEventListener('click', auth.logout);
       if (acoes) acoes.insertBefore(chip, acoes.firstChild);
       else (document.querySelector('.hero, .topbar') || document.body).appendChild(chip);
     }
   }
+
+  /* ---------- links desligados (wiki fora do ar): clicar não faz nada ---------- */
+  document.addEventListener('click', function (e) {
+    var off = e.target.closest && e.target.closest('a.is-off');
+    if (off) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
 
   /* ---------- menu mobile ---------- */
   function mobileMenu() {

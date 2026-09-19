@@ -32,11 +32,11 @@
 
     <nav class="nav">
       <a href="o-jogo.html">O JOGO</a>
-      <a href="wiki.html">wiki</a>
+      <a href="#" class="is-off" aria-disabled="true">wiki</a>
       <a href="download.html">download</a>
       <a href="ranking.html">ranking</a>
-      <a href="loja.html">loja</a>
-      <a href="doar.html">doar</a>
+      <a href="Donate">loja</a>
+      <a href="Donate">doar</a>
     </nav>
     <div class="topbar-actions">
       <a class="btn-entrar" href="login.html" data-entrar>Iniciar sessão</a>
@@ -59,13 +59,12 @@
     </div>
 
     <div class="trailer">
-      <p>TRAILER</p>
+      <video class="trailer__video" src="assets/video/pokemon-qg.mp4" poster="assets/video/pokemon-qg.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
+      <button class="trailer__play" type="button" data-trailer><i aria-hidden="true"></i><span>Assistir trailer</span></button>
     </div>
 
     <div class="stats-bar">
       <div class="stats-bar__inner">
-        <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/icon-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
-        <div class="stat__divider"></div>
         <div class="stat"><img class="stat__icon stat__icon--server" src="assets/icon-server.svg" alt=""><span><i class="live-dot"></i>SERVIDOR ONLINE</span></div>
         <div class="stat__divider"></div>
         <div class="stat"><img class="stat__icon stat__icon--event" src="assets/icon-event.svg" alt=""><span>PRÓXIMO EVENTO</span></div>
@@ -86,11 +85,11 @@
 
       <img class="about__grid" src="assets/grid-floor.png" alt="">
       <div class="about__gengar-wrap"><img class="about__gengar" src="assets/img/art/maos-filippo.png" alt="Treinadores do Pokeworld"></div>
-      <img class="corner-art corner-art--lance" src="assets/img/art/corner-lance.png" alt="" data-corner="left">
+      <img class="corner-art corner-art--lance" src="assets/img/art/trainer-azul.png" alt="" data-corner="left">
       <div class="about__particles" aria-hidden="true"></div>
       <img class="about__pokeball" src="assets/pokeball-logo.svg" alt="">
 
-      <p class="about__text" data-text="home.about.text">O PokeWorld Universe é um mundo Pokémon online moderno e <b>GRÁTIS</b>, que convida você a explorar regiões e cidades incríveis e colecionar pokémon únicos. Com cliente próprio desenvolvido pela nossa equipe, o jogo traz uma perspectiva que dá profundidade ao mundo e cidades construídas do zero, como a nossa Lumiose City.</p>
+      <p class="about__text" data-text="home.about.text">O PokeWorld Universe é um mundo online moderno e <b>GRÁTIS</b>, que convida você a explorar regiões e cidades incríveis e colecionar criaturas únicas. Com cliente próprio desenvolvido pela nossa equipe, o jogo traz uma perspectiva que dá profundidade ao mundo e cidades construídas do zero, como a nossa Lumiose City.</p>
 
       <a class="btn-jogar" href="download.html">
         <span class="btn-jogar__text">JOGAR <span class="grad">GRÁTIS</span></span>
@@ -119,7 +118,7 @@
         <img class="sys-card__icon" src="assets/d-sys-icon.svg" alt="">
         <div class="sys-card__dots"><i></i><i></i><i></i></div>
         <h3 class="sys-card__title">Ascensão estelar e evolução</h3>
-        <p class="sys-card__text">Leve seu pokémon além da forma final com a ascensão estelar, subindo estrelas para desbloquear poder. Com evolução por pedras, helds e boost, o time fica do jeito que você montar.</p>
+        <p class="sys-card__text">Leve sua criatura além da forma final com a ascensão estelar, subindo estrelas para desbloquear poder. Com evolução por pedras, helds e boost, o time fica do jeito que você montar.</p>
       </article>
       <article class="sys-card">
         <div class="sys-card__head"></div>
@@ -151,7 +150,7 @@
       </article>
     </div>
 
-    <img class="corner-art corner-art--cynthia" src="assets/img/art/corner-cynthia.png" alt="" data-corner="right">
+    <img class="corner-art corner-art--cynthia" src="assets/img/art/trainer-amarela.png" alt="" data-corner="right">
     <img class="systems__raichu" src="assets/raichu.png" alt="">
     <img class="systems__dragonite" src="assets/dragonite.png" alt="">
   </section>
@@ -173,10 +172,6 @@
           <img src="assets/logo-sigla.png" alt="">
           <div><b>Pokeworld Universe</b><small>Servidor oficial · Comunidade verificada</small></div>
         </div>
-        <div class="discord-card__stats">
-          <div><i class="live-dot"></i><b class="count" data-count="4820">4.820</b><span>online agora</span></div>
-          <div><b class="count" data-count="31540">31.540</b><span>membros</span></div>
-        </div>
         <ul class="discord-card__channels">
           <li><span>#</span>anúncios<em>updates e patch notes</em></li>
           <li><span>#</span>eventos<em>torneios e sorteios</em></li>
@@ -186,8 +181,6 @@
         <a class="pill pill--yellow" href="https://discord.gg/pokeworlduniverse" target="_blank" rel="noopener">Aceitar convite</a>
       </div>
     </div>
-    <img class="community__art community__art--l" src="assets/img/art/gengar.png" alt="" aria-hidden="true">
-    <img class="community__art community__art--r" src="assets/img/art/pikachu.png" alt="" aria-hidden="true">
   </section>
 
   <!-- ===================== ÚLTIMAS NOTÍCIAS ===================== -->
@@ -201,7 +194,7 @@
         <a class="news-card__img" href="noticia.html?id=temporada-12-regiao-aurora"><img src="assets/img/news/article-15.jpg" alt=""></a>
         <span class="news-card__badge">NOVO</span>
         <span class="news-card__date">4 de novembro, 2026</span>
-        <h3 class="news-card__title"><a href="noticia.html?id=temporada-12-regiao-aurora">Temporada 12 chega com a região Aurora e 6 novos Pokémon</a></h3>
+        <h3 class="news-card__title"><a href="noticia.html?id=temporada-12-regiao-aurora">Temporada 12 chega com a região Aurora e 6 novas criaturas</a></h3>
         <a class="news-card__link" href="noticia.html?id=temporada-12-regiao-aurora">Saiba mais</a>
       </article>
       <article class="news-card">
@@ -256,7 +249,6 @@
           <span class="step-card__num">03</span>
           <h3>Capture o primeiro</h3>
           <p>Explore, lance e capture. Lumiose City inteira espera por você.</p>
-          <a class="step-card__link" href="wiki.html">Conhecer os Pokémon →</a>
         </article>
       </div>
     </div>
@@ -265,7 +257,7 @@
   <!-- ===================== SUA LENDA COMEÇA HOJE ===================== -->
   <section class="legend-sec" id="sua-lenda">
     <div class="legend-sec__glow" aria-hidden="true"></div>
-    <img class="legend-sec__art" src="assets/img/art/player-boy.png" alt="" data-reveal>
+    <img class="legend-sec__art" src="assets/img/art/player-boy.png?v=3" alt="" data-reveal>
     <div class="legend-sec__inner">
       <div class="legend-sec__text" data-reveal>
         <span class="eyebrow eyebrow--light">Pronto para capturar?</span>
@@ -287,27 +279,24 @@
         <div class="marquee marquee--2" data-dir="-1"><div class="marquee__track"></div></div>
         <div class="marquee marquee--3" data-dir="1"><div class="marquee__track"></div></div>
 
-        <img class="stage__hero" src="assets/bg-arceus.png" alt="">
+        <img class="stage__hero" src="assets/img/qg/qg-50.jpg" alt="">
 
         <div class="stage__overlay"></div>
 
         <div class="stage__content">
-          <img class="corner-art corner-art--blue" src="assets/img/art/corner-blue.png" alt="">
-          <img class="corner-art corner-art--arcanine" src="assets/img/art/corner-arcanine.png" alt="">
+          <img class="corner-art corner-art--blue" src="assets/img/art/player-girl.png?v=3" alt="">
+          <img class="corner-art corner-art--arcanine" src="assets/img/art/leon.png" alt="">
           <div class="footer__box"></div>
           <div class="footer__tag">Comece sua Aventura</div>
           <h2 class="footer__title">pokeworld universe</h2>
 
           <div class="footer__badges">
             <a class="badge-launcher" href="download.html"><b>Baixar o launcher</b><span>Windows 10 e 11 · 64 bits</span></a>
-            <a class="badge-apk" href="download.html"><b>Baixar o APK</b><span>Android 9 ou superior</span></a>
           </div>
 
           <div class="footer__white"></div>
           <div class="footer__stats">
             <div class="stats-bar__inner">
-              <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/d-footer-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
-              <div class="stat__divider"></div>
               <div class="stat"><img class="stat__icon stat__icon--server" src="assets/d-footer-server.svg" alt=""><span><i class="live-dot"></i>SERVIDOR ONLINE</span></div>
               <div class="stat__divider"></div>
               <div class="stat"><img class="stat__icon stat__icon--event" src="assets/d-footer-event.svg" alt=""><span>PRÓXIMO EVENTO</span></div>
@@ -325,6 +314,8 @@
     </div>
   </section>
 
+  <p class="copy-pokemon copy-pokemon--home">Pokémon Copyright © 1995 – 2026 Nintendo/Creatures Inc./GAME FREAK Inc. Pokémon e todos os respectivos nomes são marcas registradas da Nintendo 1996 – 2026. PokeWorld Universe não é afiliado à Nintendo, Creatures Inc. e GAME FREAK Inc.</p>
+
   <footer class="site-footer site-footer--mobile">
     <div class="wrap">
       <div class="site-footer__top">
@@ -338,27 +329,35 @@
         </div>
         <div>
           <h4>Jogo</h4>
-          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="wiki.html">Pokédex</a></li><li><a href="ranking.html">Ranking</a></li><li><a href="loja.html">Loja</a></li></ul>
+          <ul><li><a href="o-jogo.html">Sobre o jogo</a></li><li><a href="ranking.html">Ranking</a></li></ul>
         </div>
         <div>
           <h4>Suporte</h4>
-          <ul><li><a href="download.html">Baixar</a></li><li><a href="download.html#faq">Perguntas frequentes</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="doar.html#pacotes">Doar</a></li><li><a href="regras.html">Regras</a></li></ul>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="Donate">Doar</a></li><li><a href="regras.html">Regras</a></li></ul>
         </div>
         <div>
           <h4>Baixe agora</h4>
           <div class="site-footer__baixar">
             <a class="btn btn--yellow btn--sm" href="download.html">Baixar o launcher</a>
-            <a class="baixar-alt" href="download.html">Android · APK</a>
           </div>
         </div>
       </div>
       <div class="site-footer__bar">
-        <div class="stat"><img class="stat__icon stat__icon--gamepad" src="assets/icon-gamepad.svg" alt=""><span><b class="count" data-count="1342321">1.342.321</b> jogadores online</span></div>
-        <span>© 2026 Pokeworld Universe. Projeto de demonstração, sem afiliação com The Pokémon Company.</span>
+        <div class="site-footer__status"><span><i class="live-dot"></i>Servidor online</span><span>Próximo evento</span></div>
+        <span>© 2026 Pokeworld Universe.</span>
       </div>
+      <p class="copy-pokemon">Pokémon Copyright © 1995 – 2026 Nintendo/Creatures Inc./GAME FREAK Inc. Pokémon e todos os respectivos nomes são marcas registradas da Nintendo 1996 – 2026. PokeWorld Universe não é afiliado à Nintendo, Creatures Inc. e GAME FREAK Inc.</p>
     </div>
   </footer>
 
+</div>
+
+<div class="video-modal" id="video-modal" hidden>
+  <div class="video-modal__bd" data-vclose></div>
+  <div class="video-modal__box">
+    <button class="video-modal__close" type="button" data-vclose aria-label="Fechar">×</button>
+    <video id="video-modal-player" src="assets/video/pokemon-qg.mp4" poster="assets/video/pokemon-qg.jpg" controls playsinline preload="none"></video>
+  </div>
 </div>
 
 <!-- Lightbox dos cards -->

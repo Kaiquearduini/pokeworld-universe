@@ -1,6 +1,6 @@
 /**
  * Checkout com Stripe (cartão internacional, Pix e mais conforme a conta).
- * POST /api/stripe-checkout { packageId } -> { checkoutUrl }
+ * POST /api/stripe-checkout { packageId, coupon? } -> { checkoutUrl }
  *
  * Mesma regra de ouro do Mercado Pago: o site manda SÓ o id do pacote.
  * Preço e coins vêm do catálogo do servidor (api/_lib/packages.js).
@@ -8,6 +8,7 @@
 import { randomUUID } from 'crypto';
 import { stripeConfigured, stripeCall } from './_lib/stripe.js';
 import { getPackage } from './_lib/packages.js';
+import { findCoupon, precoComCupom } from './_lib/coupons.js';
 import { createLocalOrder, attachMpOrderId } from './_lib/orders.js';
 import { gameConfigured, one } from './_lib/gamedb.js';
 import { accountFromRequest } from './_lib/session.js';
@@ -29,20 +30,29 @@ export default async function handler(req, res) {
     let pkg;
     try { pkg = getPackage(body && body.packageId); } catch (e) { return res.status(400).json({ error: 'pacote inexistente' }); }
 
+    // cupom opcional: se veio e não vale, recusa em vez de cobrar cheio sem avisar
+    let cupom = null;
+    if (body && body.coupon) {
+      cupom = findCoupon(body.coupon);
+      if (!cupom) return res.status(400).json({ error: 'Cupom inválido ou expirado.' });
+    }
+    const preco = precoComCupom(pkg, cupom);
+
     // pedido local pendente antes de mandar para a Stripe
-    const local = await createLocalOrder({ userId: accountId, packageId: pkg.id, amount: pkg.price, coins: pkg.coins });
+    const local = await createLocalOrder({ userId: accountId, packageId: pkg.id, amount: preco, coins: pkg.coins, cupomPct: cupom ? cupom.pct : 0 });
 
     const session = await stripeCall('/checkout/sessions', {
       mode: 'payment',
       'line_items[0][quantity]': '1',
       'line_items[0][price_data][currency]': 'brl',
-      'line_items[0][price_data][unit_amount]': String(Math.round(pkg.price * 100)),   // centavos
+      'line_items[0][price_data][unit_amount]': String(Math.round(preco * 100)),   // centavos, já com o cupom
       'line_items[0][price_data][product_data][name]': `PokeWorld Universe — ${pkg.title}`,
       'line_items[0][price_data][product_data][description]': `${pkg.coins} coins na conta ${user.email || user.name}`,
       client_reference_id: String(local.id),
       'metadata[order_id]': String(local.id),
       'metadata[account_id]': String(accountId),
       'metadata[package_id]': pkg.id,
+      'metadata[coupon]': cupom ? cupom.code : '',
       customer_email: user.email || undefined,
       success_url: `${APP_URL}/minha-conta.html?pagamento=retorno`,
       cancel_url: `${APP_URL}/minha-conta.html?pagamento=falhou`

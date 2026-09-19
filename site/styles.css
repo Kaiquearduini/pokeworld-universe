@@ -1843,3 +1843,9 @@ body.is-locked { overflow: hidden; }
 @media (min-width: 901px) {
   .footer__badges { left: 50%; transform: translateX(-50%); justify-content: center; }
 }
+
+/* Comunidade sem o card do Discord: o texto fica centralizado */
+.community__inner { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+.community__text p { margin-left: auto; margin-right: auto; }
+.community__cta { justify-content: center; }
+.community .eyebrow, .community__eyebrow { justify-content: center; }

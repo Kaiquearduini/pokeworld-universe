@@ -10,10 +10,10 @@ PWU.news = [
     tag: 'Novidade', date: '2026-11-20', featured: true,
     image: 'assets/img/art/screenshot-1.jpg',
     title: 'O PokeWorld Universe abre em [data]',
-    excerpt: 'Servidor de Pokémon com cliente próprio, desenvolvido pela nossa equipe, e uma perspectiva que dá profundidade ao mundo. Lumiose City inteira, Pokédex das três primeiras gerações e muito mais no dia da abertura.',
+    excerpt: 'Servidor de Pokémon com cliente próprio, desenvolvido pela nossa equipe, e uma perspectiva que dá profundidade ao mundo. PWU City inteira, Pokédex das três primeiras gerações e muito mais no dia da abertura.',
     body: [
       'O PokeWorld Universe abre em [data]. É um servidor de Pokémon com cliente próprio, desenvolvido pela nossa equipe, e uma perspectiva que dá profundidade ao mundo.',
-      'Os melhores exemplos disso são a nova perspectiva dos pokémon e a nossa Lumiose City. Construímos a cidade inteira: torre central, bairros ao redor e hunts espalhadas pelos pontos que todo fã reconhece, em uma escala bem maior que a original. Quem já viu nos filmes e jogos identifica de cara; quem nunca viu vai passar um bom tempo só andando por ela.',
+      'Os melhores exemplos disso são a nova perspectiva dos pokémon e a nossa PWU City. Construímos a cidade inteira: torre central, bairros ao redor e hunts espalhadas pelos pontos que todo fã reconhece, em uma escala bem maior que a original. Quem já viu nos filmes e jogos identifica de cara; quem nunca viu vai passar um bom tempo só andando por ela.',
       '## O que estará disponível no dia da abertura:',
       '- Pokédex com as três primeiras gerações completas, todas com versão shiny.',
       '- Sistema de catch com chances visíveis e histórico de tentativas.',

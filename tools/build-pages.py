@@ -154,7 +154,7 @@ PAGES["o-jogo"] = dict(
           </div>
         </div>
         <div class="intro__art" data-reveal>
-          <img src="assets/img/qg/qg-10.jpg" alt="Lumiose City no Pokeworld Universe">
+          <img src="assets/img/qg/qg-10.jpg" alt="PWU City no Pokeworld Universe">
         </div>
       </div>
       <div class="wrap stats-row">
@@ -168,7 +168,7 @@ PAGES["o-jogo"] = dict(
       <div class="wrap">
         <div class="sec__head"><div><h2 class="sec__title">Sistemas do <span class="grad">jogo</span></h2><p class="sec__sub">Tudo o que faz o Pokeworld Universe ser diferente.</p></div></div>
         <div class="features">
-          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Mundo livre para explorar</h3><p>Voe pelo mapa, use montarias e descubra cidades construídas do zero, como Lumiose City, com torre central, bairros e hunts espalhadas pela cidade.</p></div>
+          <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Mundo livre para explorar</h3><p>Voe pelo mapa, use montarias e descubra cidades construídas do zero, como PWU City, com torre central, bairros e hunts espalhadas pela cidade.</p></div>
           <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Ascensão estelar e evolução</h3><p>Leve sua criatura além da forma final com a ascensão estelar, subindo estrelas para desbloquear poder. Com evolução por pedras, helds e boost, o time fica do jeito que você montar.</p></div>
           <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Guildas com bosses e buffs</h3><p>Junte seu grupo, encare bosses exclusivos de guilda e libere buffs que valem para todos os membros. Quanto mais ativa a guilda, mais forte cada treinador fica.</p></div>
           <div class="feature" data-reveal><img class="feature__icon" src="assets/d-sys-icon.svg" alt=""><h3>Ranking de treinadores</h3><p>Quem está no topo do servidor aparece aqui: level, catches, conquistas e a disputa entre guildas.</p></div>
@@ -295,7 +295,7 @@ PAGES["ranking"] = dict(
     desc="Rankings do Pokeworld Universe: experiência, ganho de experiência, mortes e guildas.",
     banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Temporada 12", blend=True, title="Os melhores<br>treinadores",
                 sub="Quatro rankings, troféus exclusivos e a disputa pelo topo do servidor.",
-                art="assets/img/art/trainer-amarela.png", art2="assets/img/trophies/tier-1.png"),
+                art="assets/img/trophies/tier-1.png"),
     body="""
     <section class="sec rank-sec">
       <div class="wrap">
@@ -479,12 +479,24 @@ PAGES["minha-conta"] = dict(
 PAGES["doar"] = dict(
     title="Doar",
     desc="Apoie o Pokeworld Universe e ganhe mais créditos.",
-    banner=dict(bg="assets/img/bg/stadium-blue.jpg", blend=True, mini=True,
+    # só entra quem está logado: decide antes de a página aparecer, sem piscar
+    extra_head="""
+  <script>try{if(!localStorage.getItem('pwu_session'))location.replace('login.html?next=Donate');}catch(e){}</script>""",
+    banner=dict(bg="assets/img/bg/stadium-blue.jpg", blend=True, tag="Apoie o servidor",
                 title="Ganhe mais <span class=\"grad grad--yellow\">créditos</span>"),
     body="""
     <section class="sec sec--dark sec--textura doar-packs-sec" id="pacotes">
+      <span class="doar-moedas" aria-hidden="true"></span>
       <div class="wrap">
+        <div class="doar-topo">
+          <p class="doar-topo__oi">Olá, <b id="doar-nome">treinador</b></p>
+          <p class="doar-topo__saldo" id="doar-saldo" hidden><img src="assets/img/coins/pcoin.png?v=3" alt=""><span>Seu saldo</span><b>0</b></p>
+        </div>
         <div class="packs packs--3 packs--6" id="doar-packs"></div>
+        <div class="bonus-meter" id="bonus-meter" aria-hidden="true">
+          <div class="bonus-meter__trilho"><i class="bonus-meter__fill"></i><img class="bonus-meter__moeda" src="assets/img/coins/pcoin.png?v=3" alt=""></div>
+          <div class="bonus-meter__pontos"></div>
+        </div>
       </div>
     </section>
 """,

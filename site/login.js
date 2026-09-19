@@ -8,6 +8,8 @@
   if (!box || !window.PWU) return;
 
   var DESTINO = 'minha-conta.html';
+  var pedido = (location.search.match(/[?&]next=([^&]+)/) || [])[1];
+  if (pedido === 'Donate') DESTINO = 'Donate';
   var atual = 'login';
 
   function form(tab) { return box.querySelector('[data-lform="' + tab + '"]'); }

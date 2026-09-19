@@ -1108,3 +1108,81 @@ body[data-page="doar"] #pacotes.doar-packs-sec { padding: 1.6rem 0 6rem; }
   .packs--6 .pack em::before { width: 2.2rem; height: 2.2rem; }
   .packs--6 .pack .btn { width: 100%; padding: 1.1rem .4rem; font-size: 1.9rem; }
 }
+
+/* =====================================================================
+   Login mais largo (a caixa ficava espremida no desktop)
+   ===================================================================== */
+.login-box { width: min(76rem, 100%); padding: 4.6rem 6rem 4rem; }
+.login-box:has(.login-form--reg:not([hidden])), .login-box:has(.recover) { width: min(104rem, 100%); }
+@media (max-width: 900px) { .login-box { padding: 3rem 2.2rem 2.6rem; } }
+
+/* ranking: o troféu sozinho, à direita */
+body[data-page="ranking"] .banner__stage { width: 50rem; right: 8rem; }
+body[data-page="ranking"] .banner__art { height: 82%; animation-duration: 5s; }
+
+/* =====================================================================
+   /Donate: cabeçalho pequeno + pacotes com vida
+   ===================================================================== */
+body[data-page="doar"] .banner { min-height: 0; padding: 3.2rem 0 7rem; }
+body[data-page="doar"] .banner__title { font-size: 6.4rem; margin-top: 1.2rem; }
+body[data-page="doar"] .banner__crumb { margin-bottom: 1rem; }
+body[data-page="doar"] .banner--blend::after { height: 8rem; }
+body[data-page="doar"] .banner__ball { width: 40rem; height: 40rem; margin: -20rem 0 0 -20rem; }
+body[data-page="doar"] #pacotes.doar-packs-sec { padding: .6rem 0 7rem; overflow: hidden; }
+
+.doar-topo { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-bottom: 2.4rem; }
+.doar-topo__oi { font: 400 1.8rem var(--montreal); color: rgba(255,255,255,.7); }
+.doar-topo__oi b { color: #fff; font-weight: 500; }
+.doar-topo__saldo { display: inline-flex; align-items: center; gap: 1rem; padding: .7rem 2rem .7rem .9rem; border-radius: 10rem; background: rgba(255,255,255,.06); border: .1rem solid rgba(252,208,92,.35); font: 400 1.5rem var(--montreal); color: rgba(255,255,255,.7); }
+.doar-topo__saldo[hidden] { display: none; }
+.doar-topo__saldo img { width: 3rem; height: 3rem; object-fit: contain; }
+.doar-topo__saldo b { font: 400 2.6rem/1 var(--bebas); color: #fcd05c; }
+
+/* cartão que inclina com o mouse e tem um foco de luz que segue o cursor */
+.packs--6 { perspective: 140rem; }
+.packs--6 .pack {
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0));
+  transform-style: preserve-3d; will-change: transform;
+  transition: transform .18s ease-out, border-color .3s, background .3s, box-shadow .3s;
+}
+.packs--6 .pack:hover { --ty: -1rem; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0)); }
+.packs--6 .pack::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 30%), rgba(252,208,92,.22), transparent 65%);
+}
+.packs--6 .pack:hover::before { opacity: 1; }
+.packs--6 .pack.is-foco { border-color: rgba(252,208,92,.7); box-shadow: 0 2rem 5rem rgba(252,208,92,.16), inset 0 0 0 .1rem rgba(252,208,92,.25); }
+.packs--6 .pack__moeda { transform: translateZ(4rem); }
+.packs--6 .pack__moeda img { animation: moedaFlutua 4s ease-in-out infinite; }
+.packs--6 .pack:nth-child(2n) .pack__moeda img { animation-delay: -1.3s; }
+.packs--6 .pack:nth-child(3n) .pack__moeda img { animation-delay: -2.4s; }
+.packs--6 .pack.is-foco .pack__moeda img { filter: drop-shadow(0 .8rem 1.6rem rgba(0,0,0,.35)) drop-shadow(0 0 2.4rem rgba(252,208,92,.55)); }
+.packs--6 .pack .btn { position: relative; overflow: hidden; transform: translateZ(2rem); }
+.packs--6 .pack .btn::after { content: ""; position: absolute; top: -50%; left: -70%; width: 40%; height: 200%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.7), transparent); transform: skewX(-20deg); pointer-events: none; }
+.packs--6 .pack:hover .btn::after, .packs--6 .pack.is-foco .btn::after { animation: payBrilho 1.8s ease-in-out infinite; }
+@keyframes moedaFlutua { 0%, 100% { translate: 0 0; } 50% { translate: 0 -.8rem; } }
+
+/* medidor de bônus: a moeda corre até o pacote em foco */
+.bonus-meter { --pos: 0%; position: relative; margin: 5rem 0 0; padding-bottom: 6rem; }
+.bonus-meter__trilho { position: relative; height: 1rem; border-radius: 1rem; background: rgba(255,255,255,.08); }
+.bonus-meter__fill { position: absolute; inset: 0 auto 0 0; width: var(--pos); border-radius: inherit; background: linear-gradient(90deg, #dcee4b, #fcd05c 60%, #e6a03c); box-shadow: 0 0 2rem rgba(252,208,92,.5); transition: width .55s cubic-bezier(.2,.8,.2,1); }
+.bonus-meter__moeda { position: absolute; top: 50%; left: var(--pos); width: 4.4rem; height: 4.4rem; margin: -2.2rem 0 0 -2.2rem; object-fit: contain; filter: drop-shadow(0 .4rem 1rem rgba(0,0,0,.5)); transition: left .55s cubic-bezier(.2,.8,.2,1), rotate .55s; }
+.bonus-meter.is-on .bonus-meter__moeda { rotate: 360deg; }
+.bonus-meter__pontos span { position: absolute; top: 2.6rem; transform: translateX(-50%); text-align: center; color: rgba(255,255,255,.4); transition: color .3s, scale .3s; }
+.bonus-meter__pontos span::before { content: ""; position: absolute; left: 50%; top: -2.2rem; width: .2rem; height: 1rem; margin-left: -.1rem; background: currentColor; opacity: .6; }
+.bonus-meter__pontos b { display: block; font: 400 2.2rem/1 var(--bebas); letter-spacing: .04em; }
+.bonus-meter__pontos small { display: block; margin-top: .3rem; font: 400 1.25rem var(--montreal); }
+.bonus-meter__pontos span.is-on { color: var(--lime); scale: 1.25; }
+
+/* moedas subindo devagar ao fundo */
+.doar-moedas { position: absolute; inset: 0; z-index: 0 !important; overflow: hidden; pointer-events: none; }
+.doar-moedas i { position: absolute; bottom: -6rem; width: var(--s); height: var(--s); background: url("assets/img/coins/pcoin.png?v=3") center / contain no-repeat; opacity: 0; animation: moedaSobe var(--d) linear infinite; animation-delay: var(--a); }
+@keyframes moedaSobe { 0% { transform: translateY(0) rotate(0); opacity: 0; } 12% { opacity: .22; } 85% { opacity: .18; } 100% { transform: translateY(-80rem) rotate(260deg); opacity: 0; } }
+
+@media (max-width: 1100px) { .bonus-meter { display: none; } .packs--6 .pack { transform: none; } }
+@media (max-width: 900px) {
+  body[data-page="doar"] .banner { padding: 2.6rem 0 5rem; }
+  body[data-page="doar"] .banner__title { font-size: 4.4rem !important; }
+  .doar-topo { flex-wrap: wrap; margin-bottom: 1.8rem; }
+}
+@media (prefers-reduced-motion: reduce) { .packs--6 .pack__moeda img, .doar-moedas i { animation: none; } }

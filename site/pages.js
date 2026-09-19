@@ -672,6 +672,70 @@
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
     }
+    // ----- vida na página: saudação, saldo, entrada, inclinação e medidor de bônus -----
+    if (grade) {
+      var u0 = PWU.auth.user;
+      var nomeEl = document.getElementById('doar-nome');
+      if (nomeEl && u0 && u0.name) nomeEl.textContent = u0.name;
+      var saldoEl = document.getElementById('doar-saldo');
+      if (saldoEl && PWU.auth.coins) PWU.auth.coins().then(function (n) {
+        if (n == null) return;
+        saldoEl.hidden = false; saldoEl.querySelector('b').textContent = Number(n).toLocaleString('pt-BR');
+      }).catch(function () {});
+
+      var cards = [].slice.call(grade.querySelectorAll('.pack'));
+      var meter = document.getElementById('bonus-meter');
+      // cada marca fica embaixo do centro do seu pacote
+      function centro(i) { return (i + .5) / pacotes.length * 100; }
+      if (meter) {
+        meter.querySelector('.bonus-meter__pontos').innerHTML = pacotes.map(function (k) {
+          return '<span style="left:' + centro(pacotes.indexOf(k)) + '%"><b>+' + k.bonusPct + '%</b><small>' + PWU.brl(k.price).replace(',00', '') + '</small></span>';
+        }).join('');
+      }
+      function marcar(i) {
+        cards.forEach(function (c, n) { c.classList.toggle('is-foco', n === i); });
+        if (!meter) return;
+        var pct = i < 0 ? 0 : centro(i);
+        meter.style.setProperty('--pos', pct + '%');
+        meter.classList.toggle('is-on', i >= 0);
+        [].forEach.call(meter.querySelectorAll('.bonus-meter__pontos span'), function (sp, n) { sp.classList.toggle('is-on', n === i); });
+      }
+      var fino = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      cards.forEach(function (c, i) {
+        c.addEventListener('mouseenter', function () { marcar(i); });
+        c.addEventListener('focusin', function () { marcar(i); });
+        if (!fino) return;
+        c.addEventListener('mousemove', function (e) {
+          var r = c.getBoundingClientRect();
+          var x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+          c.style.setProperty('--rx', (-y * 10).toFixed(2) + 'deg');
+          c.style.setProperty('--ry', (x * 12).toFixed(2) + 'deg');
+          c.style.setProperty('--mx', ((x + .5) * 100).toFixed(1) + '%');
+          c.style.setProperty('--my', ((y + .5) * 100).toFixed(1) + '%');
+        });
+        c.addEventListener('mouseleave', function () { c.style.setProperty('--rx', '0deg'); c.style.setProperty('--ry', '0deg'); });
+      });
+      // começa apontando para o mais popular
+      var ini = pacotes.findIndex(function (k) { return k.badge; });
+      marcar(ini < 0 ? 0 : ini);
+
+      if (G) {
+        G.from(cards, { y: 50, autoAlpha: 0, duration: .7, stagger: .08, ease: 'power3.out', clearProps: 'transform,opacity,visibility' });
+        cards.forEach(function (c, i) {
+          var b = c.querySelector('b'), alvo = pacotes[i].coins, o = { v: 0 };
+          G.to(o, { v: alvo, duration: 1.1, delay: .2 + i * .08, ease: 'power2.out', onUpdate: function () { b.textContent = Math.round(o.v).toLocaleString('pt-BR'); } });
+        });
+        if (meter) G.from(meter, { y: 30, autoAlpha: 0, duration: .7, delay: .6, ease: 'power3.out' });
+      }
+      // moedas subindo ao fundo
+      var ceu = document.querySelector('.doar-moedas');
+      if (ceu && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var h = '';
+        for (var m = 0; m < 14; m++) h += '<i style="left:' + (4 + Math.random() * 92).toFixed(1) + '%;--s:' + (1.6 + Math.random() * 2.6).toFixed(2) + 'rem;--d:' + (9 + Math.random() * 10).toFixed(1) + 's;--a:-' + (Math.random() * 14).toFixed(1) + 's"></i>';
+        ceu.innerHTML = h;
+      }
+    }
+
     var pmD = document.getElementById('pmodal'), pmBodyD = document.getElementById('pmodal-body');
     function abrirD(html) { pmBodyD.innerHTML = html; pmD.hidden = false; document.body.classList.add('is-locked'); }
     pmD.addEventListener('click', function (e) { if (e.target.closest('[data-pclose]')) { pmD.hidden = true; document.body.classList.remove('is-locked'); } });

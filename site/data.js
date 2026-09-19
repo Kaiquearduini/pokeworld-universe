@@ -69,18 +69,6 @@ PWU.news = [
     ]
   },
   {
-    slug: 'modo-batalha-privada',
-    tag: 'Novidade', date: '2026-10-12',
-    image: 'assets/img/news/article-9.jpg',
-    title: 'Batalha Privada: crie salas personalizadas com regras próprias',
-    excerpt: 'Escolha o mapa, o número de jogadores, o tempo de partida e até desative itens. Ideal para treinos e campeonatos comunitários.',
-    body: [
-      'O novo modo Batalha Privada permite criar salas com código de convite e regras personalizadas. Você pode limitar o nível dos Pokémon, escolher entre os mapas Aurora, Vale das Fontes e Estádio Central, e definir se os itens de batalha estão liberados.',
-      'Também é possível adicionar espectadores, que assistem à partida com câmera livre e atraso de 30 segundos para evitar vantagens.',
-      'O modo está disponível para todos os jogadores a partir do nível 5.'
-    ]
-  },
-  {
     slug: 'colaboracao-champions',
     tag: 'Evento', date: '2026-09-30',
     image: 'assets/img/news/article-18.jpg',
@@ -170,17 +158,6 @@ PWU.news = [
       'O mapa entra na rotação ranqueada a partir da Temporada 12.'
     ]
   },
-  {
-    slug: 'modo-junior-criancas',
-    tag: 'Novidade', date: '2026-07-05',
-    image: 'assets/img/news/article-25.jpg',
-    title: 'Modo Júnior: partidas mais curtas e tutoriais para novos treinadores',
-    excerpt: 'Pensado para quem está começando, com bots amigáveis, dicas na tela e recompensas garantidas.',
-    body: [
-      'O Modo Júnior oferece partidas de 5 minutos contra bots com dificuldade progressiva. Dicas contextuais explicam objetivos, itens e evoluções durante a partida.',
-      'Ao completar 10 partidas no modo, o jogador desbloqueia Pikachu e 2.000 moedas Aeos.'
-    ]
-  }
 ];
 
 /* ---------- Ranking ---------- */

@@ -177,14 +177,6 @@
 .stat-box b { display: block; font: 400 4.6rem/1 var(--bebas); background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .stat-box span { font: 400 1.5rem var(--montreal); color: rgba(0,0,0,.6); }
 
-.modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.6rem; }
-.mode { position: relative; height: 42rem; border-radius: 2.4rem; overflow: hidden; color: #fff; cursor: pointer; }
-.mode img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
-.mode:hover img { transform: scale(1.08); }
-.mode__body { position: absolute; inset: auto 0 0; padding: 3rem; background: linear-gradient(180deg, transparent, rgba(0,0,0,.85)); }
-.mode__tag { display: inline-block; padding: .4rem 1.2rem; border-radius: 10rem; background: var(--lime); color: #000; font: 400 1.4rem var(--bebas); letter-spacing: .08em; }
-.mode h3 { margin-top: 1rem; font: 400 3.6rem/1 var(--bebas); }
-.mode p { margin-top: .6rem; font: 400 1.5rem/1.4 var(--montreal); color: rgba(255,255,255,.8); }
 
 .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.6rem; }
 .feature { position: relative; padding: 3rem; border-radius: 2rem; background: rgba(255,255,255,.05); border: .1rem solid rgba(255,255,255,.1); transition: transform .3s, border-color .3s; }
@@ -664,7 +656,7 @@ body[data-page="minha-conta"] .acc-sec { padding-top: 5rem; }
   .wrap, .wrap--narrow { width: calc(100% - 4rem); }
   .sec__head { flex-direction: column; align-items: flex-start; gap: 1.2rem; margin-bottom: 3rem; }
   .sec__title { font-size: 4.4rem; }
-  .intro, .modes, .features, .platforms, .steps, .news-grid, .article, .shop-grid, .site-footer__top { grid-template-columns: 1fr; }
+  .intro, .features, .platforms, .steps, .news-grid, .article, .shop-grid, .site-footer__top { grid-template-columns: 1fr; }
   .stats-row, .dex-grid { grid-template-columns: repeat(2, 1fr); }
   .gallery-grid { grid-template-columns: 1fr 1fr; }
   .gallery-grid a:first-child { grid-column: span 2; grid-row: auto; }

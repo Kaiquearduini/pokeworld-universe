@@ -317,7 +317,7 @@ PWU.pokedex = [
 
 /* ---------- Textos editáveis pelo painel admin (chave -> valor padrão) ---------- */
 PWU.texts = {
-  'home.about.text': 'O PokeWorld Universe é um mundo online moderno e <b>GRÁTIS</b>, que convida você a explorar regiões e cidades incríveis e colecionar criaturas únicas. Com cliente próprio desenvolvido pela nossa equipe, o jogo traz uma perspectiva que dá profundidade ao mundo e cidades construídas do zero, como a nossa Lumiose City.',
+  'home.about.text': 'O PokeWorld Universe é um mundo Pokémon online moderno e <b>GRÁTIS</b>, que convida você a explorar regiões e cidades incríveis e colecionar pokémon únicos. Com cliente próprio desenvolvido pela nossa equipe, o jogo traz uma perspectiva que dá profundidade ao mundo e cidades construídas do zero, como a nossa PWU City.',
   'home.cta.title': 'Comece agora sua aventura no',
   'wiki.banner.title': 'Todas as<br>criaturas',
   'wiki.banner.sub': 'Funções, alcance, dificuldade e estatísticas de cada criatura disponível.',

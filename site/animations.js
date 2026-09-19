@@ -292,7 +292,7 @@
   // dots piscando
   gsap.to('.sys-card__dots i', { opacity: 0.25, duration: 0.6, yoyo: true, repeat: -1, ease: 'sine.inOut', stagger: { each: 0.2, repeat: -1, yoyo: true } });
 
-  if (isDesktop) {
+  if (isDesktop && document.querySelector('.systems__raichu')) {
     gsap.fromTo('.systems__raichu', { y: 120, rotation: -6 }, {
       y: -120, rotation: 4, ease: 'none',
       scrollTrigger: { trigger: '.systems', start: 'top bottom', end: 'bottom top', scrub: 1.2 }

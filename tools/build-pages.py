@@ -48,7 +48,7 @@ FOOTER = """
         </div>
         <div>
           <h4>Suporte</h4>
-          <ul><li><a href="download.html">Baixar</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="tickets.html">Tickets</a></li><li><a href="regras.html">Regras</a></li><li><a href="admin.html">Painel admin</a></li></ul>
+          <ul><li><a href="download.html">Baixar</a></li><li><a href="minha-conta.html">Minha conta</a></li><li><a href="tickets.html">Tickets</a></li><li><a href="regras.html">Regras</a></li></ul>
         </div>
         <div>
           <h4>Baixe agora</h4>
@@ -396,7 +396,7 @@ PAGES["wiki"] = dict(
           </div>
           <label class="search"><i class="ico ico-search" aria-hidden="true"></i> <input id="dex-search" type="search" placeholder="Buscar criatura"></label>
         </div>
-        <p class="sec__sub" style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;gap:2rem"><span><b id="dex-count">0</b> criaturas encontradas</span><a class="btn btn--black btn--sm" href="admin.html?tab=pokemon">Painel admin</a></p>
+        <p class="sec__sub" style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;gap:2rem"><span><b id="dex-count">0</b> criaturas encontradas</span></p>
         <div class="dex-grid" id="dex-grid"></div>
       </div>
     </section>

@@ -7,7 +7,5 @@
    ===================================================================== */
 window.PWU_CONFIG = {
   SUPABASE_URL: '',
-  SUPABASE_ANON_KEY: '',
-  // Modo local (sem Supabase): senha do painel admin
-  LOCAL_ADMIN_PASSWORD: 'pokeworld'
+  SUPABASE_ANON_KEY: ''
 };

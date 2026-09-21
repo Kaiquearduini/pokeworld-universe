@@ -105,8 +105,10 @@
   var content = stage.querySelector('.stage__content');
   var marquees = Array.prototype.slice.call(stage.querySelectorAll('.marquee'));
   var IMG = hero.getAttribute('src');
-  var TILES = ['assets/img/qg/qg-3.jpg', 'assets/img/qg/qg-10.jpg', 'assets/img/qg/qg-18.jpg', 'assets/img/qg/qg-26.jpg',
-               'assets/img/qg/qg-34.jpg', 'assets/img/qg/qg-42.jpg', IMG];
+  // capturas dos mapas do jogo (assets/img/pwu); a última é a imagem do palco
+  var TILES = [];
+  for (var t = 1; t <= 12; t++) TILES.push('assets/img/pwu/pwu-' + (t < 10 ? '0' : '') + t + '.jpg');
+  TILES.push(IMG);
   var K = 4;                    // tiles por cópia (2 cópias por trilho)
   var SPEED = 5.5;              // rem por segundo
   var LAND = 0.32;              // progresso em que a imagem vira card
@@ -122,7 +124,7 @@
     for (var i = 0; i < K * 2; i++) {
       var img = document.createElement('img');
       img.className = 'tile';
-      img.src = TILES[(i + marquees.indexOf(m) * 3) % TILES.length];
+      img.src = TILES[(i + marquees.indexOf(m) * 4) % TILES.length];
       img.alt = '';
       img.draggable = false;
       track.appendChild(img);

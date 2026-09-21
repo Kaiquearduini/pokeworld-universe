@@ -999,8 +999,8 @@ html.has-cursor .cursor.is-on { opacity: 1; }
 .legend-sec__cta { display: flex; flex-wrap: wrap; gap: 1.8rem; margin-top: 3.6rem; }
 .pill--lg { width: auto; height: auto; padding: 1.6rem 4.2rem; font-size: 2.4rem; }
 .pill--discord { position: relative; flex-direction: row; gap: 1.4rem; background: rgba(255,255,255,.08); color: #fff; border: .12rem solid rgba(255,255,255,.18); backdrop-filter: blur(6px); text-align: left; line-height: 1; }
-.pill--discord .ico { position: relative; flex: none; width: 3.6rem; height: 3.6rem; border-radius: .9rem; overflow: hidden; background: #5865f2; }
-.pill--discord .ico img { position: absolute; left: -35.57%; top: -56.02%; width: 412.37%; height: 219.9%; max-width: none; }
+.pill--discord .pill__ico { position: relative; flex: none; width: 3.6rem; height: 3.6rem; border-radius: .9rem; overflow: hidden; background: #5865f2; }
+.pill--discord .pill__ico img { position: absolute; left: -35.57%; top: -56.02%; width: 412.37%; height: 219.9%; max-width: none; }
 .pill--discord .txt { display: flex; flex-direction: column; }
 .pill--discord small { display: block; margin-top: .4rem; font: 400 1.3rem var(--montreal); letter-spacing: 0; color: rgba(255,255,255,.6); }
 .pill--discord:hover { border-color: #70f5ff; background: rgba(112,244,255,.1); }

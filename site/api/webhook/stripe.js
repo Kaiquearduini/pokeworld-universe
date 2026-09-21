@@ -6,7 +6,7 @@
  * credita, e o crédito é idempotente (UPDATE ... WHERE entregue = 0).
  */
 import { assinaturaStripeValida, rawBody } from '../_lib/stripe.js';
-import { getPackage } from '../_lib/packages.js';
+import { getPackage, customPackage } from '../_lib/packages.js';
 import { findOrderByMpId, markPaidAndCredit } from '../_lib/orders.js';
 
 export const config = { api: { bodyParser: false } };
@@ -37,10 +37,17 @@ export default async function handler(req, res) {
     if (local.status === 'paid') return res.status(200).end();
 
     // confere o valor contra o pacote (em centavos)
-    const pkg = getPackage(local.package_id);
-    const esperado = Math.round(pkg.price * (local.fator || 1) * 100);   // centavos, com cupom se houver
-    if (Number(s.amount_total || 0) < esperado) {
-      console.error('[stripe] valor divergente', { sessao: s.id, pago: s.amount_total, esperado });
+    const pagoReais = Number(s.amount_total || 0) / 100;
+    let divergente;
+    if (local.package_id === 'custom') {
+      // valor livre: os créditos gravados não podem passar do que o valor pago compra
+      try { divergente = local.coins > customPackage(pagoReais / (local.fator || 1)).credits + 1; } catch (e) { divergente = true; }
+    } else {
+      const pkg = getPackage(local.package_id);
+      divergente = pagoReais + 0.001 < Math.round(pkg.price * (local.fator || 1) * 100) / 100;
+    }
+    if (divergente) {
+      console.error('[stripe] valor divergente', { sessao: s.id, pago: s.amount_total, pacote: local.package_id, creditos: local.coins });
       return res.status(200).end();
     }
 

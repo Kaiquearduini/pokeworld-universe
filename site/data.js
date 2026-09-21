@@ -317,3 +317,18 @@ PWU.avatares = [
   { name: 'Treinadora azul', image: 'assets/img/art/trainer-azul.png' },
   { name: 'Treinadora amarela', image: 'assets/img/art/trainer-amarela.png' }
 ];
+
+/* ---------- Valor livre de doação (espelho da regra do servidor) ----------
+   Aceita "137,50" ou "137.50". Entre R$ 10 e R$ 20.000. O bônus é o da maior
+   faixa alcançada; abaixo de R$ 100 não há bônus. O servidor recalcula. */
+PWU.valorLivre = function (txt) {
+  var t = String(txt || '').trim().replace(/\s/g, '');
+  if (!t) return null;
+  if (t.indexOf(',') > -1) t = t.replace(/\./g, '').replace(',', '.');
+  var price = Math.round(parseFloat(t) * 100) / 100;
+  if (!(price >= 10 && price <= 20000)) return null;
+  var pct = 0;
+  (PWU.coinPackages || []).forEach(function (k) { if (price >= k.price && k.bonusPct > pct) pct = k.bonusPct; });
+  var credits = Math.floor(price * (1 + pct / 100));
+  return { price: price, bonusPct: pct, credits: credits };
+};

@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { mpOrder, mpConfigured } from './_lib/mercadopago.js';
-import { getPackage } from './_lib/packages.js';
+import { resolvePackage } from './_lib/packages.js';
 import { findCoupon, precoComCupom } from './_lib/coupons.js';
 import { createLocalOrder, attachMpOrderId } from './_lib/orders.js';
 import { gameConfigured, one } from './_lib/gamedb.js';
@@ -8,7 +8,7 @@ import { accountFromRequest } from './_lib/session.js';
 
 const APP_URL = (process.env.APP_URL || 'https://pokeworld-universe.vercel.app').replace(/\/+$/, '');
 
-/** POST /api/checkout { packageId, coupon? } -> { checkoutUrl } */
+/** POST /api/checkout { packageId, amount?, coupon? } -> { checkoutUrl } */
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'método não permitido' });
   if (!mpConfigured() || !gameConfigured()) return res.status(503).json({ error: 'pagamento ainda não configurado no servidor' });
@@ -24,7 +24,8 @@ export default async function handler(req, res) {
     let body = req.body;
     if (typeof body === 'string') { try { body = JSON.parse(body || '{}'); } catch (e) { body = {}; } }
     let pkg;
-    try { pkg = getPackage(body && body.packageId); } catch (e) { return res.status(400).json({ error: 'pacote inexistente' }); }
+    try { pkg = resolvePackage(body && body.packageId, body && body.amount); }
+    catch (e) { return res.status(400).json({ error: body && body.packageId === 'custom' ? 'Informe um valor entre R$ 10 e R$ 20.000.' : 'pacote inexistente' }); }
 
     // cupom opcional: se veio e não vale, recusa em vez de cobrar cheio sem avisar
     let cupom = null;

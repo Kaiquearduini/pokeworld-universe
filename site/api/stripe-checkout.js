@@ -1,13 +1,13 @@
 /**
  * Checkout com Stripe (cartão internacional, Pix e mais conforme a conta).
- * POST /api/stripe-checkout { packageId, coupon? } -> { checkoutUrl }
+ * POST /api/stripe-checkout { packageId, amount?, coupon? } -> { checkoutUrl }
  *
  * Mesma regra de ouro do Mercado Pago: o site manda SÓ o id do pacote.
  * Preço e coins vêm do catálogo do servidor (api/_lib/packages.js).
  */
 import { randomUUID } from 'crypto';
 import { stripeConfigured, stripeCall } from './_lib/stripe.js';
-import { getPackage } from './_lib/packages.js';
+import { resolvePackage } from './_lib/packages.js';
 import { findCoupon, precoComCupom } from './_lib/coupons.js';
 import { createLocalOrder, attachMpOrderId } from './_lib/orders.js';
 import { gameConfigured, one } from './_lib/gamedb.js';
@@ -28,7 +28,8 @@ export default async function handler(req, res) {
     let body = req.body;
     if (typeof body === 'string') { try { body = JSON.parse(body || '{}'); } catch (e) { body = {}; } }
     let pkg;
-    try { pkg = getPackage(body && body.packageId); } catch (e) { return res.status(400).json({ error: 'pacote inexistente' }); }
+    try { pkg = resolvePackage(body && body.packageId, body && body.amount); }
+    catch (e) { return res.status(400).json({ error: body && body.packageId === 'custom' ? 'Informe um valor entre R$ 10 e R$ 20.000.' : 'pacote inexistente' }); }
 
     // cupom opcional: se veio e não vale, recusa em vez de cobrar cheio sem avisar
     let cupom = null;

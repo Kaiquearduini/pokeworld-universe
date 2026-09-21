@@ -15,11 +15,11 @@
  *   entregue     0 não creditado · 1 creditado  <- trava de idempotência
  */
 import { q, one, run, tx } from './gamedb.js';
-import { PACKAGES, packageIdFromNum } from './packages.js';
+import { PACKAGES, packageIdFromNum, CUSTOM_NUM } from './packages.js';
 
 /** Cria o pedido local ANTES de chamar o Mercado Pago, com status pendente. */
 export async function createLocalOrder({ userId, packageId, amount, coins, cupomPct = 0 }) {
-  const num = PACKAGES[packageId] ? PACKAGES[packageId].num : null;
+  const num = packageId === 'custom' ? CUSTOM_NUM : (PACKAGES[packageId] ? PACKAGES[packageId].num : null);
   if (!num) throw new Error(`Pacote inexistente: ${packageId}`);
   const r = await run(
     `INSERT INTO historico_pagamentos

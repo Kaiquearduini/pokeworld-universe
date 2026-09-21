@@ -23,9 +23,38 @@ export const PACKAGES = {
   mythic:  { id: 'mythic',  num: 906, title: '1.950 Créditos', price: 1500, credits: 1950, bonusPct: 30 },
 };
 
+/* ---------- valor livre ----------
+ * O jogador pode doar qualquer valor entre CUSTOM_MIN e CUSTOM_MAX. O bônus é o
+ * da maior faixa que o valor alcança (R$ 130 -> 8%, R$ 450 -> 25%); abaixo de
+ * R$ 100 não há bônus. Vai para o banco com id_pacote = CUSTOM_NUM.
+ */
+export const CUSTOM_MIN = 10;
+export const CUSTOM_MAX = 20000;
+export const CUSTOM_NUM = 900;
+
+export function bonusPctFor(price) {
+  let pct = 0;
+  for (const p of Object.values(PACKAGES)) if (price >= p.price && p.bonusPct > pct) pct = p.bonusPct;
+  return pct;
+}
+
+export function customPackage(amount) {
+  const price = Math.round(Number(amount) * 100) / 100;
+  if (!(price >= CUSTOM_MIN && price <= CUSTOM_MAX)) throw new Error(`Valor fora da faixa: ${amount}`);
+  const bonusPct = bonusPctFor(price);
+  const credits = Math.floor(price * (1 + bonusPct / 100));
+  return { id: 'custom', num: CUSTOM_NUM, title: `Doação de R$ ${price.toFixed(2).replace('.', ',')}`, price, credits, coins: credits, bonusPct, custom: true };
+}
+
+/** Pacote do catálogo ou, para 'custom', o pacote montado a partir do valor. */
+export function resolvePackage(id, amount) {
+  return id === 'custom' ? customPackage(amount) : getPackage(id);
+}
+
 /** id textual ('ultra') a partir do número gravado no banco (904). */
 export function packageIdFromNum(num) {
   const n = Number(num);
+  if (n === CUSTOM_NUM) return 'custom';
   const pkg = Object.values(PACKAGES).find((p) => p.num === n);
   return pkg ? pkg.id : null;
 }

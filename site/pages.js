@@ -31,7 +31,7 @@
 
   /* Pagamento (Mercado Pago, API de Orders): o site manda SÓ o id do pacote;
      o servidor define preço e coins, cria a order e devolve o checkout_url. */
-  function pay(packageId, btn, provedor, cupom) {
+  function pay(packageId, btn, provedor, cupom, amount) {
     var conteudo = btn ? btn.innerHTML : '';
     var rota = provedor === 'stripe' ? '/api/stripe-checkout' : '/api/checkout';
     var nome = provedor === 'stripe' ? 'Stripe' : 'Mercado Pago';
@@ -39,7 +39,7 @@
     if (btn) { btn.disabled = true; btn.classList.add('is-indo'); btn.innerHTML = '<span class="pay-way__head"><b>Abrindo ' + nome + '…</b></span>'; }
     return PWU.auth.token().then(function (token) {
       if (!token) throw new Error('Pagamentos exigem a conta conectada ao servidor. Entre novamente.');
-      return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(cupom ? { packageId: packageId, coupon: cupom } : { packageId: packageId }) });
+      return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(Object.assign({ packageId: packageId }, cupom ? { coupon: cupom } : {}, amount ? { amount: amount } : {})) });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (r.status === 401) throw new Error('Sua sessão expirou. Entre novamente.');
@@ -672,6 +672,28 @@
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
     }
+    // ----- valor livre: mostra o bônus enquanto digita e leva ao pagamento -----
+    var fValor = document.getElementById('f-valor');
+    if (fValor) {
+      var campoV = fValor.querySelector('input'), dicaV = document.getElementById('valor-livre-dica');
+      function dica() {
+        var v = PWU.valorLivre(campoV.value);
+        fValor.classList.toggle('is-erro', !!campoV.value && !v);
+        if (!campoV.value) { dicaV.innerHTML = 'A partir de R$ 100 você já ganha bônus.'; return; }
+        if (!v) { dicaV.innerHTML = 'Informe um valor entre <b>R$ 10</b> e <b>R$ 20.000</b>.'; return; }
+        dicaV.innerHTML = v.bonusPct
+          ? 'Com ' + PWU.brl(v.price) + ' você recebe <b>' + v.credits.toLocaleString('pt-BR') + ' créditos</b> (+' + v.bonusPct + '% de bônus).'
+          : 'Com ' + PWU.brl(v.price) + ' você recebe <b>' + v.credits.toLocaleString('pt-BR') + ' créditos</b>. A partir de R$ 100 tem bônus.';
+      }
+      campoV.addEventListener('input', function () { campoV.value = campoV.value.replace(/[^\d.,]/g, ''); dica(); });
+      fValor.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = PWU.valorLivre(campoV.value);
+        if (!v) { fValor.classList.add('is-erro'); dica(); campoV.focus(); return; }
+        location.href = 'pagamento.html?pacote=custom&valor=' + v.price;
+      });
+    }
+
     // ----- vida na página: saudação, saldo, entrada, inclinação e medidor de bônus -----
     if (grade) {
       var u0 = PWU.auth.user;
@@ -870,6 +892,12 @@
     if (page === 'pagamento') {
       var pid = qs('pacote') || 'plus';
       var k = (PWU.coinPackages || []).find(function (x) { return x.id === pid; }) || (PWU.coinPackages || [])[0];
+      var valorLivre = null;
+      if (pid === 'custom') {
+        valorLivre = PWU.valorLivre(qs('valor'));
+        if (!valorLivre) { location.replace('Donate'); return; }
+        k = { id: 'custom', price: valorLivre.price, bonusPct: valorLivre.bonusPct, coins: valorLivre.credits };
+      }
       var resumo = document.getElementById('resumo-pedido');
       var cupomAplicado = null;   // { code, pct, price } depois de validado
       function desenharResumo() {
@@ -899,7 +927,7 @@
           var code = campo.value.trim();
           if (!code) return aviso('Digite o código do cupom.');
           bt.disabled = true;
-          fetch('/api/coupon?code=' + encodeURIComponent(code) + '&pacote=' + encodeURIComponent(k.id))
+          fetch('/api/coupon?code=' + encodeURIComponent(code) + '&pacote=' + encodeURIComponent(k.id) + (valorLivre ? '&amount=' + valorLivre.price : ''))
             .then(function (r) { return r.json(); })
             .then(function (d) {
               if (!d.valid) return aviso(d.error || 'Cupom inválido ou expirado.');
@@ -915,7 +943,7 @@
       var meios = document.getElementById('meios-pagamento');
       if (meios) meios.addEventListener('click', function (e) {
         var w = e.target.closest('[data-prov]'); if (!w) return;
-        pay(k.id, w, w.dataset.prov, cupomAplicado ? cupomAplicado.code : null);
+        pay(k.id, w, w.dataset.prov, cupomAplicado ? cupomAplicado.code : null, valorLivre ? valorLivre.price : null);
       });
     }
 

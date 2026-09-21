@@ -1221,3 +1221,25 @@ body[data-page="pagamento"] .cupom__linha input, body[data-page="pagamento"] .cu
 body[data-page="pagamento"] .pay-title { margin-bottom: .8rem; }
 body[data-page="pagamento"] .pay-way { padding: 1.8rem 2.2rem 2rem; }
 @media (max-width: 900px) { body[data-page="pagamento"] .banner { padding: 2rem 0 4.6rem !important; } .pedido-topo { flex-wrap: wrap; } }
+
+/* ---------- doação com valor livre ---------- */
+.valor-livre { margin: 0 0 2.4rem; padding: 2rem 2.4rem; border-radius: 1.8rem; background: rgba(255,255,255,.04); border: .1rem solid rgba(252,208,92,.25); }
+.valor-livre label { display: block; margin-bottom: .8rem; font: 400 1.9rem var(--bebas); letter-spacing: .12em; color: #fcd05c; }
+.valor-livre__linha { display: flex; align-items: stretch; gap: 1rem; }
+.valor-livre__moeda { display: grid; place-items: center; padding: 0 1.6rem; border-radius: 1.2rem; background: rgba(0,0,0,.25); border: .15rem solid rgba(255,255,255,.12); font: 400 2.2rem var(--bebas); color: rgba(255,255,255,.7); }
+.valor-livre__linha input { flex: 1; min-width: 0; padding: 1.3rem 1.6rem; border-radius: 1.2rem; border: .15rem dashed rgba(252,208,92,.45); background: rgba(0,0,0,.25); color: #fff; font: 400 2rem var(--montreal); outline: 0; }
+.valor-livre__linha input::placeholder { font-size: 1.6rem; color: rgba(255,255,255,.35); }
+.valor-livre__linha input:focus { border-style: solid; border-color: #fcd05c; box-shadow: 0 0 0 .4rem rgba(252,208,92,.15); }
+.valor-livre.is-erro input { border-color: #ff9c9c; }
+.valor-livre__linha button { flex: none; padding: 0 3.2rem; border: 0; border-radius: 1.2rem; background: var(--grad-yellow); color: #000; font: 400 2.2rem var(--bebas); letter-spacing: .06em; cursor: pointer; transition: filter .2s, transform .2s; }
+.valor-livre__linha button:hover { filter: brightness(1.08); transform: translateY(-.2rem); }
+.valor-livre__dica { margin-top: .9rem; font: 400 1.45rem var(--montreal); color: rgba(255,255,255,.6); min-height: 1.8rem; }
+.valor-livre__dica b { color: var(--lime); font-weight: 500; }
+.valor-livre.is-erro .valor-livre__dica { color: #ff9c9c; }
+@media (max-width: 900px) {
+  .valor-livre { padding: 1.6rem 1.6rem; }
+  .valor-livre__linha { flex-wrap: wrap; }
+  .valor-livre__linha input { flex: 1 1 0; }
+  .valor-livre__moeda { padding: 0 1.2rem; }
+  .valor-livre__linha button { flex: 1 1 100%; padding: 1.2rem; }
+}

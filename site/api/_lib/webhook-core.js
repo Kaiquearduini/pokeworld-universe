@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { customPackage } from './packages.js';
 
 /**
  * Valida a assinatura do webhook do Mercado Pago.
@@ -58,10 +59,17 @@ export async function processar(mpOrderId, { fetchOrder, isPaid, findOrderByMpId
   if (local.status === 'paid') return 'ja-creditado';
 
   // 4. Confere se o valor pago bate com o pacote comprado.
-  const pkg = getPackage(local.package_id);
   const pago = Number(order.total_paid_amount ?? order.total_amount);
-  const esperado = Math.round(pkg.price * (local.fator || 1) * 100) / 100;   // com cupom, se houver
-  if (!(pago + 0.001 >= esperado)) return 'valor-divergente';
+  if (local.package_id === 'custom') {
+    // valor livre: os créditos gravados não podem passar do que o valor pago compra
+    let permitido;
+    try { permitido = customPackage(pago / (local.fator || 1)).credits; } catch (e) { return 'valor-divergente'; }
+    if (local.coins > permitido + 1) return 'valor-divergente';
+  } else {
+    const pkg = getPackage(local.package_id);
+    const esperado = Math.round(pkg.price * (local.fator || 1) * 100) / 100;   // com cupom, se houver
+    if (!(pago + 0.001 >= esperado)) return 'valor-divergente';
+  }
 
   // 5. Credita. O UPDATE condicional dentro de markPaidAndCredit é a trava real
   //    contra webhooks simultâneos.

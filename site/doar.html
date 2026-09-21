@@ -48,6 +48,15 @@
           <p class="doar-topo__oi">Olá, <b id="doar-nome">treinador</b></p>
           <p class="doar-topo__saldo" id="doar-saldo" hidden><img src="assets/img/coins/pcoin.png?v=3" alt=""><span>Seu saldo</span><b>0</b></p>
         </div>
+        <form class="valor-livre" id="f-valor" novalidate>
+          <label for="valor-livre">Valor</label>
+          <div class="valor-livre__linha">
+            <span class="valor-livre__moeda">R$</span>
+            <input id="valor-livre" name="valor" type="text" inputmode="decimal" autocomplete="off" placeholder="Digite o valor que quiser, ex.: 137,50">
+            <button type="submit">Donate</button>
+          </div>
+          <p class="valor-livre__dica"><span id="valor-livre-dica">A partir de R$ 100 você já ganha bônus.</span></p>
+        </form>
         <div class="packs packs--3 packs--6" id="doar-packs"></div>
         <div class="bonus-meter" id="bonus-meter" aria-hidden="true">
           <div class="bonus-meter__trilho"><i class="bonus-meter__fill"></i><img class="bonus-meter__moeda" src="assets/img/coins/pcoin.png?v=3" alt=""></div>

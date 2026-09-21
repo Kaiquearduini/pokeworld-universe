@@ -293,7 +293,7 @@ PAGES["download"] = dict(
 PAGES["ranking"] = dict(
     title="Ranking",
     desc="Rankings do Pokeworld Universe: experiência, ganho de experiência, mortes e guildas.",
-    banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Temporada 12", blend=True, title="Os melhores<br>treinadores",
+    banner=dict(bg="assets/img/bg/stadium-blue.jpg", blend=True, title="Os melhores<br>treinadores",
                 sub="Quatro rankings, troféus exclusivos e a disputa pelo topo do servidor.",
                 art="assets/img/trophies/tier-1.png"),
     body="""
@@ -634,7 +634,7 @@ PAGES["perfil"] = dict(
 PAGES["pagamento"] = dict(
     title="Pagamento",
     desc="Escolha como pagar seus créditos do Pokeworld Universe.",
-    banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Checkout", blend=True, title="Como quer<br>pagar?",
+    banner=dict(bg="assets/img/bg/stadium-blue.jpg", blend=True, title="Como quer pagar?",
                 sub="Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld."),
     body="""
     <section class="sec acc-sec">
@@ -648,9 +648,8 @@ PAGES["pagamento"] = dict(
           </div>
         </div>
         <div id="acc" hidden>
-          <a class="voltar" href="Donate">← Escolher outro pacote</a>
-          <article class="acc-card">
-            <h2 class="acc-card__title">Seu <span class="grad grad--yellow">pedido</span></h2>
+          <article class="acc-card acc-card--pedido">
+            <div class="pedido-topo"><h2 class="acc-card__title">Seu <span class="grad grad--yellow">pedido</span></h2><a class="voltar" href="Donate">← Escolher outro pacote</a></div>
             <div class="resumo" id="resumo-pedido"></div>
             <form class="cupom" id="f-cupom" novalidate>
               <label for="cupom-codigo">Cupom</label>

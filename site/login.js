@@ -116,7 +116,7 @@
   /* `hidden` sozinho não basta: o CSS das abas usa display:flex e vence o
      atributo. Por isso escondemos com uma classe própria. */
   function esconderLogin(esconder) {
-    box.querySelectorAll('.login-form, .login-tabs, .login-perks').forEach(function (el) {
+    box.querySelectorAll('.login-form, .login-tabs').forEach(function (el) {
       if (!el.classList.contains('recover')) el.classList.toggle('is-oculto', !!esconder);
     });
   }

@@ -1186,3 +1186,38 @@ body[data-page="doar"] #pacotes.doar-packs-sec { padding: .6rem 0 7rem; overflow
   .doar-topo { flex-wrap: wrap; margin-bottom: 1.8rem; }
 }
 @media (prefers-reduced-motion: reduce) { .packs--6 .pack__moeda img, .doar-moedas i { animation: none; } }
+
+
+/* =====================================================================
+   Login: caixa mais larga, botão maior, sem a lista 1-2-3
+   ===================================================================== */
+.login-box { width: min(92rem, 100%); padding: 4.6rem 7rem 4.4rem; }
+.login-box:has(.login-form--reg:not([hidden])), .login-box:has(.recover) { width: min(112rem, 100%); }
+.login-form .auth__submit { margin-top: 1.2rem; padding: 2rem; font-size: 2.8rem; letter-spacing: .06em; }
+.login-form[data-lform="login"] .auth__switch { margin-top: 1.8rem; font-size: 1.6rem; }
+@media (max-width: 900px) { .login-box { padding: 3rem 2.2rem 2.6rem; } .login-form .auth__submit { padding: 1.6rem; font-size: 2.3rem; } }
+
+/* =====================================================================
+   Pagamento: cabeçalho enxuto para Mercado Pago e Stripe aparecerem sem rolar
+   ===================================================================== */
+body[data-page="pagamento"] .banner { min-height: 0 !important; padding: 2.4rem 0 5.2rem !important; }
+body[data-page="pagamento"] .banner__title { font-size: 4.6rem !important; margin-top: .6rem; }
+body[data-page="pagamento"] .banner__sub { display: none; }
+body[data-page="pagamento"] .banner__crumb { margin-bottom: .4rem; }
+body[data-page="pagamento"] .banner--blend::after { height: 5rem !important; }
+body[data-page="pagamento"] .banner__ball { display: none; }
+body[data-page="pagamento"] .acc-sec { padding-top: 1.2rem; }
+body[data-page="pagamento"] .acc-card--pedido { padding-top: 2.4rem; }
+.pedido-topo { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-bottom: 1.6rem; }
+.pedido-topo .acc-card__title { margin: 0; }
+.pedido-topo .voltar { margin: 0; }
+body[data-page="pagamento"] .resumo { padding: 1.6rem 2rem; margin-bottom: 1.6rem; }
+body[data-page="pagamento"] .resumo__bonus { padding: 1rem 1.6rem; }
+body[data-page="pagamento"] .resumo__bonus b { font-size: 3.6rem; }
+body[data-page="pagamento"] .resumo__valor { font-size: 4.8rem; }
+body[data-page="pagamento"] .cupom { margin: 1rem 0 1.6rem; }
+body[data-page="pagamento"] .cupom label { margin-bottom: .5rem; }
+body[data-page="pagamento"] .cupom__linha input, body[data-page="pagamento"] .cupom__linha button { padding-top: 1rem; padding-bottom: 1rem; }
+body[data-page="pagamento"] .pay-title { margin-bottom: .8rem; }
+body[data-page="pagamento"] .pay-way { padding: 1.8rem 2.2rem 2rem; }
+@media (max-width: 900px) { body[data-page="pagamento"] .banner { padding: 2rem 0 4.6rem !important; } .pedido-topo { flex-wrap: wrap; } }

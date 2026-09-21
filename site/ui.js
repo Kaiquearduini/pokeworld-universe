@@ -249,7 +249,7 @@
 
         '<form class="auth__form" data-form="login" novalidate>' +
           '<label class="field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="treinador@pokeworld.com" required></label>' +
-          '<label class="field"><span>Senha</span><span class="field__pw"><input type="password" name="password" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="field__eye" aria-label="Mostrar senha">👁</button></span></label>' +
+          '<label class="field"><span>Senha</span><span class="field__pw"><input type="password" name="password" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="field__eye" aria-label="Mostrar senha"><i class="ico ico-eye" aria-hidden="true"></i></button></span></label>' +
           '<label class="check"><input type="checkbox" name="terms" required><i></i><span>Li e aceito os <a href="#" data-terms>Termos de Uso</a> e a <a href="#" data-terms>Política de Privacidade</a>.</span></label>' +
           '<p class="auth__error" hidden></p>' +
           '<button class="auth__submit" type="submit"><span>Entrar</span></button>' +
@@ -258,7 +258,7 @@
 
         '<form class="auth__form" data-form="register" hidden novalidate>' +
           '<label class="field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="treinador@pokeworld.com" required></label>' +
-          '<label class="field"><span>Nova senha</span><span class="field__pw"><input type="password" name="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" minlength="8" required><button type="button" class="field__eye" aria-label="Mostrar senha">👁</button></span></label>' +
+          '<label class="field"><span>Nova senha</span><span class="field__pw"><input type="password" name="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" minlength="8" required><button type="button" class="field__eye" aria-label="Mostrar senha"><i class="ico ico-eye" aria-hidden="true"></i></button></span></label>' +
           '<div class="strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div>' +
           '<label class="field"><span>Confirmar senha</span><input type="password" name="confirm" autocomplete="new-password" placeholder="Repita a senha" required></label>' +
           '<label class="check"><input type="checkbox" name="terms" required><i></i><span>Li e aceito os <a href="#" data-terms>Termos de Uso</a> e a <a href="#" data-terms>Política de Privacidade</a>.</span></label>' +

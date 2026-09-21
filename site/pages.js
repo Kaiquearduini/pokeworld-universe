@@ -327,7 +327,7 @@
     function price(it) {
       var parts = [];
       if (it.coins) parts.push('<span><img class="moeda-mini" src="assets/img/coins/pcoin.png?v=3" alt="">' + it.coins.toLocaleString('pt-BR') + '</span>');
-      if (it.gems) parts.push('<span>💎 ' + it.gems.toLocaleString('pt-BR') + '</span>');
+      if (it.gems) parts.push('<span><i class="ico ico-gem" aria-hidden="true"></i> ' + it.gems.toLocaleString('pt-BR') + '</span>');
       if (it.price) parts.push('<span>' + PWU.brl(it.price) + '</span>');
       return parts.join('');
     }
@@ -592,7 +592,7 @@
           '<div class="pay-ways">' +
           '<button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>' +
           '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>' +
-          '</div><p class="mp-note">🔒 Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
+          '</div><p class="mp-note"><i class="ico ico-lock" aria-hidden="true"></i> Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
         pmBody.addEventListener('click', function (ev) {
           var w = ev.target.closest('[data-prov]'); if (!w) return;
           pay(b.dataset.pack, w, w.dataset.prov);
@@ -769,7 +769,7 @@
       abrirD('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + (k.bonusPct ? ' · já com ' + k.bonusPct + '% de bônus' : '') + '.</p>' +
         '<div class="pay-ways"><button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>' +
         '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button></div>' +
-        '<p class="mp-note">🔒 Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
+        '<p class="mp-note"><i class="ico ico-lock" aria-hidden="true"></i> Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
       pmBodyD.addEventListener('click', function (ev) {
         var w = ev.target.closest('[data-prov]'); if (!w) return;
         pay(b.dataset.pack, w, w.dataset.prov);
@@ -861,7 +861,7 @@
         if (st) st.textContent = d.devices.length + ' aparelho(s) autorizado(s)';
         el.innerHTML = d.devices.map(function (v) {
           var atual = v.device_id === d.atual;
-          return '<div class="device' + (atual ? ' is-current' : '') + '"><div class="device__ico">' + (/Android|iOS/.test(v.label || '') ? '📱' : '💻') + '</div>' +
+          return '<div class="device' + (atual ? ' is-current' : '') + '"><div class="device__ico">' + (/Android|iOS/.test(v.label || '') ? '<i class="ico ico-phone" aria-hidden="true"></i>' : '<i class="ico ico-laptop" aria-hidden="true"></i>') + '</div>' +
             '<div><b>' + esc(v.label || 'Aparelho') + '</b><small>' + (v.last_ip ? 'IP ' + esc(v.last_ip) + ' · ' : '') + 'último acesso ' + new Date(v.last_seen).toLocaleString('pt-BR') + '</small></div>' +
             (atual ? '<span class="tag-atual">Este aparelho</span>' : '<button type="button" data-rmdev="' + esc(v.device_id) + '">Remover</button>') + '</div>';
         }).join('') || '<p class="sec__sub" style="margin:0">Nenhum aparelho registrado ainda.</p>';

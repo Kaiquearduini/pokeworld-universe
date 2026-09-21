@@ -139,7 +139,7 @@
       '<div data-rstep="2" hidden>' +
         '<div class="login-grid">' +
           '<label class="field"><span>Código do e-mail</span><input id="rc-code" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code"></label>' +
-          '<label class="field"><span>Nova senha</span><span class="field__pw"><input type="password" id="rc-pw" autocomplete="new-password" placeholder="Mínimo de 8 caracteres"><button type="button" class="field__eye" aria-label="Mostrar senha">👁</button></span></label>' +
+          '<label class="field"><span>Nova senha</span><span class="field__pw"><input type="password" id="rc-pw" autocomplete="new-password" placeholder="Mínimo de 8 caracteres"><button type="button" class="field__eye" aria-label="Mostrar senha"><i class="ico ico-eye" aria-hidden="true"></i></button></span></label>' +
           '<label class="field"><span>Confirmar nova senha</span><input type="password" id="rc-pw2" autocomplete="new-password" placeholder="Repita a senha"></label>' +
           '<ul class="login-dicas"><li>Pelo menos 8 caracteres</li><li>Misture maiúsculas e minúsculas</li><li>Inclua um número ou símbolo</li></ul>' +
         '</div>' +

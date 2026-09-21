@@ -256,10 +256,26 @@ PAGES["download"] = dict(
                 art="assets/img/art/ash.png", art2="assets/img/art/leon.png",
                 selos='<div class="banner__selos"><span><i></i>Grátis para sempre</span><span><i></i>Windows 10 e 11</span><span><i></i>Atualização automática</span></div>'),
     body="""
-    <section class="sec">
-      <div class="wrap">
-        <div class="platforms platforms--solo">
-          <div class="platform platform--destaque" data-reveal><span class="platform__ribbon">Recomendado</span><div class="platform__icon">💻</div><h3>PC</h3><p>Windows 10 e 11 de 64 bits. O launcher instala o jogo e mantém ele atualizado sozinho.</p><span class="size" id="size-pc">v12.0.1</span><a class="btn btn--yellow" href="#" id="dl-pc" data-require-auth>Baixar o launcher</a></div>
+    <section class="sec launcher-sec">
+      <div class="wrap launcher">
+        <div class="launcher__texto" data-reveal>
+          <span class="launcher__tag"><i class="ico ico-windows" aria-hidden="true"></i> Windows 10 e 11 · 64 bits</span>
+          <h2 class="sec__title">Launcher oficial<br><span class="grad">para PC</span></h2>
+          <p class="launcher__desc">Um instalador leve que baixa o jogo, aplica as atualizações sozinho e abre direto na tela de login. Você instala uma vez e nunca mais se preocupa com versão.</p>
+          <ul class="launcher__lista">
+            <li><i class="ico ico-check" aria-hidden="true"></i><div><b>Atualiza sozinho</b><span>Cada patch chega pelo launcher, sem baixar tudo de novo.</span></div></li>
+            <li><i class="ico ico-check" aria-hidden="true"></i><div><b>Instalação em minutos</b><span>Download inicial leve; o restante vem em segundo plano.</span></div></li>
+            <li><i class="ico ico-check" aria-hidden="true"></i><div><b>Mesma conta do site</b><span>Entre com o e-mail e a senha que você criou aqui.</span></div></li>
+          </ul>
+          <div class="launcher__acoes">
+            <a class="btn btn--yellow btn--lg" href="#" id="dl-pc" data-require-auth><i class="ico ico-download" aria-hidden="true"></i> Baixar o launcher</a>
+            <span class="launcher__versao" id="size-pc">v12.0.1 · grátis</span>
+          </div>
+        </div>
+        <div class="launcher__janela" data-reveal>
+          <div class="launcher__barra"><i></i><i></i><i></i><span>PokeWorld Universe Launcher</span></div>
+          <img src="assets/img/qg/qg-18.jpg" alt="PWU City vista pelo jogo" loading="lazy">
+          <div class="launcher__status"><span><i class="live-dot"></i>Servidor online</span><b>Jogar</b></div>
         </div>
       </div>
     </section>
@@ -308,7 +324,7 @@ PAGES["ranking"] = dict(
 
         <div class="rank-tools">
           <p class="sec__sub" id="rank-desc"></p>
-          <label class="search">🔍 <input id="rank-search" type="search" placeholder="Buscar treinador ou guilda"></label>
+          <label class="search"><i class="ico ico-search" aria-hidden="true"></i> <input id="rank-search" type="search" placeholder="Buscar treinador ou guilda"></label>
         </div>
 
         <div class="trophy-legend" data-reveal>
@@ -353,7 +369,7 @@ PAGES["loja"] = dict(
     </section>
 """,
     extra_bottom="""
-<button class="cart-fab" id="cart-fab" type="button">🛒 Carrinho <b>0</b></button>
+<button class="cart-fab" id="cart-fab" type="button"><i class="ico ico-cart" aria-hidden="true"></i> Carrinho <b>0</b></button>
 <aside class="cart" id="cart">
   <div class="cart__head">Seu carrinho <button type="button" data-cart-close aria-label="Fechar">×</button></div>
   <div class="cart__list"></div>
@@ -378,7 +394,7 @@ PAGES["wiki"] = dict(
             <button class="chip" type="button" data-role="suporte">Suporte</button>
             <button class="chip" type="button" data-role="velocista">Velocista</button>
           </div>
-          <label class="search">🔍 <input id="dex-search" type="search" placeholder="Buscar criatura"></label>
+          <label class="search"><i class="ico ico-search" aria-hidden="true"></i> <input id="dex-search" type="search" placeholder="Buscar criatura"></label>
         </div>
         <p class="sec__sub" style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;gap:2rem"><span><b id="dex-count">0</b> criaturas encontradas</span><a class="btn btn--black btn--sm" href="admin.html?tab=pokemon">Painel admin</a></p>
         <div class="dex-grid" id="dex-grid"></div>
@@ -585,8 +601,8 @@ PAGES["seguranca"] = dict(
             <h2 class="acc-card__title">Verificação em <span class="grad grad--yellow">duas etapas</span></h2>
             <p class="acc-card__sub">Proteção extra para a sua conta, além da senha.</p>
             <div class="doisfa__opcoes doisfa__opcoes--conta">
-              <div class="doisfa__op is-on"><i aria-hidden="true">✉</i><div><b>Por e-mail <em class="ok">ativa</em></b><span>Pedimos um código de 6 dígitos no seu e-mail sempre que alguém entra de um computador novo.</span></div></div>
-              <div class="doisfa__op"><i aria-hidden="true">🔐</i><div><b>Por aplicativo <em>em breve</em></b><span>Código do Google Authenticator, Authy ou similar a cada login.</span></div></div>
+              <div class="doisfa__op is-on"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-mail" aria-hidden="true"></i></i><div><b>Por e-mail <em class="ok">ativa</em></b><span>Pedimos um código de 6 dígitos no seu e-mail sempre que alguém entra de um computador novo.</span></div></div>
+              <div class="doisfa__op"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-shield" aria-hidden="true"></i></i><div><b>Por aplicativo <em>em breve</em></b><span>Código do Google Authenticator, Authy ou similar a cada login.</span></div></div>
             </div>
           </article>
 
@@ -681,7 +697,7 @@ PAGES["pagamento"] = dict(
                 <span class="pay-way__li">Aceita cartão internacional</span>
               </button>
             </div>
-            <p class="mp-note">🔒 O pagamento acontece no site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>
+            <p class="mp-note"><i class="ico ico-lock" aria-hidden="true"></i> O pagamento acontece no site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>
             <p class="mp-regras">** Ao gerar o QR Code você automaticamente declara aceitar <a href="regras.html" target="_blank" rel="noopener">as regras</a></p>
           </article>
 

@@ -2,13 +2,14 @@
  * Conta do jogador — grava direto na tabela `accounts` do banco do jogo.
  * A conta criada aqui é a MESMA que entra no cliente do Pokeworld.
  *
- * POST /api/account { action: 'register' | 'login' | 'password' | 'forgot' | 'reset', ... }
+ * POST /api/account { action: 'register' | 'login' | 'password' | 'forgot' | 'reset' | 'totp-setup' | 'totp-enable' | 'totp-disable', ... }
  * GET  /api/account            -> dados da conta + treinadores (Bearer token)
  */
 import crypto from 'crypto';
 import { gameConfigured, q, one, run, tableExists } from './_lib/gamedb.js';
 import { sign, accountFromRequest, hashSenha } from './_lib/session.js';
 import { mailConfigured, enviarEmail, emailCodigoDispositivo, emailCodigoSenha } from './_lib/mail.js';
+import { novoSegredo, confereTotp, otpauthUrl } from './_lib/totp.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CODIGO_VALE_MIN = 15;
@@ -45,6 +46,17 @@ async function registrarAparelho(accountId, deviceId, req) {
     [accountId, String(deviceId).slice(0, 64), apelidoDoAparelho(req), ipDe(req)]
   );
 }
+/** Autenticador por aplicativo ativo nesta conta? */
+async function totpAtivo(accountId) {
+  if (!(await tableExists('site_totp'))) return false;
+  const r = await one('SELECT enabled FROM site_totp WHERE account_id = ? LIMIT 1', [accountId]);
+  return !!(r && Number(r.enabled) === 1);
+}
+async function totpSegredo(accountId) {
+  const r = await one('SELECT secret, enabled FROM site_totp WHERE account_id = ? LIMIT 1', [accountId]);
+  return r || null;
+}
+
 async function mandarCodigoSenha(acc, req) {
   const codigo = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
   await run("UPDATE tokenvalidat SET expired = '1' WHERE id_account = ? AND expired = '0' AND token LIKE 'pwd:%'", [acc.id]);
@@ -120,6 +132,7 @@ async function dadosDaConta(accountId) {
     plan: Number(acc.premdays || 0) > 0 ? `Premium · ${acc.premdays} dias` : 'Conta Grátis',
     admin: Number(acc.type || 1) >= 5,
     avatar: acc.image || null,
+    totp: await totpAtivo(accountId),
     createdAt: Number(acc.creation || 0),
     trainers: players.map((p) => ({
       id: p.id,
@@ -185,10 +198,22 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
       }
 
+      // autenticador por aplicativo ativo? exige o código de 6 dígitos.
+      let usouTotp = false;
+      if (await totpAtivo(acc.id)) {
+        const codigo = String(body.totp || '').replace(/\D/g, '');
+        if (!codigo) return res.status(403).json({ needsTotp: true, error: 'Digite o código do seu aplicativo autenticador.' });
+        const t = await totpSegredo(acc.id);
+        if (!confereTotp(t && t.secret, codigo)) return res.status(401).json({ needsTotp: true, error: 'Código do autenticador inválido.' });
+        usouTotp = true;
+      }
+
       // computador novo? pede código por e-mail antes de liberar.
       const deviceId = String(body.deviceId || '').slice(0, 64);
       const temTabela = await tableExists('site_devices');
-      if (temTabela && deviceId && !(await aparelhoConhecido(acc.id, deviceId))) {
+      if (usouTotp && temTabela && deviceId) {
+        await registrarAparelho(acc.id, deviceId, req);          // o app já provou que é o dono
+      } else if (temTabela && deviceId && !(await aparelhoConhecido(acc.id, deviceId))) {
         if (await primeiroAparelho(acc.id)) {
           await registrarAparelho(acc.id, deviceId, req);       // o primeiro aparelho é o de confiança
         } else if (mailConfigured()) {
@@ -258,6 +283,38 @@ export default async function handler(req, res) {
       }
       await run("UPDATE tokenvalidat SET expired = '1' WHERE id = ?", [reg.id]);
       await run('UPDATE accounts SET password = ? WHERE id = ?', [hashSenha(nova), acc.id]);
+      return res.status(200).json({ ok: true });
+    }
+
+    // ---------------- autenticador por aplicativo ----------------
+    if (action === 'totp-setup') {
+      const id = accountFromRequest(req);
+      if (!id) return res.status(401).json({ error: 'não autenticado' });
+      if (!(await tableExists('site_totp'))) return res.status(412).json({ error: 'rode sql/site-tables.sql antes' });
+      const acc = await one('SELECT name, email FROM accounts WHERE id = ? LIMIT 1', [id]);
+      const secret = novoSegredo();
+      await run(
+        `INSERT INTO site_totp (account_id, secret, enabled, created_at) VALUES (?, ?, 0, NOW())
+         ON DUPLICATE KEY UPDATE secret = VALUES(secret), enabled = 0, created_at = NOW()`,
+        [id, secret]
+      );
+      return res.status(200).json({ secret, otpauth: otpauthUrl(secret, acc.email || acc.name) });
+    }
+    if (action === 'totp-enable') {
+      const id = accountFromRequest(req);
+      if (!id) return res.status(401).json({ error: 'não autenticado' });
+      const t = await totpSegredo(id);
+      if (!t) return res.status(400).json({ error: 'Gere o QR Code primeiro.' });
+      if (!confereTotp(t.secret, body.code)) return res.status(401).json({ error: 'Código inválido. Confira o horário do celular e tente de novo.' });
+      await run('UPDATE site_totp SET enabled = 1 WHERE account_id = ?', [id]);
+      return res.status(200).json({ ok: true });
+    }
+    if (action === 'totp-disable') {
+      const id = accountFromRequest(req);
+      if (!id) return res.status(401).json({ error: 'não autenticado' });
+      const acc = await one('SELECT password FROM accounts WHERE id = ? LIMIT 1', [id]);
+      if (!acc || String(acc.password).toLowerCase() !== hashSenha(password)) return res.status(401).json({ error: 'Senha incorreta.' });
+      await run('DELETE FROM site_totp WHERE account_id = ?', [id]);
       return res.status(200).json({ ok: true });
     }
 

@@ -105,10 +105,18 @@
   var content = stage.querySelector('.stage__content');
   var marquees = Array.prototype.slice.call(stage.querySelectorAll('.marquee'));
   var IMG = hero.getAttribute('src');
-  // capturas dos mapas do jogo (assets/img/pwu); a última é a imagem do palco
+  // mapas do jogo em movimento (assets/video/mapas, vindos dos GIFs);
+  // o último é o vídeo do palco, que abre a cena em tela cheia
   var TILES = [];
-  for (var t = 1; t <= 12; t++) TILES.push('assets/img/pwu/pwu-' + (t < 10 ? '0' : '') + t + '.jpg');
-  TILES.push(IMG);
+  for (var t = 1; t <= 12; t++) TILES.push('assets/video/mapas/mapa-' + (t < 10 ? '0' : '') + t);
+  var IMGV = IMG.replace(/\.(jpg|png|mp4)$/, '');
+  function tileEl(base) {
+    var v = document.createElement('video');
+    v.className = 'tile'; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'metadata';
+    v.poster = base + '.jpg'; v.src = base + '.mp4'; v.dataset.base = base;
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    return v;
+  }
   var K = 4;                    // tiles por cópia (2 cópias por trilho)
   var SPEED = 5.5;              // rem por segundo
   var LAND = 0.32;              // progresso em que a imagem vira card
@@ -122,10 +130,7 @@
   marquees.forEach(function (m) {
     var track = m.querySelector('.marquee__track');
     for (var i = 0; i < K * 2; i++) {
-      var img = document.createElement('img');
-      img.className = 'tile';
-      img.src = TILES[(i + marquees.indexOf(m) * 4) % TILES.length];
-      img.alt = '';
+      var img = tileEl(TILES[(i + marquees.indexOf(m) * 4) % TILES.length]);
       img.draggable = false;
       track.appendChild(img);
     }
@@ -164,7 +169,7 @@
     tr.style.transform = saved;
     if (slot) slot.classList.remove('is-slot');
     slot = best; slot.classList.add('is-slot');
-    if (slot.getAttribute('src') !== IMG) slot.src = IMG;
+    if (slot.dataset.base !== IMGV) { slot.dataset.base = IMGV; slot.poster = IMGV + '.jpg'; slot.src = IMGV + '.mp4'; slot.play().catch(function () {}); }
 
     var t0 = tiles[0].getBoundingClientRect(), tk = tiles[K].getBoundingClientRect();
     loopW = tk.left - t0.left;
@@ -235,7 +240,7 @@
   function closeLb() { lb.hidden = true; document.body.style.overflow = ''; }
   stage.addEventListener('click', function (e) {
     var t = e.target;
-    if (t.classList && t.classList.contains('tile') && stage.classList.contains('is-cards')) openLb(t.src);
+    if (t.classList && t.classList.contains('tile') && stage.classList.contains('is-cards')) openLb(t.dataset.base + '.jpg');
   });
   lb.addEventListener('click', closeLb);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) closeLb(); });

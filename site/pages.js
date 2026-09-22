@@ -134,9 +134,9 @@
       var html = list.map(function (p) { return '<a href="wiki.html?p=' + p.id + '" title="' + esc(p.name) + '"><img src="' + p.image + '" alt="' + esc(p.name) + '" loading="lazy"></a>'; }).join('');
       track.innerHTML = html + html;
     });
-    var counters = document.querySelectorAll('.stat-box [data-count]');
+    var counters = document.querySelectorAll('.stat-box [data-count], .geracoes [data-count]');
     if (G && counters.length) {
-      ScrollTrigger.create({ trigger: '.stats-row', start: 'top 85%', once: true, onEnter: function () {
+      ScrollTrigger.create({ trigger: '.stats-row, .geracoes', start: 'top 85%', once: true, onEnter: function () {
         counters.forEach(function (el) {
           var target = +el.dataset.count, suffix = el.dataset.suffix || '', o = { v: 0 };
           G.to(o, { v: target, duration: 2, ease: 'power2.out', onUpdate: function () { el.textContent = Math.round(o.v).toLocaleString('pt-BR') + suffix; } });
@@ -780,6 +780,51 @@
   /* =====================================================================
      PÁGINAS DA CONTA: tickets, segurança, foto de perfil e pagamento
      ===================================================================== */
+  /* ----- autenticador por aplicativo (página Segurança) ----- */
+  function montarTotp() {
+    var area = document.getElementById('totp-area'); if (!area) return;
+    var estado = document.getElementById('totp-estado'), bAtivar = document.getElementById('totp-ativar'), bDesat = document.getElementById('totp-desativar'), aviso = document.getElementById('totp-aviso');
+    var card = document.getElementById('totp-card');
+    function msg(t, ok) { aviso.textContent = t || ''; aviso.hidden = !t; aviso.classList.toggle('is-ok', !!ok); }
+    function estadoAtual(on) {
+      estado.textContent = on ? 'ativa' : 'desativada'; estado.classList.toggle('ok', !!on);
+      card.classList.toggle('is-on', !!on); bAtivar.hidden = !!on; bDesat.hidden = !on;
+      var old = area.querySelector('.totp__setup'); if (old) old.remove();
+    }
+    PWU.auth.game().then(function (d) { estadoAtual(!!(d && d.totp)); }).catch(function () {});
+
+    bAtivar.addEventListener('click', function () {
+      bAtivar.disabled = true; msg('');
+      PWU.auth.api.totpSetup().then(function (d) {
+        var box = document.createElement('div'); box.className = 'totp__setup';
+        box.innerHTML = '<p>1. Abra o Google Authenticator, Authy ou similar e leia o QR Code:</p><div class="totp__qr" id="totp-qr"></div>' +
+          '<p>Ou digite a chave manualmente: <code>' + esc(d.secret.replace(/(.{4})/g, '$1 ').trim()) + '</code></p>' +
+          '<p>2. Digite o código de 6 dígitos que o aplicativo mostra:</p>' +
+          '<div class="totp__linha"><input id="totp-confirma" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code"><button type="button" class="btn btn--yellow btn--sm" id="totp-confirmar">Confirmar</button><button type="button" class="btn btn--ghost btn--sm" id="totp-cancelar">Cancelar</button></div>';
+        area.appendChild(box);
+        var qr = document.getElementById('totp-qr');
+        if (window.qrcode) { var q = qrcode(0, 'M'); q.addData(d.otpauth); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+        else qr.innerHTML = '<span class="totp__semqr">Não consegui desenhar o QR Code. Use a chave manual ao lado.</span>';
+        var campo = document.getElementById('totp-confirma'); campo.focus();
+        campo.addEventListener('input', function () { campo.value = campo.value.replace(/\D/g, ''); });
+        document.getElementById('totp-cancelar').addEventListener('click', function () { box.remove(); bAtivar.disabled = false; });
+        function confirmar() {
+          if (campo.value.length !== 6) return msg('Digite os 6 dígitos do aplicativo.');
+          PWU.auth.api.totpEnable(campo.value).then(function () { estadoAtual(true); bAtivar.disabled = false; msg('Autenticador ativado. A partir de agora o login pede o código do app.', true); PWU.toast('Autenticador ativado!', 'ok'); })
+            .catch(function (er) { msg(er.message || 'Código inválido.'); });
+        }
+        document.getElementById('totp-confirmar').addEventListener('click', confirmar);
+        campo.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); confirmar(); } });
+      }).catch(function (er) { bAtivar.disabled = false; msg(er.offline ? 'O autenticador depende do servidor do jogo, que está fora do ar agora.' : (er.message || 'Não foi possível iniciar.')); });
+    });
+
+    bDesat.addEventListener('click', function () {
+      var senha = prompt('Para desativar o autenticador, confirme sua senha:'); if (!senha) return;
+      PWU.auth.api.totpDisable(senha).then(function () { estadoAtual(false); msg('Autenticador desativado.', true); })
+        .catch(function (er) { msg(er.message || 'Não foi possível desativar.'); });
+    });
+  }
+
   if (['tickets', 'seguranca', 'perfil', 'pagamento'].indexOf(page) > -1 && window.PWU) {
     var portao = document.getElementById('acc-gate'), area = document.getElementById('acc');
     var jogoConta = null;
@@ -820,7 +865,7 @@
       var av = document.getElementById('acc-avatar');
       if (av && PWU.avatarUrl) av.src = PWU.avatarUrl(PWU.auth.user);
       // ----- aparelhos -----
-      if (page === 'seguranca') carregarAparelhos();
+      if (page === 'seguranca') { carregarAparelhos(); montarTotp(); }
     }
 
     // ----- tickets: enviar -----

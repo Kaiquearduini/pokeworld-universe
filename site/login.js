@@ -61,6 +61,7 @@
 
       var p = kind === 'register' ? PWU.auth.api.register(email, senha) : PWU.auth.api.login(email, senha);
       p.catch(function (err) {
+        if (err.needsTotp) { pedirTotp(email, senha); var e1 = new Error(''); e1.tratado = true; throw e1; }
         if (!err.needsDevice) throw err;
         pedirCodigo(email, senha, err.email, err.message);
         var e2 = new Error(''); e2.tratado = true; throw e2;
@@ -74,6 +75,41 @@
       });
     });
   });
+
+  /* Autenticador por aplicativo ativo: pede o código de 6 dígitos do app. */
+  function pedirTotp(email, senha) {
+    esconderLogin(true);
+    var antigo = box.querySelector('.device-step'); if (antigo) antigo.remove();
+    var div = document.createElement('div');
+    div.className = 'login-form device-step';
+    div.innerHTML = '<div class="device-code"><h2 style="font:400 3.2rem/1 var(--bebas);margin-bottom:.8rem">Código do autenticador</h2>' +
+      '<p style="font-size:1.5rem;color:rgba(255,255,255,.7);margin-bottom:2rem">Abra o seu aplicativo autenticador (Google Authenticator, Authy...) e digite o código de 6 dígitos da conta PokeWorld.</p>' +
+      '<input id="totp-code" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">' +
+      '<p class="auth__error" hidden style="margin-top:1.6rem"></p>' +
+      '<button class="auth__submit" type="button" id="totp-ok" style="margin-top:1.8rem"><span>Entrar</span></button>' +
+      '<p class="auth__switch"><a href="#" id="totp-voltar">Tentar com outra conta</a></p></div>';
+    box.appendChild(div);
+    var campo = div.querySelector('#totp-code'); campo.focus();
+    campo.addEventListener('input', function () { campo.value = campo.value.replace(/\D/g, ''); });
+    div.querySelector('#totp-voltar').addEventListener('click', function (e) { e.preventDefault(); div.remove(); esconderLogin(false); trocar('login'); });
+    function enviar() {
+      var p2 = div.querySelector('.auth__error');
+      if (campo.value.length !== 6) { p2.textContent = 'Digite os 6 dígitos.'; p2.hidden = false; return; }
+      p2.hidden = true;
+      var b = div.querySelector('#totp-ok'); b.classList.add('is-loading'); b.disabled = true;
+      PWU.auth.api.login(email, senha, campo.value).then(function (user) {
+        PWU.auth.set(user);
+        PWU.toast('Bem-vindo de volta, treinador!', 'ok');
+        setTimeout(function () { location.href = DESTINO; }, 700);
+      }).catch(function (er) {
+        if (er.needsDevice) { div.remove(); return pedirCodigo(email, senha, er.email, er.message); }
+        p2.textContent = er.message || 'Código inválido.'; p2.hidden = false;
+        b.classList.remove('is-loading'); b.disabled = false;
+      });
+    }
+    div.querySelector('#totp-ok').addEventListener('click', enviar);
+    campo.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); enviar(); } });
+  }
 
   /* Computador novo: pede o código de 6 dígitos que foi para o e-mail. */
   function pedirCodigo(email, senha, emailMascarado, aviso) {

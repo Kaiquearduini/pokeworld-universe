@@ -127,7 +127,7 @@
         return r.json().catch(function () { return {}; }).then(function (d) {
           if (r.status === 503) { gameOn = false; var e = new Error('offline'); e.offline = true; throw e; }
           gameOn = true;
-          if (!r.ok) { var er = new Error(d.error || 'Algo deu errado. Tente novamente.'); if (d.needsDevice) { er.needsDevice = true; er.email = d.email; } throw er; }
+          if (!r.ok) { var er = new Error(d.error || 'Algo deu errado. Tente novamente.'); if (d.needsDevice) { er.needsDevice = true; er.email = d.email; } if (d.needsTotp) er.needsTotp = true; throw er; }
           return d;
         });
       }, function () { gameOn = false; var e = new Error('offline'); e.offline = true; throw e; });
@@ -143,8 +143,8 @@
     return gameFetch({ body: { action: 'register', email: email, password: password, deviceId: deviceId() } }).then(fromGame)
       .catch(function (e) { if (!e.offline) throw e; return anterior.register(email, password); });
   };
-  api.login = function (email, password) {
-    return gameFetch({ body: { action: 'login', email: email, password: password, deviceId: deviceId() } }).then(fromGame)
+  api.login = function (email, password, totp) {
+    return gameFetch({ body: { action: 'login', email: email, password: password, deviceId: deviceId(), totp: totp || undefined } }).then(fromGame)
       .catch(function (e) { if (!e.offline) throw e; return anterior.login(email, password); });
   };
   api.changePassword = function (email, current, next) {
@@ -167,6 +167,10 @@
         throw new Error('A recuperação por e-mail depende do servidor do jogo, que está fora do ar agora. Fale com a equipe pelo Discord.');
       });
   };
+  /** Autenticador por aplicativo: gera o segredo/QR, confirma o 1º código e desativa. */
+  api.totpSetup = function () { return gameFetch({ body: { action: 'totp-setup' } }); };
+  api.totpEnable = function (code) { return gameFetch({ body: { action: 'totp-enable', code: code } }); };
+  api.totpDisable = function (password) { return gameFetch({ body: { action: 'totp-disable', password: password } }); };
   /** Confirma o código de 6 dígitos que autoriza este computador. */
   api.confirmDevice = function (email, password, code) {
     return gameFetch({ body: { action: 'device-confirm', email: email, password: password, code: code, deviceId: deviceId() } }).then(fromGame);

@@ -157,9 +157,19 @@ PAGES["o-jogo"] = dict(
           <img src="assets/img/qg/qg-10.jpg" alt="PWU City no Pokeworld Universe">
         </div>
       </div>
-      <div class="wrap stats-row">
-        <div class="stat-box" data-reveal><b><i data-count="4">4</i> gerações</b><span>de criaturas para capturar</span><small>PS: próximas gerações em desenvolvimento.</small></div>
-        <div class="stat-box" data-reveal><b><i data-count="3">3</i> minutos</b><span>Criação de conta</span></div>
+      <div class="wrap">
+        <div class="geracoes" data-reveal>
+          <div class="geracoes__texto">
+            <span class="geracoes__tag">Criaturas</span>
+            <h3><b><i data-count="4">4</i></b> gerações<br>para capturar</h3>
+            <p>Das criaturas clássicas às mais recentes, com versão shiny em todas. Monte o time do seu jeito e leve cada uma além da forma final.</p>
+            <small>PS: próximas gerações em desenvolvimento.</small>
+          </div>
+          <div class="geracoes__lado">
+            <div class="geracoes__num"><b><i data-count="3">3</i> min</b><span>para criar sua conta</span></div>
+            <a class="btn btn--yellow" href="#" data-auth="register">Criar conta</a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -569,6 +579,8 @@ PAGES["tickets"] = dict(
 PAGES["seguranca"] = dict(
     title="Segurança",
     desc="Troque sua senha e gerencie os computadores autorizados na sua conta.",
+    extra_head="""
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>""",
     banner=dict(bg="assets/img/qg/qg-34.jpg", tag="Sua conta", blend=True, title="Segurança",
                 sub="Senha, aparelhos autorizados e histórico de acesso."),
     body="""
@@ -602,7 +614,13 @@ PAGES["seguranca"] = dict(
             <p class="acc-card__sub">Proteção extra para a sua conta, além da senha.</p>
             <div class="doisfa__opcoes doisfa__opcoes--conta">
               <div class="doisfa__op is-on"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-mail" aria-hidden="true"></i></i><div><b>Por e-mail <em class="ok">ativa</em></b><span>Pedimos um código de 6 dígitos no seu e-mail sempre que alguém entra de um computador novo.</span></div></div>
-              <div class="doisfa__op"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-shield" aria-hidden="true"></i></i><div><b>Por aplicativo <em>em breve</em></b><span>Código do Google Authenticator, Authy ou similar a cada login.</span></div></div>
+              <div class="doisfa__op" id="totp-card"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-shield" aria-hidden="true"></i></i><div><b>Por aplicativo <em id="totp-estado">desativada</em></b><span>Código do Google Authenticator, Authy ou similar a cada login.</span>
+                <div class="totp" id="totp-area">
+                  <button type="button" class="btn btn--yellow btn--sm" id="totp-ativar">Ativar autenticador</button>
+                  <button type="button" class="btn btn--ghost btn--sm" id="totp-desativar" hidden>Desativar</button>
+                  <p class="totp__aviso" id="totp-aviso" hidden></p>
+                </div>
+              </div></div>
             </div>
           </article>
 

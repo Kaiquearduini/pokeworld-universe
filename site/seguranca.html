@@ -8,6 +8,7 @@
   <link rel="icon" href="assets/logo-sigla.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="pages.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>
 </head>
 <body data-page="seguranca">
 <div class="scroll-progress" aria-hidden="true"></div>
@@ -70,7 +71,13 @@
             <p class="acc-card__sub">Proteção extra para a sua conta, além da senha.</p>
             <div class="doisfa__opcoes doisfa__opcoes--conta">
               <div class="doisfa__op is-on"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-mail" aria-hidden="true"></i></i><div><b>Por e-mail <em class="ok">ativa</em></b><span>Pedimos um código de 6 dígitos no seu e-mail sempre que alguém entra de um computador novo.</span></div></div>
-              <div class="doisfa__op"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-shield" aria-hidden="true"></i></i><div><b>Por aplicativo <em>em breve</em></b><span>Código do Google Authenticator, Authy ou similar a cada login.</span></div></div>
+              <div class="doisfa__op" id="totp-card"><i class="doisfa__ico" aria-hidden="true"><i class="ico ico-shield" aria-hidden="true"></i></i><div><b>Por aplicativo <em id="totp-estado">desativada</em></b><span>Código do Google Authenticator, Authy ou similar a cada login.</span>
+                <div class="totp" id="totp-area">
+                  <button type="button" class="btn btn--yellow btn--sm" id="totp-ativar">Ativar autenticador</button>
+                  <button type="button" class="btn btn--ghost btn--sm" id="totp-desativar" hidden>Desativar</button>
+                  <p class="totp__aviso" id="totp-aviso" hidden></p>
+                </div>
+              </div></div>
             </div>
           </article>
 

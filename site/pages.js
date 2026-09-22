@@ -576,6 +576,7 @@
 
     // pacotes de coins (exibição; preço real é do servidor)
     var packsEl = document.getElementById('acc-packs');
+    montarValorLivre();
     if (packsEl && PWU.coinPackages) {
       packsEl.innerHTML = PWU.coinPackages.map(function (k, i) {
         var moeda = 'assets/img/coins/pcoin-' + Math.min(6, i + 1) + '.png';
@@ -672,27 +673,7 @@
           '<button type="button" class="btn btn--yellow btn--sm" data-pack="' + k.id + '">' + PWU.brl(k.price) + '</button></div>';
       }).join('');
     }
-    // ----- valor livre: mostra o bônus enquanto digita e leva ao pagamento -----
-    var fValor = document.getElementById('f-valor');
-    if (fValor) {
-      var campoV = fValor.querySelector('input'), dicaV = document.getElementById('valor-livre-dica');
-      function dica() {
-        var v = PWU.valorLivre(campoV.value);
-        fValor.classList.toggle('is-erro', !!campoV.value && !v);
-        if (!campoV.value) { dicaV.innerHTML = 'A partir de R$ 100 você já ganha bônus.'; return; }
-        if (!v) { dicaV.innerHTML = 'Informe um valor entre <b>R$ 10</b> e <b>R$ 20.000</b>.'; return; }
-        dicaV.innerHTML = v.bonusPct
-          ? 'Com ' + PWU.brl(v.price) + ' você recebe <b>' + v.credits.toLocaleString('pt-BR') + ' créditos</b> (+' + v.bonusPct + '% de bônus).'
-          : 'Com ' + PWU.brl(v.price) + ' você recebe <b>' + v.credits.toLocaleString('pt-BR') + ' créditos</b>. A partir de R$ 100 tem bônus.';
-      }
-      campoV.addEventListener('input', function () { campoV.value = campoV.value.replace(/[^\d.,]/g, ''); dica(); });
-      fValor.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var v = PWU.valorLivre(campoV.value);
-        if (!v) { fValor.classList.add('is-erro'); dica(); campoV.focus(); return; }
-        location.href = 'pagamento.html?pacote=custom&valor=' + v.price;
-      });
-    }
+    montarValorLivre();
 
     // ----- vida na página: saudação, saldo, entrada, inclinação e medidor de bônus -----
     if (grade) {
@@ -780,6 +761,30 @@
   /* =====================================================================
      PÁGINAS DA CONTA: tickets, segurança, foto de perfil e pagamento
      ===================================================================== */
+  /* ----- valor livre de doação (usado em /Donate e em Minha Conta) ----- */
+  function montarValorLivre() {
+    var fValor = document.getElementById('f-valor');
+    if (fValor) {
+      var campoV = fValor.querySelector('input'), dicaV = document.getElementById('valor-livre-dica');
+      function dica() {
+        var v = PWU.valorLivre(campoV.value);
+        fValor.classList.toggle('is-erro', !!campoV.value && !v);
+        if (!campoV.value) { dicaV.innerHTML = 'A partir de R$ 100 você já ganha bônus.'; return; }
+        if (!v) { dicaV.innerHTML = 'Informe um valor entre <b>R$ 10</b> e <b>R$ 20.000</b>.'; return; }
+        dicaV.innerHTML = v.bonusPct
+          ? 'Com ' + PWU.brl(v.price) + ' você recebe <b>' + v.credits.toLocaleString('pt-BR') + ' créditos</b> (+' + v.bonusPct + '% de bônus).'
+          : 'Com ' + PWU.brl(v.price) + ' você recebe <b>' + v.credits.toLocaleString('pt-BR') + ' créditos</b>. A partir de R$ 100 tem bônus.';
+      }
+      campoV.addEventListener('input', function () { campoV.value = campoV.value.replace(/[^\d.,]/g, ''); dica(); });
+      fValor.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = PWU.valorLivre(campoV.value);
+        if (!v) { fValor.classList.add('is-erro'); dica(); campoV.focus(); return; }
+        location.href = 'pagamento.html?pacote=custom&valor=' + v.price;
+      });
+    }
+  }
+
   /* ----- autenticador por aplicativo (página Segurança) ----- */
   function montarTotp() {
     var area = document.getElementById('totp-area'); if (!area || area.dataset.pronto) return;

@@ -474,6 +474,15 @@ PAGES["minha-conta"] = dict(
               <h2 class="acc-card__title">Efetuar <span class="grad grad--yellow">doação</span></h2>
               <a class="btn btn--yellow btn--sm" href="Donate">Efetuar doação</a>
             </div>
+            <form class="valor-livre" id="f-valor" novalidate>
+              <label for="valor-livre">Valor</label>
+              <div class="valor-livre__linha">
+                <span class="valor-livre__moeda">R$</span>
+                <input id="valor-livre" name="valor" type="text" inputmode="decimal" autocomplete="off" placeholder="Digite o valor que quiser, ex.: 137,50">
+                <button type="submit">Donate</button>
+              </div>
+              <p class="valor-livre__dica"><span id="valor-livre-dica">A partir de R$ 100 você já ganha bônus.</span></p>
+            </form>
             <div class="packs" id="acc-packs"></div>
           </article>
 

@@ -158,8 +158,8 @@ PAGES["o-jogo"] = dict(
         </div>
       </div>
       <div class="wrap stats-row">
-        <div class="stat-box" data-reveal><b data-count="69">0</b><span>criaturas disponíveis</span></div>
-        <div class="stat-box" data-reveal><b data-count="10" data-suffix=" min">0</b><span>Duração média da partida</span></div>
+        <div class="stat-box" data-reveal><b><i data-count="4">4</i> gerações</b><span>de criaturas para capturar</span><small>PS: próximas gerações em desenvolvimento.</small></div>
+        <div class="stat-box" data-reveal><b><i data-count="3">3</i> minutos</b><span>Criação de conta</span></div>
       </div>
     </section>
 

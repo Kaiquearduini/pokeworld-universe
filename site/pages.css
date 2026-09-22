@@ -1288,3 +1288,13 @@ body[data-page="pagamento"] .pay-way { padding: 1.8rem 2.2rem 2rem; }
   .launcher { grid-template-columns: 1fr; gap: 3rem; }
   .btn--lg { padding: 1.5rem 3rem; font-size: 2.2rem; }
 }
+
+
+/* O Jogo: dois destaques em amarelo (gerações e tempo de criação de conta) */
+.stats-row { grid-template-columns: repeat(2, 1fr); }
+.stat-box { padding: 3rem 3.2rem; background: #151a36; }
+.stat-box b { font-size: 6rem; background: var(--grad-yellow); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stat-box b i { font-style: normal; }
+.stat-box span { display: block; margin-top: .6rem; font-size: 1.7rem; color: rgba(255,255,255,.8); }
+.stat-box small { display: block; margin-top: 1.2rem; padding-top: 1.2rem; border-top: .1rem dashed rgba(255,255,255,.15); font: italic 400 1.4rem var(--montreal); color: rgba(255,255,255,.55); }
+@media (max-width: 900px) { .stats-row { grid-template-columns: 1fr; } .stat-box b { font-size: 4.8rem; } }

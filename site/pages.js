@@ -134,7 +134,7 @@
       var html = list.map(function (p) { return '<a href="wiki.html?p=' + p.id + '" title="' + esc(p.name) + '"><img src="' + p.image + '" alt="' + esc(p.name) + '" loading="lazy"></a>'; }).join('');
       track.innerHTML = html + html;
     });
-    var counters = document.querySelectorAll('.stat-box b[data-count]');
+    var counters = document.querySelectorAll('.stat-box [data-count]');
     if (G && counters.length) {
       ScrollTrigger.create({ trigger: '.stats-row', start: 'top 85%', once: true, onEnter: function () {
         counters.forEach(function (el) {

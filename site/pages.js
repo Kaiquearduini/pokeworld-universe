@@ -782,13 +782,15 @@
      ===================================================================== */
   /* ----- autenticador por aplicativo (página Segurança) ----- */
   function montarTotp() {
-    var area = document.getElementById('totp-area'); if (!area) return;
+    var area = document.getElementById('totp-area'); if (!area || area.dataset.pronto) return;
+    area.dataset.pronto = '1';   // a página chama isto mais de uma vez; os botões só podem ganhar um clique
     var estado = document.getElementById('totp-estado'), bAtivar = document.getElementById('totp-ativar'), bDesat = document.getElementById('totp-desativar'), aviso = document.getElementById('totp-aviso');
     var card = document.getElementById('totp-card');
     function msg(t, ok) { aviso.textContent = t || ''; aviso.hidden = !t; aviso.classList.toggle('is-ok', !!ok); }
     function estadoAtual(on) {
       estado.textContent = on ? 'ativa' : 'desativada'; estado.classList.toggle('ok', !!on);
-      card.classList.toggle('is-on', !!on); bAtivar.hidden = !!on; bDesat.hidden = !on;
+      card.classList.toggle('is-on', !!on);
+      bAtivar.style.display = on ? 'none' : ''; bDesat.style.display = on ? '' : 'none';   // [hidden] perde para o display do .btn
       var old = area.querySelector('.totp__setup'); if (old) old.remove();
     }
     PWU.auth.game().then(function (d) { estadoAtual(!!(d && d.totp)); }).catch(function () {});
@@ -796,6 +798,7 @@
     bAtivar.addEventListener('click', function () {
       bAtivar.disabled = true; msg('');
       PWU.auth.api.totpSetup().then(function (d) {
+        var antigo = area.querySelector('.totp__setup'); if (antigo) antigo.remove();
         var box = document.createElement('div'); box.className = 'totp__setup';
         box.innerHTML = '<p>1. Abra o Google Authenticator, Authy ou similar e leia o QR Code:</p><div class="totp__qr" id="totp-qr"></div>' +
           '<p>Ou digite a chave manualmente: <code>' + esc(d.secret.replace(/(.{4})/g, '$1 ').trim()) + '</code></p>' +

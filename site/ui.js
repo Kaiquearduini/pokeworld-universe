@@ -136,7 +136,7 @@
   function fromGame(d) {
     if (d.token) localStorage.setItem(TOKEN_KEY, d.token);
     var a = d.account || d;
-    return { id: a.id, email: a.email, name: (a.email || '').split('@')[0], game: true, coins: a.coins, plan: a.plan, avatar: a.avatar || null, trainers: a.trainers || [] };
+    return { id: a.id, email: a.email, name: (a.email || '').split('@')[0], game: true, coins: a.coins, plan: a.plan, avatar: a.avatar || null, trainers: a.trainers || [], totpPendente: !!a.totpPendente, totpSetup: d.totpSetup || null };
   }
 
   api.register = function (email, password) {

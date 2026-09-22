@@ -133,6 +133,8 @@ async function dadosDaConta(accountId) {
     admin: Number(acc.type || 1) >= 5,
     avatar: acc.image || null,
     totp: await totpAtivo(accountId),
+    // false = ainda precisa ativar o autenticador (obrigatório para contas do site)
+    totpPendente: (await tableExists('site_totp')) && !(await totpAtivo(accountId)),
     createdAt: Number(acc.creation || 0),
     trainers: players.map((p) => ({
       id: p.id,
@@ -183,8 +185,16 @@ export default async function handler(req, res) {
         [email, hashSenha(password), email, Math.floor(Date.now() / 1000),
          String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || '0']
       );
+      // a verificação em duas etapas é obrigatória: a conta já nasce com o
+      // segredo do autenticador e o site só libera depois do primeiro código
+      let totpSetup = null;
+      if (await tableExists('site_totp')) {
+        const secret = novoSegredo();
+        await run('INSERT INTO site_totp (account_id, secret, enabled, created_at) VALUES (?, ?, 0, NOW())', [r.insertId, secret]);
+        totpSetup = { secret, otpauth: otpauthUrl(secret, email) };
+      }
       const conta = await dadosDaConta(r.insertId);
-      return res.status(201).json({ token: sign(r.insertId), account: conta });
+      return res.status(201).json({ token: sign(r.insertId), account: conta, totpSetup });
     }
 
     // ---------------- login ----------------

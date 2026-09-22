@@ -67,6 +67,8 @@
         var e2 = new Error(''); e2.tratado = true; throw e2;
       }).then(function (user) {
         PWU.auth.set(user);
+        // verificação em duas etapas obrigatória: conta nova (ou antiga sem ativar) configura agora
+        if (user && user.game && user.totpPendente) return ativarTotp(user, kind === 'register');
         PWU.toast(kind === 'register' ? 'Conta criada! Já pode entrar no jogo.' : 'Bem-vindo de volta, treinador!', 'ok');
         setTimeout(function () { location.href = DESTINO; }, 700);
       }).catch(function (err) {
@@ -75,6 +77,53 @@
       });
     });
   });
+
+  /* Passo obrigatório depois de criar a conta: ativar o autenticador. */
+  function ativarTotp(user, nova) {
+    esconderLogin(true);
+    var antigo = box.querySelector('.device-step'); if (antigo) antigo.remove();
+    var div = document.createElement('div');
+    div.className = 'login-form device-step totp-step';
+    div.innerHTML = '<div class="device-code"><span class="totp-step__tag">' + (nova ? 'Conta criada · falta um passo' : 'Passo obrigatório') + '</span>' +
+      '<h2 style="font:400 3.2rem/1 var(--bebas);margin:1rem 0 .8rem">Ative a verificação em duas etapas</h2>' +
+      '<p style="font-size:1.5rem;color:rgba(255,255,255,.7);margin-bottom:2rem">Para proteger sua conta e seus créditos, o PokeWorld exige um aplicativo autenticador. Leva menos de um minuto.</p>' +
+      '<ol class="totp-step__passos"><li><b>1</b><span>Instale o <b>Google Authenticator</b> ou o <b>Authy</b> no celular.</span></li>' +
+      '<li><b>2</b><span>Leia o QR Code abaixo (ou digite a chave).</span></li>' +
+      '<li><b>3</b><span>Digite o código de 6 dígitos que aparecer.</span></li></ol>' +
+      '<div class="totp-step__qr" id="totp-qr"><span class="totp-step__carregando">Gerando seu QR Code…</span></div>' +
+      '<p class="totp-step__chave">Chave manual: <code id="totp-chave">…</code></p>' +
+      '<input id="totp-code" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">' +
+      '<p class="auth__error" hidden style="margin-top:1.6rem"></p>' +
+      '<button class="auth__submit" type="button" id="totp-ok" style="margin-top:1.8rem"><span>Ativar e entrar</span></button>' +
+      '<p class="auth__switch"><a href="#" id="totp-sair">Sair da conta</a></p></div>';
+    box.appendChild(div);
+    var qr = div.querySelector('#totp-qr'), chave = div.querySelector('#totp-chave'), campo = div.querySelector('#totp-code');
+    function mostrar(setup) {
+      chave.textContent = setup.secret.replace(/(.{4})/g, '$1 ').trim();
+      if (window.qrcode) { var q = qrcode(0, 'M'); q.addData(setup.otpauth); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+      else qr.innerHTML = '<span class="totp-step__carregando">Use a chave manual abaixo.</span>';
+    }
+    var pronto = user.totpSetup ? Promise.resolve(user.totpSetup) : PWU.auth.api.totpSetup();
+    pronto.then(mostrar).catch(function (er) { qr.innerHTML = '<span class="totp-step__carregando">' + (er.message || 'Não consegui gerar o QR Code.') + '</span>'; });
+    campo.addEventListener('input', function () { campo.value = campo.value.replace(/\D/g, ''); });
+    div.querySelector('#totp-sair').addEventListener('click', function (e) { e.preventDefault(); PWU.auth.set(null); localStorage.removeItem('pwu_token'); div.remove(); esconderLogin(false); trocar('login'); });
+    function enviar() {
+      var p2 = div.querySelector('.auth__error');
+      if (campo.value.length !== 6) { p2.textContent = 'Digite os 6 dígitos do aplicativo.'; p2.hidden = false; return; }
+      p2.hidden = true;
+      var b = div.querySelector('#totp-ok'); b.classList.add('is-loading'); b.disabled = true;
+      PWU.auth.api.totpEnable(campo.value).then(function () {
+        user.totpPendente = false; user.totpSetup = null; PWU.auth.set(user);
+        PWU.toast('Verificação ativada. Bem-vindo ao PokeWorld!', 'ok');
+        setTimeout(function () { location.href = DESTINO; }, 700);
+      }).catch(function (er) {
+        p2.textContent = er.message || 'Código inválido.'; p2.hidden = false;
+        b.classList.remove('is-loading'); b.disabled = false;
+      });
+    }
+    div.querySelector('#totp-ok').addEventListener('click', enviar);
+    campo.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); enviar(); } });
+  }
 
   /* Autenticador por aplicativo ativo: pede o código de 6 dígitos do app. */
   function pedirTotp(email, senha) {
@@ -251,7 +300,8 @@
   }
 
   // já logado? vai direto para a conta
-  if (PWU.auth.user) location.replace(DESTINO);
+  if (PWU.auth.user && PWU.auth.user.game && PWU.auth.user.totpPendente) ativarTotp(PWU.auth.user, false);
+  else if (PWU.auth.user) location.replace(DESTINO);
   // link direto para a recuperação: /login.html?recuperar=1
   else if (/[?&]recuperar=1/.test(location.search)) telaRecuperar('');
 

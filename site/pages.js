@@ -828,6 +828,12 @@
     });
   }
 
+  // verificação em duas etapas obrigatória: conta sem ativar volta para o login
+  if (['minha-conta', 'tickets', 'seguranca', 'perfil', 'pagamento', 'doar'].indexOf(page) > -1 && window.PWU && PWU.auth.user && PWU.auth.user.game && PWU.auth.user.totpPendente) {
+    location.replace('login.html' + (page === 'doar' || page === 'pagamento' ? '?next=Donate' : ''));
+    return;
+  }
+
   if (['tickets', 'seguranca', 'perfil', 'pagamento'].indexOf(page) > -1 && window.PWU) {
     var portao = document.getElementById('acc-gate'), area = document.getElementById('acc');
     var jogoConta = null;

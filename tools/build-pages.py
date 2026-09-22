@@ -420,7 +420,7 @@ PAGES["minha-conta"] = dict(
     title="Minha Conta",
     desc="Sua conta Pokeworld Universe: dados, treinadores, doações e segurança.",
     banner=dict(bg="assets/img/bg/stadium-blue.jpg", tag="Área do treinador", blend=True, title="Minha<br>conta",
-                sub="Gerencie seus dados, seus treinadores e apoie o servidor.", art="assets/img/art/player-boy.png?v=3"),
+                sub="Gerencie seus dados, seus treinadores e apoie o servidor."),
     body="""
     <section class="sec acc-sec">
       <div class="wrap--narrow">

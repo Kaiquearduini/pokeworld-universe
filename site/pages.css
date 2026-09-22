@@ -1335,3 +1335,15 @@ body[data-page="pagamento"] .pay-way { padding: 1.8rem 2.2rem 2rem; }
 .totp__linha input { width: 14rem; padding: 1rem 1.2rem; border-radius: 1rem; border: .15rem solid rgba(255,255,255,.15); background: rgba(0,0,0,.3); color: #fff; font: 500 2rem/1 ui-monospace, Menlo, monospace; letter-spacing: .3em; text-align: center; outline: 0; }
 .totp__linha input:focus { border-color: #70f5ff; }
 .doisfa__op .totp .btn { padding: .8rem 1.8rem; font-size: 1.6rem; }
+
+/* ---------- passo obrigatório: ativar o autenticador ---------- */
+.totp-step__tag { display: inline-block; padding: .5rem 1.4rem; border-radius: 10rem; background: rgba(220,238,75,.16); color: var(--lime); font: 400 1.4rem var(--bebas); letter-spacing: .12em; text-transform: uppercase; }
+.totp-step__passos { list-style: none; display: grid; gap: .8rem; margin: 0 auto 2rem; max-width: 46rem; text-align: left; }
+.totp-step__passos li { display: flex; gap: 1rem; align-items: flex-start; font: 400 1.45rem/1.5 var(--montreal); color: rgba(255,255,255,.8); }
+.totp-step__passos li > b { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--grad-yellow); color: #000; font: 400 1.4rem var(--bebas); }
+.totp-step__passos span b { color: #fff; font-weight: 500; }
+.totp-step__qr { width: 19rem; height: 19rem; margin: 0 auto; padding: .8rem; border-radius: 1.4rem; background: #fff; display: grid; place-items: center; }
+.totp-step__qr svg { width: 100%; height: 100%; display: block; }
+.totp-step__carregando { font: 400 1.3rem var(--montreal); color: #333; text-align: center; padding: 1rem; }
+.totp-step__chave { margin: 1.2rem 0 1.6rem; font: 400 1.35rem var(--montreal); color: rgba(255,255,255,.6); }
+.totp-step__chave code { display: inline-block; margin-top: .4rem; padding: .3rem .8rem; border-radius: .6rem; background: rgba(255,255,255,.08); font: 500 1.4rem ui-monospace, Menlo, monospace; letter-spacing: .08em; color: #fcd05c; word-break: break-all; }

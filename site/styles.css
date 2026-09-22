@@ -624,7 +624,6 @@ html.has-cursor .cursor.is-on { opacity: 1; }
   height: 22rem;
   object-fit: contain;
   z-index: 3;
-  filter: drop-shadow(0 1.6rem 2.6rem rgba(0,0,0,.45));
 }
 .about__text {
   position: absolute;

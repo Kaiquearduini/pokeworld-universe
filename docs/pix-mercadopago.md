@@ -31,7 +31,7 @@ Os arquivos legados `checkout.js` e `webhook/mercadopago.js` não são os handle
 
 Em 25/09/2026, a integração foi instalada no site oficial com backup da versão anterior. A página pública gerou QR Code e Pix Copia e Cola em produção, e uma notificação real de pedido pendente foi autenticada e respondida com HTTP 200 sem liberar créditos. Na página de pagamento, o recebedor aparece como AVANTE LABS LTDA e a descrição como PWU ONLINE.
 
-Foram aprovados 15 grupos de testes Node (Stripe e Pix), 33 verificações de banco isolado e uma cobrança Pix na API de teste com estado `processed/accredited`. Esses resultados não substituem o teste final de pagamento real e conferência do saldo no jogo, que ainda depende do pagamento do usuário.
+Foram aprovados 15 grupos de testes Node (Stripe e Pix), 33 verificações de banco isolado e uma cobrança Pix na API de teste com estado `processed/accredited`. Depois, o titular pagou o Pix real de R$ 10: o provedor confirmou `processed/accredited`, o webhook entregou os 10 Diamond Points automaticamente e o saldo passou de 10 para 20 tanto no banco do jogo quanto na página Minha Conta. A conferência visual do comando `/saldo` no cliente continua a cargo do titular; não houve crédito manual.
 
 Executar `node --experimental-vm-modules --test tests/stripe-production.test.mjs tests/pix-production.test.mjs`. São testes locais com dados fictícios e dependências simuladas; não movimentam dinheiro. O teste da API Mercado Pago e os testes de banco isolado têm recibos próprios. Um pagamento de teste nunca deve creditar uma conta real.
 

@@ -6,21 +6,26 @@ import crypto from 'crypto';
 
 const API = 'https://api.stripe.com/v1';
 
-export function stripeConfigured() { return !!process.env.STRIPE_SECRET_KEY; }
+export function stripeConfigured() {
+  return process.env.STRIPE_MODE === 'live' && /^(rk|sk)_live_[A-Za-z0-9]+$/.test(process.env.STRIPE_SECRET_KEY || '') &&
+    /^whsec_[A-Za-z0-9]+$/.test(process.env.STRIPE_WEBHOOK_SECRET || '');
+}
 
 /** Chamada à API da Stripe com corpo em form-urlencoded (o formato que ela usa). */
 export async function stripeCall(path, form, { method = 'POST', idempotencyKey } = {}) {
   const headers = {
     Authorization: 'Bearer ' + process.env.STRIPE_SECRET_KEY,
+    'Stripe-Version': '2026-08-26.dahlia',
     'Content-Type': 'application/x-www-form-urlencoded'
   };
   if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
 
-  const body = form ? new URLSearchParams(form).toString() : undefined;
-  const r = await fetch(API + path, { method, headers, body });
+  const body = form ? new URLSearchParams(Object.entries(form).filter(([,v])=>v!==undefined && v!==null)).toString() : undefined;
+  const r = await fetch(API + path, { method, headers, body, signal:AbortSignal.timeout(15000) });
   const data = await r.json().catch(() => ({}));
   if (!r.ok) {
-    const e = new Error((data.error && data.error.message) || 'erro na Stripe');
+    const e = new Error('stripe-api-failed');
+    e.code = String(data.error?.code || data.error?.type || 'provider').replace(/[^a-z_]/g,'').slice(0,80);
     e.status = r.status;
     throw e;
   }
@@ -44,7 +49,7 @@ export function assinaturaStripeValida({ header = '', rawBody = '', secret, tole
     if (k === 't') t = v;
     if (k === 'v1') v1.push(v);
   }
-  if (!t || !v1.length) return false;
+  if (!t || !/^\d{1,12}$/.test(t) || !v1.length || typeof header !== 'string' || header.length > 2048) return false;
 
   const esperado = crypto.createHmac('sha256', secret).update(`${t}.${rawBody}`, 'utf8').digest('hex');
   const a = Buffer.from(esperado, 'utf8');

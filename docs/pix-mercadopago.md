@@ -37,4 +37,16 @@ Executar `node --experimental-vm-modules --test tests/stripe-production.test.mjs
 
 Trocar futuramente o provedor Pix exige integração e validação específicas da Stone. Pedidos já emitidos continuam associados ao provedor original; não repetir automaticamente uma cobrança em outro provedor quando o resultado anterior for desconhecido.
 
+## Confirmação e CPF no Pix — 25/09/2026
+
+A opção pública se chama Pix, com ícone genérico de QR Code. Antes de gerar o pagamento, a página mostra e-mail da conta autenticada, pontos, bônus, cupom e total. Foram removidos os avisos visuais de descrição/fatura; a identificação PWU ONLINE enviada aos provedores permanece.
+
+O CPF do pagador é obrigatório nesse formulário por decisão do proprietário do site. Navegador e servidor verificam os dois dígitos verificadores, tamanho e sequências repetidas. Isso não é consulta à Receita Federal nem prova de identidade ou titularidade. A autorização e a confirmação continuam dependentes do provedor.
+
+O CPF segue no corpo do POST autenticado e é encaminhado a `payer.identification` na API Mercado Pago. Não faz parte da URL, do e-mail de conta, dos registros de pedidos, da carteira ou da resposta do endpoint. Não é salvo em localStorage/sessionStorage nem em atributos de HTML; o campo é limpo ao fechar o diálogo. Os logs da aplicação registram apenas códigos de erro, e o proxy precisa permanecer sem registro de corpos de requisição. O Mercado Pago trata esse dado como parte do pagamento.
+
+Publicar juntos `pagamento.html`, `pages.js`, `pages.css`, `api/pix-checkout.js`, `api/_lib/pix-validation.js` e `api/_lib/pix-mercadopago.js`. Páginas antigas já abertas precisam ser atualizadas para enviar o CPF. O novo campo não altera o destinatário dos pontos: ele continua definido pela sessão autenticada no servidor. Nenhuma migração do banco ou atualização do jogo é necessária.
+
+A verificação desta alteração inclui 17 grupos de testes locais de Pix/Stripe, rejeição de CPF inválido antes de criar pedidos, payload do CPF enviado ao provedor, repetição do mesmo pedido, confirmação com cupom e revisão visual desktop/celular. O ambiente de teste do Mercado Pago aceitou um novo pedido com CPF de exemplo da documentação. A atualização não realizou um novo pagamento real.
+
 Fontes: [Pix Orders](https://www.mercadopago.com.br/developers/pt/docs/checkout-api-orders/payment-integration/pix), [Notificações](https://www.mercadopago.com.br/developers/pt/docs/checkout-api-orders/notifications), [Teste Pix](https://www.mercadopago.com.br/developers/pt/docs/checkout-api-orders/integration-test/pix).

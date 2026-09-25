@@ -14,7 +14,7 @@ const local={reference,account_id:42,package_id:'custom',amount_cents:1000,credi
 const env={MP_MODE:'live',MP_USER_ID:'12345',MP_APPLICATION_ID:'67890',MP_WEBHOOK_SECRET:'fixture-only-secret'};
 const options={userId:env.MP_USER_ID,applicationId:env.MP_APPLICATION_ID};
 const remote={id,type:'online',processing_mode:'automatic',user_id:'12345',integration_data:{application_id:'67890'},country_code:'BRA',currency:'BRL',external_reference:reference,total_amount:'10.00',total_paid_amount:'10.00',status:'processed',status_detail:'accredited',transactions:{payments:[{id:paymentId,amount:'10.00',status:'processed',status_detail:'accredited',payment_method:{id:'pix',type:'bank_transfer',ticket_url:'https://www.mercadopago.com.br/payments/123/ticket?hash=fixture'}}]}};
-const input={packageId:'custom',amount:10,requestId:reference};
+const input={packageId:'custom',amount:10,requestId:reference,cpf:'11144477735'}; // Synthetic CPF fixture.
 remote.transactions.payments[0].paid_amount='10.00';
 const clone=()=>structuredClone(remote);
 function response(){return {code:200,status(c){this.code=c;return this;},json(v){this.value=v;return this;},end(){return this;}};}
@@ -40,6 +40,29 @@ test('only official live Pix ticket URL redirects and input cannot set recipient
  for(const url of ['https://www.mercadopago.com.br/sandbox/payments/123/ticket','http://www.mercadopago.com.br/payments/123/ticket','https://www.mercadopago.com.br.evil.invalid/payments/123/ticket','https://user@www.mercadopago.com.br/payments/123/ticket','https://www.mercadopago.com.br/redirect','javascript:alert(1)'])assert.throws(()=>validation.pixTicketUrl(url));
  for(const key of ['account','account_id','credits','price','email','payer','provider','url'])assert.throws(()=>validation.checkoutInput({...input,[key]:'bad'}));
 });
+
+test('CPF is required, normalizes punctuation and rejects malformed values and both check-digit errors',()=>{
+ assert.equal(validation.checkoutInput({...input,cpf:'111.444.777-35'}).cpf,input.cpf);
+ for(const cpf of [undefined,null,11144477735,'','1114447773','111444777350','00000000000','11111111111','11144477725','11144477734','x11144477735','111.444.777/35',{},[]])
+  assert.throws(()=>validation.checkoutInput({...input,cpf}));
+});
+
+test('provider receives validated CPF in payer identification only, with unchanged amount and idempotency',async()=>{
+ const calls=[];
+ const context=vm.createContext({AbortSignal,process:{env:{...env,MP_MODE:'live',MP_ACCESS_TOKEN:'APP_USR-fixture-only'}},fetch:async(url,options)=>{
+  calls.push({url,options});return {ok:true,json:async()=>url.endsWith('/users/me')?{id:12345,country_id:'BR',tags:[]}:remote};
+ }});
+ const source=await readFile(new URL('../site/api/_lib/pix-mercadopago.js',import.meta.url),'utf8');
+ const m=new vm.SourceTextModule(source,{context});
+ await m.link(()=>new vm.SyntheticModule(['ORDER_ID','normalizeCpf'],function(){this.setExport('ORDER_ID',validation.ORDER_ID);this.setExport('normalizeCpf',validation.normalizeCpf);},{context}));
+ await m.evaluate();
+ await assert.rejects(()=>m.namespace.createPixOrder(local,'fixture@example.invalid','11111111111'));assert.equal(calls.length,0);
+ await m.namespace.createPixOrder(local,'fixture@example.invalid','111.444.777-35');
+ const outbound=calls[1];assert.equal(outbound.url,'https://api.mercadopago.com/v1/orders');
+ assert.deepEqual(JSON.parse(outbound.options.body).payer,{email:'fixture@example.invalid',identification:{type:'CPF',number:input.cpf}});
+ assert.equal(JSON.parse(outbound.options.body).total_amount,'10.00');assert.equal(outbound.options.headers['X-Idempotency-Key'],reference);
+ assert.equal(outbound.options.redirect,'error');
+});
 test('webhook HMAC authenticates ID/request/timestamp and rejects replay and ambiguous headers',()=>{
  const now=Date.now(),requestId='request-fixture';
  for(const ts of [String(now),String(Math.floor(now/1000))]) {
@@ -52,7 +75,7 @@ test('webhook HMAC authenticates ID/request/timestamp and rejects replay and amb
 test('checkout snapshots authenticated account, rejects forgery and retries same saved reference after provider timeout',async()=>{
  let account=42,saved,created=[],bound=[],timeout=true; const result={...remote,status:'action_required',status_detail:'waiting_transfer'};
  const handler=await module('pix-checkout.js',{
-  './_lib/pix-mercadopago.js':{pixConfigured:()=>true,createPixOrder:async(l,email)=>{created.push([l.reference,email]);if(timeout)throw new Error('timeout');return result;},fetchPixOrder:async()=>result},
+  './_lib/pix-mercadopago.js':{pixConfigured:()=>true,createPixOrder:async(l,email,cpf)=>{created.push([l.reference,email,cpf]);if(timeout)throw new Error('timeout');return result;},fetchPixOrder:async()=>result},
   './_lib/pix-validation.js':validation,'./_lib/packages.js':catalog,'./_lib/coupons.js':coupons,
   './_lib/pix-orders.js':{createOrder:async(...args)=>{saved=args;return local;},bindOrder:async(...args)=>bound.push(args)},
   './_lib/gamedb.js':{gameConfigured:()=>true,one:async()=>({id:42,email:'fixture@example.invalid'})},
@@ -60,9 +83,13 @@ test('checkout snapshots authenticated account, rejects forgery and retries same
  });
  const run=async body=>{const r=response();await handler({method:'POST',body},r);return r;};
  assert.equal((await run(input)).code,503);timeout=false;assert.equal((await run(input)).code,200);
- assert.deepEqual(created,[[reference,'fixture@example.invalid'],[reference,'fixture@example.invalid']]);
+ assert.deepEqual(created,[[reference,'fixture@example.invalid',input.cpf],[reference,'fixture@example.invalid',input.cpf]]);
  assert.deepEqual(saved,[42,reference,'custom',1000,10]);assert.deepEqual(bound,[[42,reference,id]]);
  saved=null;assert.equal((await run({...input,account_id:99})).code,400);assert.equal(saved,null);
+ const attempts=created.length;
+ for(const cpf of [undefined,'11111111111','11144477734']) {
+  assert.equal((await run({...input,cpf})).code,400);assert.equal(saved,null);assert.equal(created.length,attempts);
+ }
  account=null;assert.equal((await run(input)).code,401);
 });
 test('webhook re-fetches authoritative order; pending, invalid signature, test mode and mismatches never credit',async()=>{

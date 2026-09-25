@@ -1,5 +1,22 @@
 import { cents } from './payment-validation.js';
-export { checkoutInput, UUID } from './stripe-live-validation.js';
+import { checkoutInput as paymentInput } from './stripe-live-validation.js';
+export { UUID } from './stripe-live-validation.js';
+export function normalizeCpf(value) {
+  if (typeof value !== 'string' || !/^(?:\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2})$/.test(value)) throw new Error('invalid-cpf');
+  const cpf = value.replace(/\D/g, '');
+  if (/^(\d)\1{10}$/.test(cpf)) throw new Error('invalid-cpf');
+  for (let length = 9; length <= 10; length++) {
+    let sum = 0;
+    for (let i = 0; i < length; i++) sum += Number(cpf[i]) * (length + 1 - i);
+    if ((sum * 10 % 11) % 10 !== Number(cpf[length])) throw new Error('invalid-cpf');
+  }
+  return cpf;
+}
+export function checkoutInput(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error('invalid-input');
+  const {cpf, ...order} = body;
+  return {...paymentInput(order), cpf: normalizeCpf(cpf)};
+}
 export const ORDER_ID = /^ORD(?!TST)[A-Z0-9]{26}$/;
 export const PAYMENT_ID = /^PAY[A-Z0-9]{26}$/;
 export function validatePixOrder(remote, local, {userId, applicationId, test = false, paid = false} = {}) {

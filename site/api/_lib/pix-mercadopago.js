@@ -1,4 +1,4 @@
-import {ORDER_ID} from './pix-validation.js';
+import {ORDER_ID,normalizeCpf} from './pix-validation.js';
 let identityCache;
 export function pixConfigured() {
   return process.env.MP_MODE === 'live' && /^APP_USR-[A-Za-z0-9-]+$/.test(process.env.MP_ACCESS_TOKEN || '') &&
@@ -26,12 +26,13 @@ export async function fetchPixOrder(id) {
   await verifyPixMerchant();
   return request('/v1/orders/'+id);
 }
-export async function createPixOrder(order, email) {
+export async function createPixOrder(order, email, cpf) {
+  const identification = {type:'CPF',number:normalizeCpf(cpf)};
   await verifyPixMerchant();
   const amount=(Number(order.amount_cents)/100).toFixed(2);
   return request('/v1/orders', {
     type:'online', processing_mode:'automatic', total_amount:amount, external_reference:order.reference,
-    description:`PWU ONLINE - ${order.credits} Diamond Points`, payer:{email},
+    description:`PWU ONLINE - ${order.credits} Diamond Points`, payer:{email,identification},
     transactions:{payments:[{amount,payment_method:{id:'pix',type:'bank_transfer'},expiration_time:'PT2H'}]}
   },order.reference);
 }

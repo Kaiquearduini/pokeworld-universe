@@ -35,22 +35,34 @@
   function DEX() { return (window.PWU && PWU.store) ? PWU.store.pokemon() : (PWU.pokedex || []); }
   function whenReady(fn) { if (window.PWU && PWU.store) PWU.store.ready.then(fn); else fn(); }
   function qs(k) { return new URLSearchParams(location.search).get(k); }
+  var pixRequestPayers = new WeakMap();
+  function validCpf(value) {
+    var cpf = String(value || '').replace(/\D/g, '');
+    if (!/^\d{11}$/.test(cpf) || /^(\d)\1{10}$/.test(cpf)) return false;
+    for (var length = 9; length <= 10; length++) {
+      var sum = 0;
+      for (var i = 0; i < length; i++) sum += Number(cpf[i]) * (length + 1 - i);
+      if ((sum * 10 % 11) % 10 !== Number(cpf[length])) return false;
+    }
+    return true;
+  }
 
   /* Pagamento (Mercado Pago, API de Orders): o site manda SÓ o id do pacote;
      o servidor define preço e coins, cria a order e devolve o checkout_url. */
-  function pay(packageId, btn, provedor, cupom, amount) {
+  function pay(packageId, btn, provedor, cupom, amount, onError, cpf) {
     if (['stripe','mercadopago'].indexOf(provedor)<0) { PWU.toast('Meio de pagamento indisponível.'); return; }
     var requestShape = JSON.stringify([provedor,packageId,cupom||'',amount||null]);
+    if (provedor === 'mercadopago' && btn && pixRequestPayers.get(btn) !== cpf) { delete btn.dataset.requestShape; pixRequestPayers.set(btn, cpf); }
     if (btn && btn.dataset.requestShape !== requestShape) { btn.dataset.requestId = crypto.randomUUID(); btn.dataset.requestShape = requestShape; }
     var requestId = btn ? btn.dataset.requestId : crypto.randomUUID();
     var conteudo = btn ? btn.innerHTML : '';
     var rota = provedor === 'stripe' ? '/api/stripe-checkout' : '/api/checkout';
-    var nome = provedor === 'stripe' ? 'Stripe' : 'Mercado Pago';
-    function fail(msg) { PWU.toast(msg); if (btn) { btn.disabled = false; btn.classList.remove('is-indo'); btn.innerHTML = conteudo; } }
+    var nome = provedor === 'stripe' ? 'Stripe' : 'Pix';
+    function fail(msg) { if (onError) onError(msg); else PWU.toast(msg); if (btn) { btn.disabled = false; btn.classList.remove('is-indo'); btn.innerHTML = conteudo; } }
     if (btn) { btn.disabled = true; btn.classList.add('is-indo'); btn.innerHTML = '<span class="pay-way__head"><b>Abrindo ' + nome + '…</b></span>'; }
     return PWU.auth.token().then(function (token) {
       if (!token) throw new Error('Pagamentos exigem a conta conectada ao servidor. Entre novamente.');
-      return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(Object.assign({ packageId: packageId, requestId: requestId }, cupom ? { coupon: cupom } : {}, amount ? { amount: amount } : {})) });
+      return fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(Object.assign({ packageId: packageId, requestId: requestId }, cupom ? { coupon: cupom } : {}, amount ? { amount: amount } : {}, provedor === 'mercadopago' && cpf ? { cpf: cpf } : {})) });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (r.status === 401) throw new Error('Sua sessão expirou. Entre novamente.');
@@ -614,7 +626,7 @@
         var k = PWU.coinPackages.find(function (x) { return x.id === b.dataset.pack; }) || {};
         openP('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + '. Os coins caem na sua conta do jogo assim que o pagamento for confirmado.</p>' +
           '<div class="pay-ways">' +
-          '<button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix · Brasil</small></button>' +
+          '<button type="button" class="pay-way" data-prov="mercadopago"><b>Pix</b><small>QR Code ou Copia e Cola</small></button>' +
           '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>' +
           '</div><p class="mp-note"><i class="ico ico-lock" aria-hidden="true"></i> Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
         pmBody.addEventListener('click', function (ev) {
@@ -759,7 +771,7 @@
       location.href = 'pagamento.html?pacote=' + encodeURIComponent(b.dataset.pack); return;
       var k = pacotes.find(function (x) { return x.id === b.dataset.pack; }) || {};
       abrirD('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + (k.bonusPct ? ' · já com ' + k.bonusPct + '% de bônus' : '') + '.</p>' +
-        '<div class="pay-ways"><button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix · Brasil</small></button>' +
+        '<div class="pay-ways"><button type="button" class="pay-way" data-prov="mercadopago"><b>Pix</b><small>QR Code ou Copia e Cola</small></button>' +
         '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button></div>' +
         '<p class="mp-note"><i class="ico ico-lock" aria-hidden="true"></i> Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
       pmBodyD.addEventListener('click', function (ev) {
@@ -1022,8 +1034,58 @@
 
       var meios = document.getElementById('meios-pagamento');
 
+      var pixDialog = document.getElementById('pix-confirm');
+      var pixPay = document.getElementById('pix-confirm-pay');
+      var pixBack = document.getElementById('pix-confirm-back');
+      var pixEdit = document.getElementById('pix-edit-coupon');
+      var pixError = document.getElementById('pix-confirm-error');
+      var pixCpf = document.getElementById('pix-cpf');
+      var pixOrder = null;
+      function pixMessage(message) { pixError.textContent = message || ''; pixError.hidden = !message; }
+      function closePix() { if (!pixPay.disabled) pixDialog.close(); }
+      if (pixDialog) {
+        pixCpf.addEventListener('input', function () {
+          var digits = pixCpf.value.replace(/\D/g, '').slice(0, 11);
+          pixCpf.value = digits.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3}\.\d{3})(\d)/, '$1.$2').replace(/(\d{3}\.\d{3}\.\d{3})(\d)/, '$1-$2');
+          pixCpf.setCustomValidity(''); pixMessage('');
+        });
+        pixBack.addEventListener('click', closePix);
+        pixEdit.addEventListener('click', function () { closePix(); if (!pixDialog.open && campo) campo.focus(); });
+        pixDialog.addEventListener('cancel', function (e) { if (pixPay.disabled) e.preventDefault(); });
+        pixDialog.addEventListener('close', function () { document.body.classList.remove('is-locked'); pixCpf.value = ''; pixCpf.setCustomValidity(''); });
+        document.addEventListener('auth:change', function () {
+          if (pixDialog.open && pixOrder && (!PWU.auth.user || String(PWU.auth.user.id) !== pixOrder.accountId)) closePix();
+        });
+        pixPay.addEventListener('click', function () {
+          if (!pixOrder || pixPay.disabled) return;
+          if (!PWU.auth.user || String(PWU.auth.user.id) !== pixOrder.accountId) {
+            pixMessage('Sua sessão mudou. Volte e confira a conta antes de continuar.'); return;
+          }
+          if (!validCpf(pixCpf.value)) {
+            pixMessage('Informe um CPF válido para gerar o Pix.');
+            pixCpf.setCustomValidity('Confira os 11 dígitos do CPF.'); pixCpf.reportValidity(); return;
+          }
+          pixMessage(''); pixBack.disabled = true; pixEdit.disabled = true; pixCpf.disabled = true;
+          pay(pixOrder.packageId, pixPay, 'mercadopago', pixOrder.coupon, pixOrder.amount, pixMessage, pixCpf.value.replace(/\D/g, '')).then(function () {
+            if (!pixPay.disabled) { pixBack.disabled = false; pixEdit.disabled = false; pixCpf.disabled = false; }
+          });
+        });
+      }
       if (meios) meios.addEventListener('click', function (e) {
-        var w = e.target.closest('[data-prov]'); if (!w) return;
+        var w = e.target.closest('[data-prov]'); if (!w || meios.querySelector('[data-prov]:disabled') || !k) return;
+        if (bt && bt.disabled) { PWU.toast('Aguarde a confirmação do cupom.'); return; }
+        if (w.dataset.prov === 'mercadopago' && pixDialog) {
+          var user = PWU.auth.user;
+          if (!user) { PWU.toast('Entre na sua conta para continuar.'); return; }
+          pixOrder = { accountId: String(user.id), packageId: k.id, coupon: cupomAplicado ? cupomAplicado.code : null, amount: valorLivre ? valorLivre.price : null };
+          document.getElementById('pix-confirm-email').textContent = user.email || 'Conta conectada';
+          document.getElementById('pix-confirm-points').textContent = Number(k.coins).toLocaleString('pt-BR');
+          document.getElementById('pix-confirm-bonus').textContent = '+' + k.bonusPct + '%';
+          document.getElementById('pix-confirm-coupon').textContent = cupomAplicado ? cupomAplicado.code + ' (−' + cupomAplicado.pct + '%)' : 'Nenhum cupom aplicado';
+          document.getElementById('pix-confirm-total').textContent = PWU.brl(cupomAplicado ? cupomAplicado.price : k.price);
+          pixMessage(''); pixDialog.showModal(); document.body.classList.add('is-locked'); pixCpf.focus();
+          return;
+        }
         pay(k.id, w, w.dataset.prov, cupomAplicado ? cupomAplicado.code : null, valorLivre ? valorLivre.price : null);
       });
     }

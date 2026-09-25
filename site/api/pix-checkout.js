@@ -21,13 +21,13 @@ export default async function handler(req,res) {
       if (body.coupon && !coupon) throw new Error('invalid-coupon');
       amount=Math.round(precoComCupom(pkg,coupon)*100);
       if (!Number.isSafeInteger(amount) || amount<100 || amount>2000000) throw new Error('invalid-amount');
-    } catch {return res.status(400).json({error:'Confira o pacote, o valor e o cupom.'});}
+    } catch (err) {return res.status(400).json({error:err.message==='invalid-cpf' ? 'Informe um CPF válido para gerar o Pix.' : 'Confira o pacote, o valor e o cupom.'});}
     const user=await one('SELECT id,email FROM accounts WHERE id=? LIMIT 1',[account]);
     if (!user || typeof user.email !== 'string' || user.email.length>254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email))
       return res.status(409).json({error:'Confira o e-mail da sua conta antes de pagar.'});
     const local=await createOrder(account,body.requestId,pkg.id,amount,pkg.coins);
     if (!local || local.fulfilled_at) return res.status(409).json({error:'Este pedido já foi concluído. Atualize a página.'});
-    const remote=local.provider_order_id ? await fetchPixOrder(local.provider_order_id) : await createPixOrder(local,user.email);
+    const remote=local.provider_order_id ? await fetchPixOrder(local.provider_order_id) : await createPixOrder(local,user.email,body.cpf);
     validatePixOrder(remote,local,{userId:process.env.MP_USER_ID,applicationId:process.env.MP_APPLICATION_ID});
     await bindOrder(account,local.reference,remote.id);
     if (remote.status!=='action_required' || remote.status_detail!=='waiting_transfer')

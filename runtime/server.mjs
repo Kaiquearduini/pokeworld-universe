@@ -12,8 +12,8 @@ const defaultRoot = fileURLToPath(new URL('../site/', import.meta.url));
 const routes = new Map([
   ['/api/account', 'account.js'], ['/api/game', 'game.js'],
   ['/api/coupon', 'coupon.js'], ['/api/admin-login', 'admin-login.js'],
-  ['/api/checkout', 'checkout.js'], ['/api/stripe-checkout', 'stripe-live-checkout.js'],
-  ['/api/webhook/mercadopago', 'webhook/mercadopago.js'], ['/api/webhook/stripe', 'webhook/stripe-live.js']
+  ['/api/checkout', 'pix-checkout.js'], ['/api/stripe-checkout', 'stripe-live-checkout.js'],
+  ['/api/webhook/mercadopago', 'webhook/pix-live.js'], ['/api/webhook/stripe', 'webhook/stripe-live.js']
 ]);
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg',
@@ -37,7 +37,7 @@ async function body(req, max = 1024 * 1024) {
   return Buffer.concat(chunks);
 }
 
-export function createApp({ root = defaultRoot, apiEnabled = false, paymentsEnabled = false, stripeEnabled = false, stripeWebhookEnabled = false, emailAuthEnabled = false, accountPreview = false, rankingPreview = false,
+export function createApp({ root = defaultRoot, apiEnabled = false, paymentsEnabled = false, stripeEnabled = false, stripeWebhookEnabled = false, pixEnabled = false, pixWebhookEnabled = false, emailAuthEnabled = false, accountPreview = false, rankingPreview = false,
   loadHandler = async name => (await import(pathToFileURL(path.join(root, 'api', name)))).default } = {}) {
   const rootPromise = realpath(root);
   let loginWindow = 0, loginAttempts = 0;
@@ -71,7 +71,9 @@ export function createApp({ root = defaultRoot, apiEnabled = false, paymentsEnab
         const authRoute = emailAuthEnabled && pathname === '/api/account';
         const stripeRoute = !accountPreview && ((stripeEnabled && ['/api/stripe-checkout','/api/coupon'].includes(pathname)) ||
           ((stripeEnabled || stripeWebhookEnabled) && pathname === '/api/webhook/stripe'));
-        if (!authRoute && !stripeRoute && ((accountPreview || rankingPreview) ? !previewRoute : (!apiEnabled || (paymentRoutes.has(pathname) && !paymentsEnabled)))) return json(res, 503, { error: 'recurso em homologação' });
+        const pixRoute = !accountPreview && ((pixEnabled && ['/api/checkout','/api/coupon'].includes(pathname)) ||
+          ((pixEnabled || pixWebhookEnabled) && pathname === '/api/webhook/mercadopago'));
+        if (!authRoute && !stripeRoute && !pixRoute && ((accountPreview || rankingPreview) ? !previewRoute : (!apiEnabled || (paymentRoutes.has(pathname) && !paymentsEnabled)))) return json(res, 503, { error: 'recurso em homologação' });
         if (!pathname.startsWith('/api/webhook/')) {
           if (req.headers.origin && req.headers.origin !== 'https://pokeworlduniverse.com') return json(res,403,{error:'Origem não autorizada.'});
           if (req.headers['sec-fetch-site'] === 'cross-site') return json(res,403,{error:'Origem não autorizada.'});
@@ -168,7 +170,7 @@ export function createApp({ root = defaultRoot, apiEnabled = false, paymentsEnab
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.PORT || 5089);
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT inválida');
-  const server = createApp({ stripeEnabled: process.env.PWU_STRIPE_ENABLED === 'true', stripeWebhookEnabled: process.env.PWU_STRIPE_WEBHOOK_ENABLED === 'true', emailAuthEnabled: process.env.PWU_EMAIL_AUTH_ENABLED === 'true', apiEnabled: process.env.PWU_API_ENABLED === 'true', paymentsEnabled: process.env.PWU_PAYMENTS_ENABLED === 'true', accountPreview: process.env.PWU_ACCOUNT_PREVIEW === 'true', rankingPreview: process.env.PWU_RANKING_PREVIEW === 'true' });
+  const server = createApp({ pixEnabled: process.env.PWU_PIX_ENABLED === 'true', pixWebhookEnabled: process.env.PWU_PIX_WEBHOOK_ENABLED === 'true', stripeEnabled: process.env.PWU_STRIPE_ENABLED === 'true', stripeWebhookEnabled: process.env.PWU_STRIPE_WEBHOOK_ENABLED === 'true', emailAuthEnabled: process.env.PWU_EMAIL_AUTH_ENABLED === 'true', apiEnabled: process.env.PWU_API_ENABLED === 'true', paymentsEnabled: process.env.PWU_PAYMENTS_ENABLED === 'true', accountPreview: process.env.PWU_ACCOUNT_PREVIEW === 'true', rankingPreview: process.env.PWU_RANKING_PREVIEW === 'true' });
   server.requestTimeout = 30000; server.headersTimeout = 15000;
   server.listen(port, '127.0.0.1', () => console.log(`PWU local: http://127.0.0.1:${port}`));
   for (const signal of ['SIGTERM', 'SIGINT']) process.on(signal, () => {

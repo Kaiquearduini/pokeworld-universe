@@ -39,8 +39,8 @@
   /* Pagamento (Mercado Pago, API de Orders): o site manda SÓ o id do pacote;
      o servidor define preço e coins, cria a order e devolve o checkout_url. */
   function pay(packageId, btn, provedor, cupom, amount) {
-    if (provedor !== 'stripe') { PWU.toast('Pix pela Stone estará disponível após a integração.'); return; }
-    var requestShape = JSON.stringify([packageId,cupom||'',amount||null]);
+    if (['stripe','mercadopago'].indexOf(provedor)<0) { PWU.toast('Meio de pagamento indisponível.'); return; }
+    var requestShape = JSON.stringify([provedor,packageId,cupom||'',amount||null]);
     if (btn && btn.dataset.requestShape !== requestShape) { btn.dataset.requestId = crypto.randomUUID(); btn.dataset.requestShape = requestShape; }
     var requestId = btn ? btn.dataset.requestId : crypto.randomUUID();
     var conteudo = btn ? btn.innerHTML : '';
@@ -54,11 +54,11 @@
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (r.status === 401) throw new Error('Sua sessão expirou. Entre novamente.');
-        if (r.status === 503) throw new Error('Pagamento ainda não configurado no servidor.');
+        if (r.status === 503) throw new Error(d.error || 'Pagamento temporariamente indisponível.');
         if ([400,409,429].indexOf(r.status)>-1 && d.error) throw new Error(d.error);
         if (!r.ok || !d.checkoutUrl) throw new Error('Não foi possível iniciar o pagamento.');
         var target = new URL(d.checkoutUrl);
-        if (target.protocol !== 'https:' || target.hostname !== 'checkout.stripe.com' || target.username || target.password || target.port) throw new Error('Endereço de pagamento inválido.');
+        if (target.protocol !== 'https:' || (provedor === 'stripe' ? target.hostname !== 'checkout.stripe.com' : (target.hostname !== 'www.mercadopago.com.br' || !/^\/payments\/[0-9]+\/ticket$/.test(target.pathname))) || target.username || target.password || target.port) throw new Error('Endereço de pagamento inválido.');
         location.href = target.href;
       });
     }).catch(function (e) { fail(e.message === 'Failed to fetch' ? 'Pagamento indisponível neste ambiente.' : e.message); });
@@ -614,7 +614,7 @@
         var k = PWU.coinPackages.find(function (x) { return x.id === b.dataset.pack; }) || {};
         openP('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + '. Os coins caem na sua conta do jogo assim que o pagamento for confirmado.</p>' +
           '<div class="pay-ways">' +
-          '<button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>' +
+          '<button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix · Brasil</small></button>' +
           '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button>' +
           '</div><p class="mp-note"><i class="ico ico-lock" aria-hidden="true"></i> Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
         pmBody.addEventListener('click', function (ev) {
@@ -759,7 +759,7 @@
       location.href = 'pagamento.html?pacote=' + encodeURIComponent(b.dataset.pack); return;
       var k = pacotes.find(function (x) { return x.id === b.dataset.pack; }) || {};
       abrirD('<h3>Como quer pagar?</h3><p class="sub"><b>' + Number(k.coins || 0).toLocaleString('pt-BR') + ' coins</b> por ' + PWU.brl(k.price || 0) + (k.bonusPct ? ' · já com ' + k.bonusPct + '% de bônus' : '') + '.</p>' +
-        '<div class="pay-ways"><button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix, boleto ou cartão · Brasil</small></button>' +
+        '<div class="pay-ways"><button type="button" class="pay-way" data-prov="mercadopago"><b>Mercado Pago</b><small>Pix · Brasil</small></button>' +
         '<button type="button" class="pay-way" data-prov="stripe"><b>Stripe</b><small>Cartão de crédito · internacional</small></button></div>' +
         '<p class="mp-note"><i class="ico ico-lock" aria-hidden="true"></i> Você é levado para o site do provedor. Nenhum dado de cartão passa pelo Pokeworld.</p>');
       pmBodyD.addEventListener('click', function (ev) {

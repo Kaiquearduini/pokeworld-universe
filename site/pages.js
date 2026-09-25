@@ -1034,59 +1034,47 @@
 
       var meios = document.getElementById('meios-pagamento');
 
-      var pixDialog = document.getElementById('pix-confirm');
-      var pixPay = document.getElementById('pix-confirm-pay');
-      var pixBack = document.getElementById('pix-confirm-back');
-      var pixEdit = document.getElementById('pix-edit-coupon');
-      var pixError = document.getElementById('pix-confirm-error');
       var pixCpf = document.getElementById('pix-cpf');
-      var pixOrder = null;
-      function pixMessage(message) { pixError.textContent = message || ''; pixError.hidden = !message; }
-      function closePix() { if (!pixPay.disabled) pixDialog.close(); }
-      if (pixDialog) {
+      var pixEmail = document.getElementById('pix-email');
+      var payerError = document.getElementById('payment-payer-error');
+      function payerMessage(message) { payerError.textContent = message || ''; payerError.hidden = !message; }
+      function refreshPayer() {
+        pixEmail.value = PWU.auth.user ? PWU.auth.user.email || '' : '';
+        pixCpf.value = ''; pixCpf.removeAttribute('aria-invalid'); payerMessage('');
+      }
+      if (pixCpf && pixEmail) {
+        refreshPayer();
+        document.addEventListener('auth:change', refreshPayer);
+        window.addEventListener('pagehide', function () { pixCpf.value = ''; });
         pixCpf.addEventListener('input', function () {
           var digits = pixCpf.value.replace(/\D/g, '').slice(0, 11);
           pixCpf.value = digits.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3}\.\d{3})(\d)/, '$1.$2').replace(/(\d{3}\.\d{3}\.\d{3})(\d)/, '$1-$2');
-          pixCpf.setCustomValidity(''); pixMessage('');
-        });
-        pixBack.addEventListener('click', closePix);
-        pixEdit.addEventListener('click', function () { closePix(); if (!pixDialog.open && campo) campo.focus(); });
-        pixDialog.addEventListener('cancel', function (e) { if (pixPay.disabled) e.preventDefault(); });
-        pixDialog.addEventListener('close', function () { document.body.classList.remove('is-locked'); pixCpf.value = ''; pixCpf.setCustomValidity(''); });
-        document.addEventListener('auth:change', function () {
-          if (pixDialog.open && pixOrder && (!PWU.auth.user || String(PWU.auth.user.id) !== pixOrder.accountId)) closePix();
-        });
-        pixPay.addEventListener('click', function () {
-          if (!pixOrder || pixPay.disabled) return;
-          if (!PWU.auth.user || String(PWU.auth.user.id) !== pixOrder.accountId) {
-            pixMessage('Sua sessão mudou. Volte e confira a conta antes de continuar.'); return;
-          }
-          if (!validCpf(pixCpf.value)) {
-            pixMessage('Informe um CPF válido para gerar o Pix.');
-            pixCpf.setCustomValidity('Confira os 11 dígitos do CPF.'); pixCpf.reportValidity(); return;
-          }
-          pixMessage(''); pixBack.disabled = true; pixEdit.disabled = true; pixCpf.disabled = true;
-          pay(pixOrder.packageId, pixPay, 'mercadopago', pixOrder.coupon, pixOrder.amount, pixMessage, pixCpf.value.replace(/\D/g, '')).then(function () {
-            if (!pixPay.disabled) { pixBack.disabled = false; pixEdit.disabled = false; pixCpf.disabled = false; }
-          });
+          pixCpf.removeAttribute('aria-invalid'); payerMessage('');
         });
       }
       if (meios) meios.addEventListener('click', function (e) {
         var w = e.target.closest('[data-prov]'); if (!w || meios.querySelector('[data-prov]:disabled') || !k) return;
         if (bt && bt.disabled) { PWU.toast('Aguarde a confirmação do cupom.'); return; }
-        if (w.dataset.prov === 'mercadopago' && pixDialog) {
-          var user = PWU.auth.user;
-          if (!user) { PWU.toast('Entre na sua conta para continuar.'); return; }
-          pixOrder = { accountId: String(user.id), packageId: k.id, coupon: cupomAplicado ? cupomAplicado.code : null, amount: valorLivre ? valorLivre.price : null };
-          document.getElementById('pix-confirm-email').textContent = user.email || 'Conta conectada';
-          document.getElementById('pix-confirm-points').textContent = Number(k.coins).toLocaleString('pt-BR');
-          document.getElementById('pix-confirm-bonus').textContent = '+' + k.bonusPct + '%';
-          document.getElementById('pix-confirm-coupon').textContent = cupomAplicado ? cupomAplicado.code + ' (−' + cupomAplicado.pct + '%)' : 'Nenhum cupom aplicado';
-          document.getElementById('pix-confirm-total').textContent = PWU.brl(cupomAplicado ? cupomAplicado.price : k.price);
-          pixMessage(''); pixDialog.showModal(); document.body.classList.add('is-locked'); pixCpf.focus();
-          return;
+        var cpf = null;
+        if (w.dataset.prov === 'mercadopago') {
+          if (!pixCpf || !validCpf(pixCpf.value)) {
+            payerMessage('Informe um CPF válido para gerar o Pix.');
+            if (pixCpf) { pixCpf.setAttribute('aria-invalid', 'true'); pixCpf.focus(); }
+            return;
+          }
+          cpf = pixCpf.value.replace(/\D/g, '');
         }
-        pay(k.id, w, w.dataset.prov, cupomAplicado ? cupomAplicado.code : null, valorLivre ? valorLivre.price : null);
+        payerMessage('');
+        if (pixCpf) pixCpf.disabled = true;
+        if (campo) campo.disabled = true;
+        if (bt) bt.disabled = true;
+        pay(k.id, w, w.dataset.prov, cupomAplicado ? cupomAplicado.code : null, valorLivre ? valorLivre.price : null, payerMessage, cpf).then(function () {
+          if (!w.disabled) {
+            if (pixCpf) pixCpf.disabled = false;
+            if (campo) campo.disabled = false;
+            if (bt) bt.disabled = false;
+          }
+        });
       });
     }
 

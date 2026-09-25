@@ -7,7 +7,7 @@
   <meta name="description" content="Escolha como pagar seus Diamond Points do Pokeworld Universe.">
   <link rel="icon" href="assets/logo-sigla.png">
   <link rel="stylesheet" href="styles.css?pwu=80dee41-20260924b">
-  <link rel="stylesheet" href="pages.css?pwu=pix-ui-20260925">
+  <link rel="stylesheet" href="pages.css?pwu=pix-inline-20260925">
 </head>
 <body data-page="pagamento">
 <div class="scroll-progress" aria-hidden="true"></div>
@@ -55,14 +55,25 @@
             <div class="pedido-topo"><h2 class="acc-card__title">Seu <span class="grad grad--yellow">pedido</span></h2><a class="voltar" href="Donate">← Escolher outro pacote</a></div>
             <div class="resumo" id="resumo-pedido"></div>
             <p class="mp-note">Os Diamond Points são compartilhados entre os personagens da conta.</p>
-            <form class="cupom" id="f-cupom" novalidate>
-              <label for="cupom-codigo">Cupom</label>
-              <div class="cupom__linha">
-                <input id="cupom-codigo" name="cupom" type="text" inputmode="text" autocomplete="off" maxlength="32" placeholder="Tem um cupom? Digite aqui">
-                <button type="submit">Aplicar</button>
+            <div class="payment-payer">
+              <div>
+                <label for="pix-email">Seu e-mail</label>
+                <input id="pix-email" type="email" autocomplete="off" readonly>
               </div>
-              <p class="cupom__msg" hidden></p>
-            </form>
+              <div>
+                <label for="pix-cpf">CPF</label>
+                <input id="pix-cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" aria-describedby="payment-payer-error">
+              </div>
+              <form class="cupom" id="f-cupom" novalidate>
+                <label for="cupom-codigo">Cupom de desconto</label>
+                <div class="cupom__linha">
+                  <input id="cupom-codigo" name="cupom" type="text" inputmode="text" autocomplete="off" maxlength="32" placeholder="Código do cupom">
+                  <button type="submit">Aplicar</button>
+                </div>
+                <p class="cupom__msg" hidden></p>
+              </form>
+              <p class="payment-payer__error" id="payment-payer-error" role="alert" hidden></p>
+            </div>
             <h3 class="pay-title">Escolha o meio de pagamento <span>clique em uma das opções</span></h3>
             <div class="pay-ways" id="meios-pagamento">
               <button type="button" class="pay-way pay-way--mp" data-prov="mercadopago">
@@ -128,28 +139,7 @@
 
 </div>
 
-<dialog class="pix-confirm" id="pix-confirm" aria-labelledby="pix-confirm-title" aria-describedby="pix-confirm-intro">
-  <h2 id="pix-confirm-title">Pagar com <span class="grad grad--yellow">Pix</span></h2>
-  <p id="pix-confirm-intro" class="pix-confirm__intro">Confira os dados antes de gerar seu pagamento.</p>
-  <div class="pix-confirm__cpf">
-    <label for="pix-cpf">CPF de quem vai pagar</label>
-    <input id="pix-cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" aria-describedby="pix-cpf-help" required>
-    <p id="pix-cpf-help">Enviado ao Mercado Pago para identificar o pagador deste Pix.</p>
-  </div>
-  <dl class="pix-confirm__details">
-    <div class="pix-confirm__wide"><dt>E-mail da conta</dt><dd id="pix-confirm-email"></dd></div>
-    <div><dt>Diamond Points</dt><dd id="pix-confirm-points"></dd></div>
-    <div><dt>Bônus incluído</dt><dd id="pix-confirm-bonus"></dd></div>
-    <div class="pix-confirm__wide"><dt>Cupom</dt><dd><span id="pix-confirm-coupon"></span> <button class="pix-confirm__edit" type="button" id="pix-edit-coupon">Alterar</button></dd></div>
-    <div class="pix-confirm__wide pix-confirm__total"><dt>Total a pagar</dt><dd id="pix-confirm-total"></dd></div>
-  </dl>
-  <p class="pix-confirm__note">Os pontos serão enviados para esta conta após a confirmação do pagamento. Na próxima etapa, escaneie o QR Code ou use o Pix Copia e Cola.</p>
-  <p class="pix-confirm__error" id="pix-confirm-error" role="alert" hidden></p>
-  <div class="pix-confirm__actions">
-    <button class="pix-confirm__back" type="button" id="pix-confirm-back">Voltar</button>
-    <button class="btn btn--yellow" type="button" id="pix-confirm-pay">Gerar Pix</button>
-  </div>
-</dialog>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -158,6 +148,6 @@
 <script src="data.js?pwu=80dee41-20260924b"></script>
 <script src="store.js?pwu=80dee41-20260924b"></script>
 <script src="ui.js?pwu=80dee41-20260924b"></script>
-<script src="pages.js?pwu=pix-ui-20260925"></script>
+<script src="pages.js?pwu=pix-inline-20260925"></script>
 </body>
 </html>

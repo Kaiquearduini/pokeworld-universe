@@ -26,13 +26,18 @@ export async function fetchPixOrder(id) {
   await verifyPixMerchant();
   return request('/v1/orders/'+id);
 }
+export async function cancelPixOrder(id,key) {
+  if (!ORDER_ID.test(id || '') || typeof key!=='string' || !/^[a-z0-9-]{1,128}$/.test(key)) throw new Error('pix-cancel-invalid');
+  await verifyPixMerchant();
+  return request('/v1/orders/'+id+'/cancel',{},key);
+}
 export async function createPixOrder(order, email, cpf) {
   const identification = {type:'CPF',number:normalizeCpf(cpf)};
   await verifyPixMerchant();
   const amount=(Number(order.amount_cents)/100).toFixed(2);
   return request('/v1/orders', {
     type:'online', processing_mode:'automatic', total_amount:amount, external_reference:order.reference,
-    description:`PWU ONLINE - ${order.credits} Diamond Points`, payer:{email,identification},
+    description:`PWU ONLINE - ${order.credits} Pcoins`, payer:{email,identification},
     transactions:{payments:[{amount,payment_method:{id:'pix',type:'bank_transfer'},expiration_time:'PT2H'}]}
   },order.reference);
 }

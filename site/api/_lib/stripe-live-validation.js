@@ -31,3 +31,28 @@ export function checkoutUrl(value) {
     throw new Error('stripe-url-invalid');
   return value;
 }
+
+// A Checkout Session can stay paid after a refund. Check the current underlying
+// charge before the atomic database fulfillment, including delayed notifications.
+export function validateLiveCharge(intent, session, order) {
+  const charge = intent?.latest_charge;
+  const amount = Number(order.amount_cents);
+  if (!intent || intent.object !== 'payment_intent' || intent.id !== session.payment_intent ||
+      intent.livemode !== true || intent.status !== 'succeeded' || intent.currency !== 'brl' ||
+      intent.amount !== amount || intent.amount_received !== amount ||
+      intent.metadata?.integration !== APP || intent.metadata?.reference !== order.reference ||
+      !charge || typeof charge !== 'object' || charge.object !== 'charge' ||
+      !/^ch_[A-Za-z0-9]+$/.test(charge.id || '') || charge.payment_intent !== intent.id ||
+      charge.livemode !== true || charge.status !== 'succeeded' || charge.paid !== true ||
+      charge.captured !== true || charge.currency !== 'brl' || charge.amount !== amount ||
+      charge.amount_captured !== amount || charge.payment_method_details?.type !== 'card' ||
+      !Number.isSafeInteger(charge.amount_refunded) || charge.amount_refunded < 0 ||
+      typeof charge.refunded !== 'boolean' || typeof charge.disputed !== 'boolean' ||
+      !Array.isArray(charge.refunds?.data) || typeof charge.refunds.has_more !== 'boolean')
+    throw new Error('stripe-charge-mismatch');
+  if (charge.disputed) return 'charge.dispute.created';
+  if (charge.refunded || charge.amount_refunded > 0 || charge.refunds.has_more ||
+      charge.refunds.data.some(refund => !['failed','canceled'].includes(refund?.status)))
+    return 'charge.refunded';
+  return null;
+}

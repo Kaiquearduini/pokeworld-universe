@@ -12,6 +12,7 @@ const reference='12345678-1234-1234-1234-123456789012';
 const order={reference,account_id:42,package_id:'custom',amount_cents:1000,credits:10,session_id:null};
 const session={id:'cs_live_Verify',livemode:true,status:'complete',mode:'payment',payment_status:'paid',currency:'brl',amount_total:1000,amount_subtotal:1000,payment_intent:'pi_Verify',payment_method_types:['card'],client_reference_id:reference,metadata:{integration:validation.APP,reference,account_id:'42',package_id:'custom'}};
 const input={packageId:'custom',amount:10,requestId:reference};
+const intent={id:'pi_Verify',object:'payment_intent',livemode:true,status:'succeeded',currency:'brl',amount:1000,amount_received:1000,metadata:{integration:validation.APP,reference},latest_charge:{id:'ch_Verify',object:'charge',livemode:true,payment_intent:'pi_Verify',status:'succeeded',paid:true,captured:true,currency:'brl',amount:1000,amount_captured:1000,amount_refunded:0,refunded:false,disputed:false,payment_method_details:{type:'card'},refunds:{data:[],has_more:false}}};
 async function module(name,mocks,env={STRIPE_MODE:'live'}) {
  const context=vm.createContext({Buffer,URL,console:{log(){},error(){}},process:{env}});
  const m=new vm.SourceTextModule(await readFile(new URL('../site/api/'+name,import.meta.url),'utf8'),{context});
@@ -70,7 +71,7 @@ test('signed webhook independently retrieves Stripe and refuses mismatches befor
  const event={id:'evt_Fixture',livemode:true,type:'checkout.session.completed',data:{object:session}};
  let raw=JSON.stringify(event);
  const handler=await module('webhook/stripe-live.js',{
-  '../_lib/stripe.js':{rawBody:async()=>raw,assinaturaStripeValida:()=>signature,stripeCall:async()=>{calls++;return retrieved;}},
+  '../_lib/stripe.js':{rawBody:async()=>raw,assinaturaStripeValida:()=>signature,stripeCall:async path=>{calls++;return path.startsWith('/payment_intents/')?intent:retrieved;}},
   '../_lib/stripe-live-validation.js':validation,
   '../_lib/stripe-orders.js':{readOrder:async()=>order,flagPayment:async()=>{},fulfillOrder:async()=>{if(failDatabase)throw new Error('timeout');credits++;return {credited:1};}}
  });

@@ -37,7 +37,7 @@ async function body(req, max = 1024 * 1024) {
   return Buffer.concat(chunks);
 }
 
-export function createApp({ root = defaultRoot, apiEnabled = false, paymentsEnabled = false, stripeEnabled = false, stripeWebhookEnabled = false, pixEnabled = false, pixWebhookEnabled = false, emailAuthEnabled = false, accountPreview = false, rankingPreview = false,
+export function createApp({ gamePixHandler = null, paymentMaintenance = null, root = defaultRoot, apiEnabled = false, paymentsEnabled = false, stripeEnabled = false, stripeWebhookEnabled = false, pixEnabled = false, pixWebhookEnabled = false, emailAuthEnabled = false, accountPreview = false, rankingPreview = false,
   loadHandler = async name => (await import(pathToFileURL(path.join(root, 'api', name)))).default } = {}) {
   const rootPromise = realpath(root);
   let loginWindow = 0, loginAttempts = 0;
@@ -60,6 +60,22 @@ export function createApp({ root = defaultRoot, apiEnabled = false, paymentsEnab
       if (pathname === '/healthz') {
         if (!['GET', 'HEAD'].includes(req.method)) return json(res, 405, { error: 'método não permitido' });
         return json(res, 200, { ok: true, apiEnabled, paymentsEnabled, ...(emailAuthEnabled ? {emailAuthEnabled:true} : {}), ...(accountPreview ? { accountPreview: true } : {}), ...(rankingPreview ? { rankingPreview: true } : {}) });
+      }
+      const paymentRequest = pathname === '/api/game-pix' || paymentRoutes.has(pathname) ||
+        ['/api/webhook/stripe','/api/webhook/mercadopago'].includes(pathname);
+      if (paymentRequest && paymentMaintenance) {
+        let unavailable = true;
+        try { unavailable = await paymentMaintenance(); } catch { /* Fail closed, preserve webhook retries. */ }
+        if (unavailable) {
+          res.setHeader('Retry-After','30');
+          return json(res,503,{error:'Pagamentos temporariamente indisponíveis. Tente novamente.'});
+        }
+      }
+      if (pathname === '/api/game-pix') {
+        if (!gamePixHandler) return json(res, 503, {error:'unavailable'});
+        if (url.search) return json(res, 400, {error:'invalid_request'});
+        await gamePixHandler(req,res);
+        return;
       }
       if (pathname.startsWith('/api/')) {
         const name = routes.get(pathname);
@@ -170,7 +186,10 @@ export function createApp({ root = defaultRoot, apiEnabled = false, paymentsEnab
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.PORT || 5089);
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT inválida');
-  const server = createApp({ pixEnabled: process.env.PWU_PIX_ENABLED === 'true', pixWebhookEnabled: process.env.PWU_PIX_WEBHOOK_ENABLED === 'true', stripeEnabled: process.env.PWU_STRIPE_ENABLED === 'true', stripeWebhookEnabled: process.env.PWU_STRIPE_WEBHOOK_ENABLED === 'true', emailAuthEnabled: process.env.PWU_EMAIL_AUTH_ENABLED === 'true', apiEnabled: process.env.PWU_API_ENABLED === 'true', paymentsEnabled: process.env.PWU_PAYMENTS_ENABLED === 'true', accountPreview: process.env.PWU_ACCOUNT_PREVIEW === 'true', rankingPreview: process.env.PWU_RANKING_PREVIEW === 'true' });
+  const {configuredGamePixHandler} = await import('../site/api/_lib/game-pix-runtime.js');
+  const gamePixHandler = configuredGamePixHandler();
+  const {paymentMaintenance} = await import('../site/api/_lib/payment-maintenance.js');
+  const server = createApp({ gamePixHandler, paymentMaintenance: gamePixHandler ? paymentMaintenance : null, pixEnabled: process.env.PWU_PIX_ENABLED === 'true', pixWebhookEnabled: process.env.PWU_PIX_WEBHOOK_ENABLED === 'true', stripeEnabled: process.env.PWU_STRIPE_ENABLED === 'true', stripeWebhookEnabled: process.env.PWU_STRIPE_WEBHOOK_ENABLED === 'true', emailAuthEnabled: process.env.PWU_EMAIL_AUTH_ENABLED === 'true', apiEnabled: process.env.PWU_API_ENABLED === 'true', paymentsEnabled: process.env.PWU_PAYMENTS_ENABLED === 'true', accountPreview: process.env.PWU_ACCOUNT_PREVIEW === 'true', rankingPreview: process.env.PWU_RANKING_PREVIEW === 'true' });
   server.requestTimeout = 30000; server.headersTimeout = 15000;
   server.listen(port, '127.0.0.1', () => console.log(`PWU local: http://127.0.0.1:${port}`));
   for (const signal of ['SIGTERM', 'SIGINT']) process.on(signal, () => {

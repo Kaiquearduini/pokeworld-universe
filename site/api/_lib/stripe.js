@@ -64,11 +64,14 @@ export function assinaturaStripeValida({ header = '', rawBody = '', secret, tole
 }
 
 /** Lê o corpo cru da requisição (necessário para validar a assinatura). */
-export function rawBody(req) {
-  return new Promise((resolve, reject) => {
-    let data = '';
-    req.on('data', (c) => { data += c; });
-    req.on('end', () => resolve(data));
-    req.on('error', reject);
-  });
+export async function rawBody(req) {
+  const chunks = [];
+  let size = 0;
+  for await (const chunk of req) {
+    const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    size += bytes.length;
+    if (size > 262144) throw Object.assign(new Error('body-too-large'), {code:'body-too-large'});
+    chunks.push(bytes);
+  }
+  return Buffer.concat(chunks).toString('utf8');
 }

@@ -28,10 +28,10 @@ async function harness({id=51, fail=false}={}) {
   }};
 }
 test('unauthenticated profile update never writes',async()=>{
-  const h=await harness({id:null});const r=await h.request({action:'appearance',characterId:'leon',cardId:'agua'});
+  const h=await harness({id:null});const r=await h.request({action:'appearance',characterId:'personagem-1',cardId:'agua'});
   assert.equal(r.code,401);assert.equal(h.writes.length,0);
 });
-test('all 60 combinations update only the authenticated account with one atomic statement',async()=>{
+test('all 30 combinations update only the authenticated account with one atomic statement',async()=>{
   const h=await harness();
   for(const c of catalog.characters)for(const card of catalog.cards){
     const before=h.writes.length;
@@ -50,29 +50,48 @@ test('malformed and tampered choices cannot become a path or SQL input',async()=
   const h=await harness();
   for(const bad of [null,undefined,1,true,[],{},'','LEON','__proto__','constructor','../leon','leon--agua','<svg onload=alert(1)>',"'; DROP TABLE accounts;--",'https://evil.invalid/a.png','a'.repeat(20000)]) {
     for(const field of ['characterId','cardId']) {
-      const r=await h.request({action:'appearance',characterId:'leon',cardId:'agua',[field]:bad});
+      const r=await h.request({action:'appearance',characterId:'personagem-1',cardId:'agua',[field]:bad});
       assert.equal(r.code,400);
     }
   }
   assert.equal(h.writes.length,0);
 });
 test('preview read-only and wrong methods never change appearance',async()=>{
-  const h=await harness();const body={action:'appearance',characterId:'leon',cardId:'agua'};
+  const h=await harness();const body={action:'appearance',characterId:'personagem-1',cardId:'agua'};
   assert.equal((await h.request(body,{previewReadOnly:true})).code,403);
   assert.equal((await h.request(body,{method:'DELETE'})).code,405);
   assert.equal(h.writes.length,0);
 });
 test('storage failure reports failure, not a saved result',async()=>{
-  const h=await harness({fail:true});const r=await h.request({action:'appearance',characterId:'leon',cardId:'agua'});
+  const h=await harness({fail:true});const r=await h.request({action:'appearance',characterId:'personagem-1',cardId:'agua'});
   assert.equal(r.code,500);assert.equal(r.body.ok,undefined);assert.equal(h.writes.length,0);
 });
 test('saved appearance is returned by the existing authenticated account read',async()=>{
-  const h=await harness();await h.request({action:'appearance',characterId:'ash',cardId:'psiquico'});
+  const h=await harness();await h.request({action:'appearance',characterId:'personagem-2',cardId:'psiquico'});
   const r=await h.request({}, {method:'GET'});
-  assert.equal(r.code,200);assert.equal(r.body.avatar,catalog.appearanceUrl('ash','psiquico'));assert.equal(r.body.coins,123);
+  assert.equal(r.code,200);assert.equal(r.body.avatar,catalog.appearanceUrl('personagem-2','psiquico'));assert.equal(r.body.coins,123);
 });
 test('legacy avatar selection remains compatible',async()=>{
   const h=await harness();const r=await h.request({action:'avatar',avatar:'assets/img/art/leon.png'});
   assert.equal(r.code,200);assert.equal(r.body.avatar,'assets/img/art/leon.png');
-  assert.deepEqual(catalog.fromAvatar(r.body.avatar),{characterId:'leon',cardId:'sem-card'});
+  assert.equal(catalog.fromAvatar(r.body.avatar),null);
+});
+
+test('retired characters cannot be selected; saved legacy files remain available', async () => {
+  const h=await harness();
+  for(const id of ['leon','ash','treinadora','treinadora-azul','treinadora-amarela']) {
+    assert.equal((await h.request({action:'appearance',characterId:id,cardId:'agua'})).code,400);
+    assert.equal(catalog.fromAvatar(`assets/img/profile/portraits/4215a26d3fb6-v2/${id}--agua.svg`),null);
+    assert.ok((await readFile(new URL(`../site/assets/img/profile/portraits/4215a26d3fb6-v2/${id}--agua.svg`,import.meta.url))).length>0);
+  }
+  assert.equal(h.writes.length,0);
+});
+test('header faces preserve the chosen card and compatibility with earlier saved versions', async () => {
+  for (const c of catalog.characters) for (const b of catalog.cards) {
+    const face = catalog.faceUrl(c.id,b.id);
+    assert.equal(catalog.headerAvatarUrl(catalog.appearanceUrl(c.id,b.id)),face);
+    assert.equal(catalog.headerAvatarUrl(`assets/img/profile/portraits/4215a26d3fb6-v2/${c.id}--${b.id}.svg`),face);
+    assert.ok((await readFile(new URL('../site/'+face,import.meta.url),'utf8')).includes('viewBox="0 0 160 160"'));
+  }
+  assert.equal(catalog.headerAvatarUrl('https://example.invalid/avatar.png'),'https://example.invalid/avatar.png');
 });

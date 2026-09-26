@@ -1,4 +1,4 @@
-import { characters, cards, selection, appearanceUrl, fromAvatar, portraitMarkup } from './profile-catalog.js?pwu=profile-20260926-v2';
+import { characters, cards, selection, appearanceUrl, fromAvatar, portraitMarkup } from './profile-catalog.js?pwu=profile-20260926-v3';
 
 const editor = document.getElementById('profile-editor');
 if (editor && window.PWU?.auth) {
@@ -10,18 +10,14 @@ if (editor && window.PWU?.auth) {
   const save = document.getElementById('profile-save');
   const restore = document.getElementById('profile-restore');
   const tabs = [...editor.querySelectorAll('[role="tab"]')];
-  let owner = null, savedAvatar = '', characterId = 'leon', cardId = 'agua', saving = false, dirty = false, generation = 0;
+  let owner = null, savedAvatar = '', characterId = characters[0].id, cardId = 'agua', saving = false, dirty = false, generation = 0;
 
   function say(text, error = false) {
     message.textContent = text;
     message.classList.toggle('is-error', error);
   }
   function update() {
-    const chosen = selection(characterId, cardId);
     preview.innerHTML = portraitMarkup(characterId, cardId);
-    document.getElementById('profile-character-name').textContent = chosen.character.name;
-    document.getElementById('profile-card-name').textContent = chosen.card.name;
-    document.getElementById('profile-selection').textContent = chosen.character.name + ' · ' + chosen.card.name;
     editor.querySelectorAll('[data-character]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.character === characterId)));
     editor.querySelectorAll('[data-card]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.card === cardId)));
     editor.querySelectorAll('[data-character], [data-card]').forEach(button => { button.disabled = saving; });
@@ -33,11 +29,13 @@ if (editor && window.PWU?.auth) {
   }
   function reset(avatar) {
     const chosen = fromAvatar(avatar);
-    characterId = chosen?.characterId || 'leon';
+    characterId = chosen?.characterId || characters[0].id;
     cardId = chosen?.cardId || 'agua';
     dirty = false;
     update();
   }
+  document.querySelector('#tab-characters span').textContent = characters.length;
+  document.querySelector('#tab-cards span').textContent = cards.filter(card => card.image).length;
   for (const character of characters) {
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'profile-choice'; button.dataset.character = character.id;
@@ -47,7 +45,7 @@ if (editor && window.PWU?.auth) {
     const label = document.createElement('span'); label.className = 'profile-choice__label'; label.textContent = character.name;
     const check = document.createElement('span'); check.className = 'profile-choice__check'; check.textContent = '✓'; check.setAttribute('aria-hidden', 'true');
     button.append(art, label, check);
-    button.addEventListener('click', () => { characterId = character.id; dirty = true; update(); say('Prévia atualizada. Salve para usar no seu perfil.'); });
+    button.addEventListener('click', () => { characterId = character.id; dirty = true; update(); say(''); });
     document.getElementById('profile-characters').append(button);
   }
   for (const card of cards) {
@@ -61,7 +59,7 @@ if (editor && window.PWU?.auth) {
     const label = document.createElement('span'); label.className = 'profile-choice__label'; label.textContent = card.name;
     const check = document.createElement('span'); check.className = 'profile-choice__check'; check.textContent = '✓'; check.setAttribute('aria-hidden', 'true');
     button.append(art, label, check);
-    button.addEventListener('click', () => { cardId = card.id; dirty = true; update(); say('Card atualizado na prévia. Seu personagem foi mantido.'); });
+    button.addEventListener('click', () => { cardId = card.id; dirty = true; update(); say(''); });
     document.getElementById('profile-cards').append(button);
   }
   function openTab(tab, focus = false) {
@@ -83,7 +81,7 @@ if (editor && window.PWU?.auth) {
       if (next !== null) { event.preventDefault(); openTab(tabs[next], true); }
     });
   });
-  restore.addEventListener('click', () => { reset(savedAvatar); say('Prévia restaurada. Nenhuma alteração foi salva.'); });
+  restore.addEventListener('click', () => { reset(savedAvatar); say(''); });
   save.addEventListener('click', async () => {
     if (saving || save.disabled || !owner) return;
     const requestedOwner = owner, requestedGeneration = generation;
@@ -108,7 +106,7 @@ if (editor && window.PWU?.auth) {
     saving = false; savedAvatar = PWU.avatarUrl(user); reset(savedAvatar);
     if (!owner) return;
     if (user.game && user.totpPendente) { location.replace('login.html'); return; }
-    say('Combine um personagem com o card que mais combina com você.');
+    say('');
     if (auth.game) auth.game().then(data => {
       if (generation !== currentGeneration || !data || String(data.id) !== owner || saving) return;
       savedAvatar = data.avatar || '';

@@ -1,17 +1,12 @@
 // Shared allowlist: browser choices and authenticated account updates use the same IDs.
-export const revision = '4215a26d3fb6-v2';
-const previousRevisions = ['4215a26d3fb6-v1'];
+export const revision = '4215a26d3fb6-v3';
+const previousRevisions = ['4215a26d3fb6-v1', '4215a26d3fb6-v2'];
 export const characters = [
-  { id: 'leon', name: 'Leon', image: 'assets/img/profile/characters/leon.png', width: 2500, height: 3000, crop: [89, 61, 2366, 2889], legacy: ['assets/img/art/leon.png'] },
-  { id: 'ash', name: 'Ash e Pikachu', image: 'assets/img/profile/characters/ash.png', width: 2500, height: 3000, crop: [519, 291, 1645, 2645], legacy: ['assets/img/art/ash.png'] },
-  { id: 'personagem-1', name: 'Personagem 01', image: 'assets/img/profile/characters/personagem-1.png', width: 1080, height: 1350, crop: [61, 6, 996, 1305] },
-  { id: 'personagem-2', name: 'Personagem 02', image: 'assets/img/profile/characters/personagem-2.png', width: 1080, height: 1350, crop: [83, 33, 967, 1278] },
-  { id: 'personagem-3', name: 'Personagem 03', image: 'assets/img/profile/characters/personagem-3.png', width: 1080, height: 1350, crop: [109, 37, 901, 1242] },
-  { id: 'personagem-4', name: 'Personagem 04', image: 'assets/img/profile/characters/personagem-4.png', width: 1080, height: 1350, crop: [88, 37, 946, 1249] },
-  { id: 'personagem-5', name: 'Personagem 05', image: 'assets/img/profile/characters/personagem-5.png', width: 1080, height: 1350, crop: [62, 36, 959, 1250] },
-  { id: 'treinadora', name: 'Treinadora', image: 'assets/img/art/player-girl.png', width: 388, height: 760, crop: [0, 0, 388, 760], legacy: ['assets/img/art/player-girl.png?v=3', 'assets/img/art/player-girl.png'] },
-  { id: 'treinadora-azul', name: 'Treinadora azul', image: 'assets/img/art/trainer-azul.png', width: 386, height: 760, crop: [0, 0, 386, 760], legacy: ['assets/img/art/trainer-azul.png'] },
-  { id: 'treinadora-amarela', name: 'Treinadora amarela', image: 'assets/img/art/trainer-amarela.png', width: 472, height: 760, crop: [0, 0, 472, 760], legacy: ['assets/img/art/trainer-amarela.png'] }
+  { id: 'personagem-1', name: 'Wattson', face: [280, 0, 680, 680], image: 'assets/img/profile/characters/personagem-1.png', width: 1080, height: 1350, crop: [61, 6, 996, 1305] },
+  { id: 'personagem-2', name: 'Koga', face: [320, 0, 760, 760], image: 'assets/img/profile/characters/personagem-2.png', width: 1080, height: 1350, crop: [83, 33, 967, 1278] },
+  { id: 'personagem-3', name: 'Giovanni', face: [270, 5, 520, 520], image: 'assets/img/profile/characters/personagem-3.png', width: 1080, height: 1350, crop: [109, 37, 901, 1242] },
+  { id: 'personagem-4', name: 'Acerola', face: [215, 0, 630, 630], image: 'assets/img/profile/characters/personagem-4.png', width: 1080, height: 1350, crop: [88, 37, 946, 1249] },
+  { id: 'personagem-5', name: 'Bruno', face: [300, 0, 620, 620], image: 'assets/img/profile/characters/personagem-5.png', width: 1080, height: 1350, crop: [62, 36, 959, 1250] },
 ];
 export const cards = [
   { id: 'agua', name: 'Água', color: '#5976f1', image: 'assets/img/profile/cards/card-1.png' },
@@ -47,4 +42,21 @@ export function portraitMarkup(characterId, cardId, source = value => value) {
   const { character, card } = value;
   const background = card.image ? `<svg width="600" height="800" viewBox="53 23 989 1296" preserveAspectRatio="xMidYMid slice"><image href="${esc(source(card.image))}" width="1080" height="1350"/></svg>` : '';
   return `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" role="img" aria-label="${esc(character.name + ' · ' + card.name)}"><rect width="600" height="800" fill="#13254d"/>${background}<svg x="24" y="24" width="552" height="752" viewBox="${character.crop.join(' ')}" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image href="${esc(source(character.image))}" width="${character.width}" height="${character.height}"/></svg></svg>`;
+}
+
+// Small header portrait: same original art and background, with a face-specific viewBox.
+export function faceUrl(characterId, cardId) {
+  if (!selection(characterId, cardId)) throw new Error('Aparência inválida.');
+  return `assets/img/profile/faces/${revision}/${characterId}--${cardId}.svg`;
+}
+export function headerAvatarUrl(avatar) {
+  const chosen = fromAvatar(avatar);
+  return chosen ? faceUrl(chosen.characterId, chosen.cardId) : avatar;
+}
+export function faceMarkup(characterId, cardId, source = value => value) {
+  const chosen = selection(characterId, cardId);
+  if (!chosen) throw new Error('Aparência inválida.');
+  const { character, card } = chosen;
+  const background = card.image ? `<svg width="160" height="160" viewBox="53 23 989 1296" preserveAspectRatio="xMidYMid slice"><image href="${esc(source(card.image))}" width="1080" height="1350"/></svg>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="${esc(character.name)}"><rect width="160" height="160" fill="#13254d"/>${background}<svg width="160" height="160" viewBox="${character.face.join(' ')}" overflow="hidden"><image href="${esc(source(character.image))}" width="${character.width}" height="${character.height}"/></svg></svg>`;
 }

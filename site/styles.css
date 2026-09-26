@@ -1726,7 +1726,7 @@ body.is-locked { overflow: hidden; }
 .user-chip { display: flex; align-items: center; gap: .8rem; padding: .4rem 1.2rem .4rem .5rem; border-radius: 10rem; background: rgba(0,0,0,.45); color: #fff; font: 500 1.4rem var(--montreal); backdrop-filter: blur(6px); white-space: nowrap; }
 .user-chip a { display: flex; align-items: center; gap: .8rem; color: inherit; max-width: 18rem; overflow: hidden; text-overflow: ellipsis; }
 .user-chip span { overflow: hidden; text-overflow: ellipsis; }
-.user-chip img { width: 3.2rem; height: 3.2rem; border-radius: 50%; object-fit: contain; background: #fff; }
+.user-chip img { width: 44px; height: 44px; flex: 0 0 44px; border: 2px solid #fcd05c; border-radius: 13px; object-fit: contain; background: #13254d; box-shadow: 0 0 0 1px #70eaff55; }
 .user-chip button { border: 0; background: rgba(255,255,255,.15); color: #fff; padding: .4rem 1rem; border-radius: 10rem; font: 400 1.3rem var(--bebas); letter-spacing: .06em; cursor: pointer; }
 .user-chip button:hover { background: var(--grad-yellow); color: #000; }
 

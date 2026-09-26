@@ -5,6 +5,7 @@
    ===================================================================== */
 (function () {
   window.PWU = window.PWU || {};
+  var headerCatalogPromise;
   var USERS_KEY = 'pwu_users', SESSION_KEY = 'pwu_session';
 
   /* ---------- toasts ---------- */
@@ -411,8 +412,20 @@
     if (u) {
       var chip = document.createElement('div');
       chip.className = 'user-chip';
-      chip.innerHTML = '<a href="' + ACCOUNT_URL + '"><img src="' + avatarUrl(u) + '" alt="" onerror="this.src=\'assets/logo-sigla.png\'"><span>' + u.name + '</span></a><button type="button" aria-label="Sair">Sair</button>';
-      chip.querySelector('button').addEventListener('click', auth.logout);
+      var link = document.createElement('a'); link.href = ACCOUNT_URL; link.setAttribute('aria-label', 'Minha conta');
+      var picture = document.createElement('img'); picture.alt = ''; picture.width = 44; picture.height = 44;
+      var requestedAvatar = avatarUrl(u), requestedOwner = String(u.id);
+      picture.src = requestedAvatar;
+      picture.onerror = function () { picture.onerror = null; picture.src = 'assets/logo-sigla.png'; };
+      var name = document.createElement('span'); name.textContent = u.name;
+      var logout = document.createElement('button'); logout.type = 'button'; logout.textContent = 'Sair'; logout.setAttribute('aria-label', 'Sair');
+      logout.addEventListener('click', auth.logout); link.append(picture, name); chip.append(link, logout);
+      headerCatalogPromise = headerCatalogPromise || import('./profile-catalog.js?pwu=profile-20260926-v3');
+      headerCatalogPromise.then(function (catalog) {
+        if (picture.isConnected && auth.user && String(auth.user.id) === requestedOwner && avatarUrl(auth.user) === requestedAvatar) {
+          picture.src = catalog.headerAvatarUrl(requestedAvatar);
+        }
+      }).catch(function () { /* Keep the saved image if the optional close-up cannot load. */ });
       if (acoes) acoes.insertBefore(chip, acoes.firstChild);
       else (document.querySelector('.hero, .topbar') || document.body).appendChild(chip);
     }
@@ -467,9 +480,15 @@
   auth.load();
   if (auth.user && (!auth.user.game || !localStorage.getItem(TOKEN_KEY))) auth.set(null);
   if (localStorage.getItem(TOKEN_KEY)) {
+    var initialToken = localStorage.getItem(TOKEN_KEY), initialUser = auth.user, initialAvatar = auth.user && auth.user.avatar;
     api.me().then(function (d) {
-      if (d && d.id) { var u = fromGame(d); if (!auth.user || auth.user.email !== u.email) auth.set(u); }
-      else if (d === null && gameOn === true) { localStorage.removeItem(TOKEN_KEY); auth.set(null); }
+      // A delayed account read must never undo a save or restore a logged-out session.
+      if (localStorage.getItem(TOKEN_KEY) !== initialToken || auth.user !== initialUser || (auth.user && auth.user.avatar) !== initialAvatar) return;
+      if (d && d.id) {
+        var u = fromGame(d);
+        if (!auth.user || String(auth.user.id) !== String(u.id) || auth.user.email !== u.email) auth.set(u);
+        else if ((auth.user.avatar || null) !== u.avatar) auth.set(Object.assign({}, auth.user, { avatar: u.avatar }));
+      } else if (d === null && gameOn === true) { localStorage.removeItem(TOKEN_KEY); auth.set(null); }
     });
   }
   if (sb) sb.auth.getSession().then(function (r) {

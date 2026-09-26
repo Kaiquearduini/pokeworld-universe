@@ -22,7 +22,7 @@ async function request(body,auth=token){
  return {status:res.status,data:await res.json()};
 }
 try {
- const input={action:'appearance',characterId:'leon',cardId:'agua'};
+ const input={action:'appearance',characterId:'personagem-1',cardId:'agua'};
  assert.equal((await request(input)).status,500);
  checks.push('Reproduced production permission failure against real MariaDB');
  await admin.query(`GRANT UPDATE(image) ON ${process.env.GAME_DB_NAME}.accounts TO '${process.env.GAME_DB_USER}'@'127.0.0.1'`);
@@ -33,7 +33,7 @@ try {
   const fresh=await request();assert.equal(fresh.status,200);assert.equal(fresh.data.avatar,res.data.avatar);
   assert.equal(fresh.data.diamondPoints,17);
  }
- checks.push('All 60 combinations commit and reload through real authenticated HTTP and database');
+ checks.push('All 30 combinations commit and reload through real authenticated HTTP and database');
  assert.deepEqual(await q('SELECT id,image,diamond_points FROM accounts WHERE id=202'),[{id:202,image:'unchanged.png',diamond_points:33}]);
  checks.push('Forged account ID and balance fields do not alter the other account or balance');
  await assert.rejects(q('UPDATE accounts SET diamond_points=diamond_points WHERE id=-1'),error=>error.code==='ER_COLUMNACCESS_DENIED_ERROR');
@@ -43,10 +43,10 @@ try {
  assert.equal((await request(input,sign(101,Date.now(),false))).status,401);
  assert.equal((await request({...input,cardId:'../../invalid'})).status,400);
  checks.push('Unauthenticated, missing-MFA and invalid-card requests are rejected');
- assert.deepEqual(fromAvatar('assets/img/profile/portraits/4215a26d3fb6-v1/leon--agua.svg'),{characterId:'leon',cardId:'agua'});
+ assert.deepEqual(fromAvatar('assets/img/profile/portraits/4215a26d3fb6-v1/personagem-1--agua.svg'),{characterId:'personagem-1',cardId:'agua'});
  checks.push('Previously saved square choices map to the new vertical catalog');
- const result={passed:true,checks,combinations:60,real_database:true,real_http:true,loopback_only:true,production_writes:false};
- if (process.env.PROFILE_TEST_RESULT) await writeFile(process.env.PROFILE_TEST_RESULT,JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+ const result={passed:true,checks,combinations:30,real_database:true,real_http:true,loopback_only:true,production_writes:false};
+ await writeFile(new URL('profile-db-result.json',import.meta.url),JSON.stringify(result,null,2));console.log(JSON.stringify(result));
 } finally {
  await new Promise(resolve=>server.close(resolve));await pool().end();await admin.end();
 }

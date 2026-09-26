@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Foto de perfil — Pokeworld Universe</title>
-  <meta name="description" content="Escolha a foto de perfil da sua conta Pokeworld Universe.">
+  <meta name="description" content="Personalize seu perfil com personagens e cards de fundo do Pokeworld Universe.">
   <link rel="icon" href="assets/logo-sigla.png">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="styles.css?pwu=profile-20260926-v1">
+  <link rel="stylesheet" href="pages.css?pwu=profile-20260926-v1">
+  <link rel="stylesheet" href="profile-editor.css?pwu=profile-20260926-v1">
 </head>
 <body data-page="perfil">
 <div class="scroll-progress" aria-hidden="true"></div>
@@ -34,14 +35,14 @@
       <nav class="banner__crumb" aria-label="Você está em"><a href="index.html">Início</a><i aria-hidden="true"></i><span>Foto de perfil</span></nav>
       <span class="banner__tag">Sua conta</span>
       <h1 class="banner__title">Foto de perfil</h1>
-      <p class="banner__sub">Escolha um parceiro para representar você no site.</p>
+      <p class="banner__sub">Seu personagem, seu card, sua identidade no PWU.</p>
     </div>
   </section>
 
   <main class="sub">
 
     <section class="sec acc-sec">
-      <div class="wrap--narrow">
+      <div class="profile-wrap">
         <div class="shop-gate" id="acc-gate" hidden style="margin-bottom:0">
           <div class="shop-gate__card">
             <img src="assets/logo-sigla.png" alt="">
@@ -52,17 +53,40 @@
         </div>
         <div id="acc" hidden>
           <a class="voltar" href="minha-conta.html">← Voltar para minha conta</a>
-          <article class="acc-card">
-            <div class="acc-top">
-              <div class="acc-avatar"><img id="acc-avatar" src="assets/logo-sigla.png" alt="Foto atual"></div>
-              <div><h2 class="acc-card__title">Sua <span class="grad grad--yellow">foto</span></h2><p class="acc-card__sub" style="margin-top:.6rem">Clique em um parceiro para escolher.</p></div>
+          <article class="profile-editor" id="profile-editor">
+            <header class="profile-editor__heading">
+              <div><p class="profile-eyebrow">Identidade de treinador</p><h2>Seu perfil, <span>do seu jeito</span></h2><p class="profile-editor__intro">Escolha quem representa você e dê um toque especial com um card.</p></div>
+              <span class="profile-editor__badge">Coleção PWU</span>
+            </header>
+            <div class="profile-editor__body">
+              <aside class="profile-preview-panel" aria-label="Prévia da sua aparência">
+                <p class="profile-preview__tag">Assim fica seu perfil</p>
+                <div class="profile-preview" id="profile-preview"></div>
+                <h3 class="profile-preview__name" id="profile-character-name">Leon</h3>
+                <p class="profile-preview__card">Card de fundo · <b id="profile-card-name">Água</b></p>
+                <p class="profile-preview__note">Rosto e busto em destaque. Troque o fundo sem mudar o personagem.</p>
+              </aside>
+              <div class="profile-options">
+                <div class="profile-tabs" role="tablist" aria-label="Personalizar perfil">
+                  <button type="button" role="tab" id="tab-characters" aria-selected="true" aria-controls="panel-characters">Personagem <span>10</span></button>
+                  <button type="button" role="tab" id="tab-cards" aria-selected="false" aria-controls="panel-cards" tabindex="-1">Card de fundo <span>5</span></button>
+                </div>
+                <section class="profile-panel" role="tabpanel" id="panel-characters" aria-labelledby="tab-characters">
+                  <h3 class="profile-panel__heading">Quem vai representar você?</h3>
+                  <p class="profile-panel__text">Escolha um personagem. Seu card de fundo continua o mesmo.</p>
+                  <div class="profile-grid" id="profile-characters" role="group" aria-label="Personagens disponíveis"></div>
+                </section>
+                <section class="profile-panel" role="tabpanel" id="panel-cards" aria-labelledby="tab-cards" hidden>
+                  <h3 class="profile-panel__heading">Um fundo que combina com você</h3>
+                  <p class="profile-panel__text">Cinco cards para combinar livremente ou a opção sem card.</p>
+                  <div class="profile-grid profile-grid--cards" id="profile-cards" role="group" aria-label="Cards disponíveis"></div>
+                </section>
+              </div>
             </div>
-            <div class="avatar-grid avatar-grid--page" id="grade-avatar" style="margin-top:2.6rem"></div>
-            <form id="f-av" novalidate style="max-width:52rem">
-              <label class="field"><span>Ou cole o endereço de uma imagem (https)</span><input type="url" name="url" placeholder="https://..."></label>
-              <p class="auth__error" hidden></p>
-              <button class="auth__submit" type="submit"><span>Salvar foto</span></button>
-            </form>
+            <footer class="profile-editor__footer">
+              <div><p class="profile-editor__selection" id="profile-selection">Leon · Água</p><p class="profile-editor__message" id="profile-message" role="status" aria-live="polite"></p></div>
+              <div class="profile-actions"><button class="profile-restore" id="profile-restore" type="button" disabled>Restaurar</button><button class="profile-save" id="profile-save" type="button" disabled>Salvar aparência</button></div>
+            </footer>
           </article>
         </div>
       </div>
@@ -108,11 +132,12 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="config.js"></script>
+<script src="config.js?pwu=profile-20260926-v1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="data.js"></script>
-<script src="store.js"></script>
-<script src="ui.js"></script>
-<script src="pages.js"></script>
+<script src="data.js?pwu=profile-20260926-v1"></script>
+<script src="store.js?pwu=profile-20260926-v1"></script>
+<script src="ui.js?pwu=profile-20260926-v1"></script>
+<script src="pages.js?pwu=profile-20260926-v1"></script>
+<script type="module" src="profile-editor.js?pwu=profile-20260926-v1"></script>
 </body>
 </html>

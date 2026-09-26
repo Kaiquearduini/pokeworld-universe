@@ -6,6 +6,7 @@
  * GET  /api/account            -> dados da conta + treinadores (Bearer token)
  */
 import crypto from 'crypto';
+import { selection, appearanceUrl } from '../profile-catalog.js';
 import { gameConfigured, q, one, run, tableExists, tx } from './_lib/gamedb.js';
 import { sign, accountFromRequest, hashSenha } from './_lib/session.js';
 import { mailConfigured } from './_lib/mail.js';
@@ -302,6 +303,17 @@ export default async function handler(req, res) {
       if (!id) return res.status(401).json({ error: 'não autenticado' });
       await run('DELETE FROM site_devices WHERE account_id = ? AND device_id = ?', [id, String(body.deviceId || '').slice(0, 64)]);
       return res.status(200).json({ ok: true });
+    }
+
+    // Two cosmetic choices are stored atomically in the existing profile image field.
+    // Account ownership always comes from the authenticated session, never the payload.
+    if (action === 'appearance') {
+      const id = await accountFromRequest(req);
+      if (!id) return res.status(401).json({ error: 'Entre na sua conta para salvar a aparência.' });
+      if (!selection(body.characterId, body.cardId)) return res.status(400).json({ error: 'Escolha um personagem e um card disponíveis.' });
+      const avatar = appearanceUrl(body.characterId, body.cardId);
+      await run('UPDATE accounts SET image = ? WHERE id = ?', [avatar, id]);
+      return res.status(200).json({ ok: true, avatar });
     }
 
     // ---------------- foto de perfil ----------------

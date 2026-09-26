@@ -115,7 +115,8 @@
   var gameOn = null;          // null = ainda não sabemos
   // guarda as implementações anteriores (Supabase ou local) para o fallback.
   // Precisa copiar as FUNÇÕES: guardar o objeto `api` criaria recursão infinita.
-  var anterior = { register: api.register, login: api.login, changePassword: api.changePassword };
+  // Game accounts only: never substitute local/Supabase authentication.
+  sb = null;
 
   function gameFetch(opts) {
     var o = opts || {};
@@ -125,7 +126,7 @@
     return fetch('/api/account' + (o.query || ''), { method: o.method || 'POST', headers: h, body: o.body ? JSON.stringify(o.body) : undefined })
       .then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (d) {
-          if (r.status === 503) { gameOn = false; var e = new Error('offline'); e.offline = true; throw e; }
+          if (r.status === 503) { gameOn = false; var e = new Error(d.error || 'Serviço temporariamente indisponível.'); e.offline = true; throw e; }
           gameOn = true;
           if (!r.ok) { var er = new Error(d.error || 'Algo deu errado. Tente novamente.'); if (d.needsDevice) { er.needsDevice = true; er.email = d.email; } if (d.needsTotp) er.needsTotp = true; throw er; }
           return d;
@@ -140,16 +141,19 @@
   }
 
   api.register = function (email, password) {
-    return gameFetch({ body: { action: 'register', email: email, password: password, deviceId: deviceId() } }).then(fromGame)
-      .catch(function (e) { if (!e.offline) throw e; return anterior.register(email, password); });
+    return gameFetch({ body: { action: 'register', email: email, password: password, terms: true, deviceId: deviceId() } }).then(function (d) {
+      if (d.needsEmail) { var error = new Error(d.message); error.needsEmail = true; error.email = email; throw error; }
+      throw new Error('Resposta inesperada do cadastro. Nenhuma sessão iniciada.');
+    });
+  };
+  api.confirmRegister = function(email, password, code) {
+    return gameFetch({body:{action:'register-confirm',email:email,password:password,code:code,deviceId:deviceId()}}).then(fromGame);
   };
   api.login = function (email, password, totp) {
-    return gameFetch({ body: { action: 'login', email: email, password: password, deviceId: deviceId(), totp: totp || undefined } }).then(fromGame)
-      .catch(function (e) { if (!e.offline) throw e; return anterior.login(email, password); });
+    return gameFetch({ body: { action: 'login', email: email, password: password, deviceId: deviceId(), totp: totp || undefined } }).then(fromGame);
   };
   api.changePassword = function (email, current, next) {
-    return gameFetch({ body: { action: 'password', password: current, next: next } }).then(function () {})
-      .catch(function (e) { if (!e.offline) throw e; return anterior.changePassword(email, current, next); });
+    return gameFetch({ body: { action: 'password', password: current, next: next } });
   };
   /** Esqueci minha senha: pede o código de 6 dígitos por e-mail. */
   api.forgot = function (email) {
@@ -169,7 +173,7 @@
   };
   /** Autenticador por aplicativo: gera o segredo/QR, confirma o 1º código e desativa. */
   api.totpSetup = function () { return gameFetch({ body: { action: 'totp-setup' } }); };
-  api.totpEnable = function (code) { return gameFetch({ body: { action: 'totp-enable', code: code } }); };
+  api.totpEnable = function (code) { return gameFetch({ body: { action: 'totp-enable', code: code } }).then(function(d) { if (d.token) localStorage.setItem(TOKEN_KEY,d.token); return d; }); };
   api.totpDisable = function (password) { return gameFetch({ body: { action: 'totp-disable', password: password } }); };
   /** Confirma o código de 6 dígitos que autoriza este computador. */
   api.confirmDevice = function (email, password, code) {
@@ -186,8 +190,21 @@
       return url;
     });
   };
+  api.appearance = function (characterId, cardId) {
+    var owner = auth.user && String(auth.user.id);
+    return gameFetch({ body: { action: 'appearance', characterId: characterId, cardId: cardId } }).then(function (d) {
+      if (auth.user && String(auth.user.id) === owner) { auth.user.avatar = d.avatar; auth.set(auth.user); }
+      return d.avatar;
+    }).catch(function (e) {
+      if (e.offline) throw new Error('Não foi possível conectar ao site. Sua aparência não foi salva; tente novamente.');
+      throw e;
+    });
+  };
   api.ticket = function (subject, message) {
     return gameFetch({ body: { action: 'ticket', subject: subject, message: message } });
+  };
+  api.createCharacter = function (name, sex) {
+    return gameFetch({body:{action:'character-create',name:name,sex:sex}});
   };
   /** Dados frescos da conta do jogo (saldo, treinadores). null se não for conta do jogo. */
   api.me = function () {
@@ -203,7 +220,7 @@
       if (tk) return Promise.resolve(tk);
       return sb ? sb.auth.getSession().then(function (r) { return r.data.session ? r.data.session.access_token : null; }) : Promise.resolve(null);
     },
-    /** Saldo real de coins: accounts.pontos no banco do jogo. */
+    /** Saldo real de coins: accounts.diamond_points no banco do jogo. */
     coins: function () {
       return api.me().then(function (d) {
         if (d) return Number(d.coins || 0);
@@ -320,15 +337,7 @@
   }
 
   function openModal(tab) {
-    if (!modal) buildModal();
-    if (auth.user) { toast('Você já está conectado como ' + auth.user.name + '.'); return; }
-    modal.hidden = false;
-    document.body.classList.add('is-locked');
-    switchTab(tab || 'login');
-    if (window.gsap) {
-      gsap.fromTo(modal.querySelector('.auth__backdrop'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 });
-      gsap.fromTo(modal.querySelector('.auth__card'), { y: 40, scale: 0.94, autoAlpha: 0 }, { y: 0, scale: 1, autoAlpha: 1, duration: 0.5, ease: 'back.out(1.6)' });
-    }
+    location.href = LOGIN_URL + (tab === 'register' ? '#criar' : '');
   }
   function closeModal() {
     if (!modal || modal.hidden) return;
@@ -456,6 +465,7 @@
   });
 
   auth.load();
+  if (auth.user && (!auth.user.game || !localStorage.getItem(TOKEN_KEY))) auth.set(null);
   if (localStorage.getItem(TOKEN_KEY)) {
     api.me().then(function (d) {
       if (d && d.id) { var u = fromGame(d); if (!auth.user || auth.user.email !== u.email) auth.set(u); }

@@ -1361,3 +1361,8 @@ body[data-page="pagamento"] .payment-payer label { display: block; margin-bottom
 .payment-payer .payment-payer__error { grid-column: 1 / -1; font: 400 1.4rem/1.5 var(--montreal); color: #ffd9d9; }
 .pay-way:focus-visible { outline: .25rem solid #fcd05c; outline-offset: .4rem; }
 @media (max-width: 600px) { .payment-payer { grid-template-columns: 1fr; } }
+
+/* Larger square profile portrait: preserves the character/card composition. */
+body[data-page="minha-conta"] .acc-avatar { width: clamp(150px,19rem,210px); height: clamp(150px,19rem,210px); margin-bottom: 12px; }
+body[data-page="minha-conta"] .acc-avatar img { border-radius: 20px; object-fit: cover; }
+body[data-page="minha-conta"] .acc-avatar__edit { font-size: 14px; padding: 8px 17px; bottom: -12px; }

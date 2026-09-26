@@ -490,7 +490,7 @@
       document.getElementById('acc-name').value = shown.name ? (jogo ? jogo.name : u.name) : ' *  *  *  *  *';
       document.getElementById('acc-email').value = shown.email ? (jogo ? jogo.email : u.email) : ' *  *  *  *  *';
       var av = document.getElementById('acc-avatar');
-      if (av) av.src = (PWU.avatarUrl ? PWU.avatarUrl(u) : 'assets/img/pokemon/pikachu.png');
+      if (av) av.src = (jogo && jogo.avatar) || (PWU.avatarUrl ? PWU.avatarUrl(u) : 'assets/img/pokemon/pikachu.png');
       document.getElementById('acc-diamonds').textContent = jogo && Number.isSafeInteger(jogo.diamondPoints) ? jogo.diamondPoints.toLocaleString('pt-BR') : 'Indisponível';
       document.getElementById('acc-plan').textContent = pr.plan || 'Conta Grátis';
       var tw = document.querySelector('[data-acc="twitch"]'); if (tw) tw.textContent = pr.twitch ? 'Twitch: ' + pr.twitch : 'Vincular Twitch';
@@ -872,7 +872,7 @@
     return;
   }
 
-  if (['tickets', 'seguranca', 'perfil', 'pagamento'].indexOf(page) > -1 && window.PWU) {
+  if (['tickets', 'seguranca', 'pagamento'].indexOf(page) > -1 && window.PWU) {
     var portao = document.getElementById('acc-gate'), area = document.getElementById('acc');
     var jogoConta = null;
 

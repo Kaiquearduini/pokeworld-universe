@@ -58,9 +58,15 @@ try {
   }
   await page.goto(base+'/minha-conta.html',{waitUntil:'networkidle'});
   const banner=await page.locator('.banner').boundingBox(),account=await page.locator('#acc .acc-card').first().boundingBox();
-  assert.ok(banner.height<210,'Banner too tall '+width+': '+banner.height);assert.ok(account.y<440,'Account too low '+width+': '+account.y);
+  assert.ok(banner.height<160,'Banner too tall '+width+': '+banner.height);assert.ok(account.y<320,'Account too low '+width+': '+account.y);
+  const frames=await page.evaluate(()=>{
+   const large=getComputedStyle(document.querySelector('#acc-avatar')),small=getComputedStyle(document.querySelector('.user-chip img'));
+   return {large:large.borderTopColor,small:small.borderTopColor,thickness:large.borderTopWidth,background:large.backgroundImage,fit:large.objectFit};
+  });
+  assert.equal(frames.large,frames.small,'Large profile frame must match header gold');
+  assert.equal(frames.thickness,'2px');assert.equal(frames.background,'none');assert.equal(frames.fit,'contain');
   const title=await page.locator('.banner__title').boundingBox();assert.ok(title.height<50);
-  results.push({width,threeChoicesVisible:true,arrowsAndKeyboard:true,alignedHeader:true,bannerHeight:banner.height,accountTop:account.y});
+  results.push({width,threeChoicesVisible:true,arrowsAndKeyboard:true,alignedHeader:true,goldFramesMatch:true,bannerHeight:banner.height,accountTop:account.y});
  }
  await page.setViewportSize({width:1440,height:900});await page.goto(base+'/minha-conta.html',{waitUntil:'networkidle'});
  await page.screenshot({path:out+'account-first-screen.png'});await page.locator('.user-chip').screenshot({path:out+'header-aligned.png'});

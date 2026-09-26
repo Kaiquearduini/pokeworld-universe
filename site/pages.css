@@ -1364,23 +1364,24 @@ body[data-page="pagamento"] .payment-payer label { display: block; margin-bottom
 
 /* Tall profile card preserves all of the selected artwork. */
 body[data-page="minha-conta"] .acc-avatar { width: clamp(150px,19rem,210px); height: auto; aspect-ratio: 3 / 4; margin-bottom: 12px; }
-body[data-page="minha-conta"] .acc-avatar img { border-radius: 20px; object-fit: contain; }
+body[data-page="minha-conta"] .acc-avatar img { border: 2px solid #fcd05c; border-radius: 20px; object-fit: contain; background: #13254d; }
 body[data-page="minha-conta"] .acc-avatar__edit { font-size: 14px; padding: 8px 17px; bottom: -12px; }
 
 @media (max-width: 420px) { body[data-page="minha-conta"] .acc-top { align-items: flex-start; flex-wrap: wrap; } }
 
 /* A compact identity banner keeps account information near the first fold. */
-body:is([data-page="minha-conta"], [data-page="perfil"]) .banner { min-height: 0; padding: 16px 0 22px; }
+body:is([data-page="minha-conta"], [data-page="perfil"]) .banner { min-height: 0; padding: 12px 0 18px; }
 body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__inner { width: calc(100% - 40px); padding: 0; }
-body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__crumb { margin-bottom: 6px; font-size: 12px; }
+body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__meta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 12px; }
+body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__crumb { margin: 0; font-size: 12px; }
 body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__tag { padding: 4px 10px; font-size: 11px; }
-body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__title { font-size: clamp(32px,3vw,44px); line-height: 1; margin-top: 8px; }
-body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__sub { margin-top: 8px; padding-top: 10px; font-size: 13px; line-height: 1.4; max-width: 520px; }
+body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__title { font-size: clamp(32px,3vw,40px); line-height: 1; margin-top: 8px; }
+body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__sub { margin-top: 6px; padding-top: 8px; font-size: 13px; line-height: 1.4; max-width: 520px; }
 body:is([data-page="minha-conta"], [data-page="perfil"]) .banner--blend::after { height: 50px; }
 body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__ball { width: 220px; height: 220px; margin: -110px 0 0 -110px; }
-body:is([data-page="minha-conta"], [data-page="perfil"]) .acc-sec { padding-top: 24px; }
+body:is([data-page="minha-conta"], [data-page="perfil"]) .acc-sec { padding-top: 20px; }
 @media (max-width: 720px) {
-  body:is([data-page="minha-conta"], [data-page="perfil"]) .banner { padding: 12px 0 18px; }
+  body:is([data-page="minha-conta"], [data-page="perfil"]) .banner { padding: 10px 0 14px; }
   body:is([data-page="minha-conta"], [data-page="perfil"]) .banner__sub { font-size: 12px; }
   body:is([data-page="minha-conta"], [data-page="perfil"]) .acc-sec { padding-top: 18px; }
 }

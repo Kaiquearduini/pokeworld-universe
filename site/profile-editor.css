@@ -9,7 +9,7 @@
 .profile-editor__badge { padding: 8px 12px; border: 1px solid #70f5ff38; border-radius: 30px; color: #9cecf4; font: 500 11px var(--montreal); white-space: nowrap; }
 .profile-editor__body { display: grid; grid-template-columns: 330px minmax(0,1fr); gap: 30px; padding: 30px 34px; }
 .profile-preview-panel { align-self: start; }
-.profile-preview { width: 100%; aspect-ratio: 3 / 4; border: 2px solid #72ddea; border-radius: 18px; overflow: hidden; box-shadow: 0 12px 30px #0005; background: #12254d; }
+.profile-preview { width: 100%; aspect-ratio: 3 / 4; border: 2px solid #fcd05c; border-radius: 18px; overflow: hidden; box-shadow: 0 12px 30px #0005; background: #12254d; }
 .profile-preview svg { display: block; width: 100%; height: 100%; }
 .profile-tabs { display: flex; padding: 5px; border-radius: 13px; background: #07142d; gap: 6px; margin-bottom: 22px; }
 .profile-tabs button { flex: 1; min-height: 46px; padding: 8px; border: 1px solid transparent; border-radius: 10px; color: #a5bad5; background: transparent; cursor: pointer; font: 500 14px var(--montreal); }

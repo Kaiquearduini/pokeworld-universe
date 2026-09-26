@@ -43,3 +43,12 @@ Integração real: `tests/profile-database.integration.mjs`, restrita à fixture
 - Somente sete arquivos do site foram publicados, com conferência de hashes, estágio temporário, backup e verificações HTTPS posteriores. A revisão dos SVGs permanece v3; nenhuma imagem foi regenerada.
 
 Para reproduzir o teste visual, inicie a fixture local com `node tests/fixtures/profile-preview.mjs` e execute `node tests/profile-layout.browser.mjs` com Playwright e Chrome disponíveis. A variável opcional `PWU_PLAYWRIGHT_MODULE` informa a URL de um módulo Playwright já instalado. A fixture usa apenas 127.0.0.1:17941 e dados fictícios; evidências são gravadas numa pasta temporária.
+
+
+## Moldura e banner — revisão v5, 26/09/2026
+
+A foto vertical da conta e a prévia do editor agora usam a mesma borda dourada de 2 px do retrato no cabeçalho. A composição continua inteira e sem deformação. O banner agrupa a navegação e o selo numa linha com quebra responsiva; título, textura, degradê e detalhe luminoso permanecem. O espaço acima dos dados foi reduzido.
+
+Verificações desta revisão: dez cenários de seleção, salvamento local, erros e sessão; sete larguras de 320 a 1920 px; banner entre 118 e 135 px e início da conta entre 200 e 307 px. Carrosséis de três opções, teclado, redimensionamento e catálogos fictícios com 45 opções continuam passando. A borda da foto grande foi comparada à borda do topo no navegador. Nenhum erro JavaScript detectado.
+
+Somente quatro arquivos de apresentação publicados após comparação da versão anterior, backup e teste temporário na hospedagem. Os arquivos públicos foram conferidos por HTTPS após ativação. As folhas de estilo alteradas usam `profile-20260926-v5`; imagens e scripts preservam suas revisões existentes. Esta revisão não altera API, banco, autenticação, pagamentos ou jogo. Os testes de integração com banco da revisão v3 não foram repetidos para este ajuste de apresentação.

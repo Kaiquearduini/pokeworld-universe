@@ -1362,7 +1362,9 @@ body[data-page="pagamento"] .payment-payer label { display: block; margin-bottom
 .pay-way:focus-visible { outline: .25rem solid #fcd05c; outline-offset: .4rem; }
 @media (max-width: 600px) { .payment-payer { grid-template-columns: 1fr; } }
 
-/* Larger square profile portrait: preserves the character/card composition. */
-body[data-page="minha-conta"] .acc-avatar { width: clamp(150px,19rem,210px); height: clamp(150px,19rem,210px); margin-bottom: 12px; }
-body[data-page="minha-conta"] .acc-avatar img { border-radius: 20px; object-fit: cover; }
+/* Tall profile card preserves all of the selected artwork. */
+body[data-page="minha-conta"] .acc-avatar { width: clamp(150px,19rem,210px); height: auto; aspect-ratio: 3 / 4; margin-bottom: 12px; }
+body[data-page="minha-conta"] .acc-avatar img { border-radius: 20px; object-fit: contain; }
 body[data-page="minha-conta"] .acc-avatar__edit { font-size: 14px; padding: 8px 17px; bottom: -12px; }
+
+@media (max-width: 420px) { body[data-page="minha-conta"] .acc-top { align-items: flex-start; flex-wrap: wrap; } }

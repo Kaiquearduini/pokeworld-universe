@@ -1,4 +1,4 @@
-import { characters, cards, selection, appearanceUrl, fromAvatar, portraitMarkup } from './profile-catalog.js';
+import { characters, cards, selection, appearanceUrl, fromAvatar, portraitMarkup } from './profile-catalog.js?pwu=profile-20260926-v2';
 
 const editor = document.getElementById('profile-editor');
 if (editor && window.PWU?.auth) {

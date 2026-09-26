@@ -1,4 +1,5 @@
-import { characters, cards, selection, appearanceUrl, fromAvatar, portraitMarkup } from './profile-catalog.js?pwu=profile-20260926-v3';
+import { initProfileCarousel } from './profile-carousel.js?pwu=profile-20260926-v4';
+import { characters, cards, appearanceUrl, fromAvatar, portraitMarkup } from './profile-catalog.js?pwu=profile-20260926-v3';
 
 const editor = document.getElementById('profile-editor');
 if (editor && window.PWU?.auth) {
@@ -33,6 +34,7 @@ if (editor && window.PWU?.auth) {
     cardId = chosen?.cardId || 'agua';
     dirty = false;
     update();
+    carousels.forEach(carousel => carousel.revealSelection());
   }
   document.querySelector('#tab-characters span').textContent = characters.length;
   document.querySelector('#tab-cards span').textContent = cards.filter(card => card.image).length;
@@ -62,12 +64,14 @@ if (editor && window.PWU?.auth) {
     button.addEventListener('click', () => { cardId = card.id; dirty = true; update(); say(''); });
     document.getElementById('profile-cards').append(button);
   }
+  const carousels = ['profile-characters', 'profile-cards'].map(id => initProfileCarousel(document.getElementById(id)));
   function openTab(tab, focus = false) {
     tabs.forEach(button => {
       const active = button === tab;
       button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
       document.getElementById(button.getAttribute('aria-controls')).hidden = !active;
     });
+    requestAnimationFrame(() => carousels.forEach(carousel => { carousel.refresh(); carousel.revealSelection(); }));
     if (focus) tab.focus();
   }
   tabs.forEach((tab, index) => {

@@ -1,6 +1,6 @@
 # Seleção de personagem e card do perfil
 
-A página `perfil.html` oferece cinco personagens em uma aba e cinco cards de fundo, mais a opção sem card, em outra. A prévia é um card vertical 3:4 com a arte completa disponível. Foram retirados da seleção Leon, Ash/Pikachu e as três treinadoras, conforme pedido do usuário. Arquivos de versões anteriores continuam disponíveis para não quebrar fotos já salvas.
+A página `perfil.html` oferece personagens e cards em abas independentes. Cada aba mostra três opções por vez em uma única linha horizontal, com setas, rolagem nativa e indicador da faixa visível. O catálogo atual tem cinco personagens e cinco cards, mais a opção sem card. A prévia é um card vertical 3:4 com a arte completa disponível. Foram retirados da seleção Leon, Ash/Pikachu e as três treinadoras, conforme pedido do usuário. Arquivos de versões anteriores continuam disponíveis para não quebrar fotos já salvas.
 
 Os nomes escolhidos por semelhança visual são Wattson (arte 1), Koga (arte 2), Giovanni (arte 3), Acerola (arte 4) e Bruno (arte 5). São nomes atribuídos a artes personalizadas; não uma confirmação da identidade original pelo artista. Referência consultada: https://www.artofpkm.com/characters, incluindo as páginas /characters/wattson/cards, /characters/304/artwork, /characters/giovanni, /characters/acerola e /characters/303/secondary_cards.
 
@@ -8,7 +8,7 @@ A prévia não contém nome, descrição ou legenda abaixo da arte. O rodapé ma
 
 ## Foto no cabeçalho
 
-O topo usa um retrato quadrado de 44 px com cantos arredondados, borda dourada e enquadramento individual do rosto. O fundo continua sendo o mesmo card escolhido. A página da conta usa o card vertical inteiro. As imagens originais não foram deformadas ou modificadas; os enquadramentos são feitos com SVG e viewBox.
+O topo usa blocos alinhados de 44 px para foto, nome e Sair. A foto mantém a moldura dourada e o recorte do rosto; o nome recebe uma moldura dourada discreta. Nomes compridos são abreviados visualmente e a navegação reserva espaço para a área do usuário. No celular, o nome fica oculto conforme o comportamento anterior. O fundo continua sendo o mesmo card escolhido. A página da conta usa o card vertical inteiro. As imagens originais não foram deformadas ou modificadas; os enquadramentos são feitos com SVG e viewBox.
 
 Ao abrir o site, a foto salva no servidor atualiza uma sessão local antiga. A resposta inicial é descartada se o usuário já trocou de sessão, saiu ou salvou uma foto enquanto a leitura estava pendente. O nome no cabeçalho é inserido como texto, sem interpolação de HTML.
 
@@ -31,3 +31,15 @@ Para acrescentar opções, edite o catálogo, altere a revisão e execute `node 
 
 Teste unitário: `node --experimental-vm-modules --test tests/profile-appearance.test.mjs`.
 Integração real: `tests/profile-database.integration.mjs`, restrita à fixture em `127.0.0.1:13316`, com as variáveis de configuração apropriadas.
+
+## Layout compacto — revisão v4, 26/09/2026
+
+- `profile-carousel.js` mantém três opções visíveis, independentemente do tamanho do catálogo. Setas avançam por grupos de três; toque e barra de rolagem usam o movimento nativo. Home/End e setas do teclado alcançam qualquer opção. A seleção salva reaparece na faixa visível quando se abre a aba ou restaura a prévia. O fim da rolagem e as mudanças de tamanho alinham novamente as opções.
+- Personagens e cards mantêm escolhas independentes; navegar pelas setas não salva nem troca a seleção.
+- Os banners de Minha conta e Foto de perfil ficaram compactos, com título em uma linha e a identidade visual preservada. O card e os dados passam a aparecer mais cedo na tela. Demais banners não foram alterados.
+- Testes em sete larguras (320, 390, 768, 1024, 1280, 1440 e 1920 px): três opções completas por faixa, setas e teclado, nome/foto/Sair alinhados, menu sem sobreposição, nomes longos contidos, ausência de transbordamento da página e banner abaixo de 210 px. A primeira ficha da conta começa antes de 350 px nos tamanhos verificados.
+- Catálogos fictícios com 45 personagens e 45 cards foram testados em desktop e celular, sem novas linhas e com a última opção acessível. O catálogo real permanece com cinco personagens.
+- Dez cenários anteriores de seleção/salvamento/erros/sessão continuam passando. As 56 verificações offline existentes passaram. Banco, autenticação e pagamentos não foram alterados; a integração com MariaDB da revisão v3 não precisou ser repetida para esta alteração de layout.
+- Somente sete arquivos do site foram publicados, com conferência de hashes, estágio temporário, backup e verificações HTTPS posteriores. A revisão dos SVGs permanece v3; nenhuma imagem foi regenerada.
+
+Para reproduzir o teste visual, inicie a fixture local com `node tests/fixtures/profile-preview.mjs` e execute `node tests/profile-layout.browser.mjs` com Playwright e Chrome disponíveis. A variável opcional `PWU_PLAYWRIGHT_MODULE` informa a URL de um módulo Playwright já instalado. A fixture usa apenas 127.0.0.1:17941 e dados fictícios; evidências são gravadas numa pasta temporária.

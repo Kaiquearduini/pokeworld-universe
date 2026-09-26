@@ -35,7 +35,7 @@ function fixture() {
       const remote=orders.get(id);assert.equal(key,remote.external_reference+'-cancel');cancels++;
       if(mode==='cancel-down') throw new Error('timeout');
       if(mode==='pay-on-cancel') pay(remote);
-      else {remote.status='canceled';remote.status_detail='canceled_transaction';Object.assign(remote.transactions.payments[0],{status:'canceled',status_detail:'canceled_transaction'});}
+      else {remote.status='canceled';remote.status_detail='canceled';Object.assign(remote.transactions.payments[0],{status:'canceled',status_detail:'canceled_transaction'});if(mode==='cancel-nominal-total'){remote.total_paid_amount=remote.total_amount;delete remote.transactions.payments[0].paid_amount;}}
       if(mode==='lost-cancel') throw new Error('cancel-response-lost');
       return structuredClone(remote);
     }
@@ -168,7 +168,9 @@ test('confirmed expiration clears the active session without credit and allows a
 });
 
 test('conflicting cancellation data cannot unlock a second payable order',async()=>{
-  for(const inconsistent of [r=>r.transactions.payments[0].status='processed',r=>r.total_paid_amount='150.00',r=>r.transactions.payments[0].paid_amount='150.00']) {
+  // A nominal order total on a cancelled order is valid provider data and is
+  // covered separately below. A captured transaction or mismatched state is not.
+  for(const inconsistent of [r=>r.transactions.payments[0].status='processed',r=>r.transactions.payments[0].paid_amount='150.00',r=>r.transactions.payments[0].paid_amount='invalid']) {
     const f=fixture(),first=(await f.create()).order,r=[...f.orders.values()][0];
     r.status='canceled';r.status_detail='canceled_transaction';r.transactions.payments[0].status='canceled';inconsistent(r);
     // Cancel intent hides the QR, but only consistent provider evidence ends the session.
@@ -229,4 +231,13 @@ test('private HTTP listener rejects missing auth, oversized input and malformed 
   let calls=0;const token='a'.repeat(64),server=createGameBridge({token,service:{async handle(){calls++;return {ok:true};}}});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   function request(body,auth='Bearer '+token) {return new Promise((resolve,reject)=>{const req=http.request({host:'127.0.0.1',port:server.address().port,path:'/game-pix',method:'POST',headers:{Authorization:auth,'Content-Type':'application/json'}},res=>{res.resume();res.on('end',()=>resolve(res.statusCode));});req.on('error',reject);req.end(body);});}
   try {assert.equal(await request('{}',''),401);assert.equal(await request('{broken'),503);assert.equal(await request('x'.repeat(3000)),413);assert.equal(await request('{"account":1,"request":{"action":"recover"},"coins":100}'),400);assert.equal(await request('{"account":1,"request":{"action":"recover"}}'),200);assert.equal(calls,1);} finally {await new Promise(resolve=>server.close(resolve));}
+});
+
+
+test('cancelled production-shaped response releases session despite nominal order total',async()=>{
+  const f=fixture(),first=(await f.create()).order;f.setMode('cancel-nominal-total');
+  const result=await f.api.handle(f.account,{action:'cancel',orderId:first.id});
+  assert.equal(result.order.status,'cancelled');assert.equal(await balance(f.account),0);
+  assert.equal(await store.active(f.account),null);
+  const fresh=(await f.create()).order;assert.notEqual(fresh.id,first.id);assert.equal(f.counts().creates,2);
 });

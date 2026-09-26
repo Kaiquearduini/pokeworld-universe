@@ -71,8 +71,11 @@ export class GamePixService {
         const result=await this.ledger.fulfill(local,remote,'game_'+reference.replaceAll('-',''));
         if(!result || ![0,1].includes(Number(result.credited))) throw new Error('receipt-missing');
         status='paid';
+      // Orders may retain a nominal total_paid_amount even after cancellation.
+      // Trust matching terminal statuses after identity validation; a captured
+      // payment amount or an existing paid receipt still prevents cancellation.
       } else if(['canceled','expired'].includes(remote.status) && payment.status===remote.status &&
-        Number(remote.total_paid_amount || 0)===0 && Number(payment.paid_amount || 0)===0) {
+        (payment.paid_amount == null || /^0+(?:\.0{1,2})?$/.test(String(payment.paid_amount)))) {
         status=remote.status==='canceled'?'cancelled':'expired';
       }
       await this.store.update(account,reference,lease,status==='pending' && local.cancel_requested ? 'cancelling':status,{bound:true});

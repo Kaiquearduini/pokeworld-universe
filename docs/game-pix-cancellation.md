@@ -1,0 +1,11 @@
+# Pix: cancelamento confirmado e total nominal
+
+Em 26/09/2026, uma resposta oficial de consulta de ordem Pix apresentou a ordem em `canceled/canceled`, pagamento em `canceled/canceled_transaction`, `total_paid_amount` igual ao valor nominal e `payment.paid_amount` ausente. A identidade, referência, moeda e valor original passaram na validação. Não havia recibo de crédito. O serviço anterior exigia total pago zero na ordem e devolvia `pending`, prendendo a interface em “Cancelando pedido”.
+
+A reconciliação agora reconhece estados terminais concordantes depois de validar a identidade e a vinculação da ordem. O campo agregado nominal não impede o cancelamento. Um valor capturado positivo ou malformado na transação continua bloqueando o encerramento. Um recibo local já creditado ou pagamento confirmado continua prevalecendo; revisão por estorno/disputa permanece separada. Não há atualização manual de pedidos nem cancelamento presumido por tempo de espera.
+
+Testes: 37 casos de unidade, fronteira do provedor e indisponibilidade; 28 casos em MariaDB isolado com TLS. Cobertura inclui resposta realista com total nominal, liberação da sessão para novo pedido, fechamento/reabertura, concorrência, resposta perdida, repetição de requisições, pagamento durante cancelamento, crédito único e restrição entre contas. Um teste anterior tratava total nominal como conflito; essa expectativa foi substituída pelo caso realista, preservando os conflitos de estado e valor capturado. Nenhuma chamada de criação/cancelamento/pagamento foi feita contra o provedor real nos testes.
+
+Publicação: somente `site/api/_lib/game-pix-service.js` na hospedagem do site, com hash da versão anterior, backup, teste temporário e verificações depois da ativação. A mesma função publicada reconheceu a resposta oficial já existente em uma simulação somente em memória, sem escrever no banco. O próximo acesso normal do jogo pode reconciliar o pedido pendente. O servidor do jogo não foi atualizado nem reiniciado por esta correção.
+
+Referência de estados: https://www.mercadopago.com.br/developers/pt/docs/checkout-api-orders/payment-management/status/order-status . Nenhum identificador de conta, pedido real ou segredo é necessário para reproduzir os testes.
